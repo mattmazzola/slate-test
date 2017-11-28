@@ -1,22 +1,26 @@
-import * as React from 'react';
-import './App.css';
-
-const logo = require('./logo.svg');
+import * as React from 'react'
+import { EntityExtraction } from './EntityExtraction'
+import './App.css'
 
 class App extends React.Component {
   render() {
     return (
-      <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to React</h2>
-        </div>
-        <p className="App-intro">
-          To get started, edit <code>src/App.tsx</code> and save to reload.
-        </p>
+      <div className="slate-app">
+        <header>
+          <h1>Slate Samples</h1>
+        </header>
+        <section>
+          <h2>Entity Extraction</h2>
+          <h3>Requirements</h3>
+          <ul>
+            <li></li>
+          </ul>
+          <hr/>
+          <EntityExtraction />
+        </section>
       </div>
     );
   }
 }
 
-export default App;
+export default App
