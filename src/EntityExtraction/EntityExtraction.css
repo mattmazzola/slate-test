@@ -64,3 +64,9 @@
   .hover-menu .button[data-active="true"] {
     color: #fff;
   }
+
+  .code-block {
+      border: 1px solid balck;
+      background: rgba(124, 219, 124, 0.836);
+      padding: 0.125em;
+  }
