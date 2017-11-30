@@ -7,13 +7,14 @@ import './EntityExtraction.css'
 import { IPosition } from '../models'
 import { valueToJSON } from '../utilities';
 
-const root = window.document.querySelector('main')
+const menuRootElement = window.document.querySelector('main')
 
 function CodeNode(props: any) {
     return <span className="code-block" {...props.attributes}>{props.children}</span>
 }
 
 interface MenuProps {
+    rootElement: Element
     isVisible: boolean
     position: IPosition
     menuRef: any
@@ -22,29 +23,6 @@ interface MenuProps {
 }
 
 class Menu extends React.Component<MenuProps> {
-    hasMark(type: any) {
-        const { value }: any = this.props
-        return value.activeMarks.some((mark: any) => mark.type == type)
-    }
-
-    onClickMark(event: any, type: string) {
-        const { value, onChange } = this.props
-        event.preventDefault()
-        const change = value.change().toggleMark(type)
-        onChange(change)
-    }
-
-    renderMarkButton(type: any, icon: any) {
-        const isActive = this.hasMark(type)
-        const onMouseDown = (event: any) => this.onClickMark(event, type)
-
-        return (
-            <span className="button" onMouseDown={onMouseDown} data-active={isActive}>
-                <span className="material-icons">{icon}</span>
-            </span>
-        )
-    }
-
     onMouseDownInsertBlock = (event: React.MouseEvent<HTMLElement>) => {
         // Prevent default to stop focus moving in the editor which would close the menu and preven the click from firing.
         event.preventDefault()
@@ -87,12 +65,15 @@ class Menu extends React.Component<MenuProps> {
     render() {
         return (
             ReactDOM.createPortal(
-                <div className={`menu hover-menu custom-toolbar ${this.props.isVisible ? "custom-toolbar--visible" : ""}`} ref={this.props.menuRef}>
+                <div className={`custom-toolbar ${this.props.isVisible ? "custom-toolbar--visible" : ""}`} ref={this.props.menuRef}>
                     <button type="button" onClick={this.onClickInsertBlock} onMouseDown={this.onMouseDownInsertBlock}>
                         Insert Block
-            </button>
+                    </button>
+                    <button type="button" onClick={this.onClickInsertBlock} onMouseDown={this.onMouseDownInsertBlock}>
+                        Insert Block
+                    </button>
                 </div>,
-                root!
+                this.props.rootElement
             )
         )
     }
@@ -191,6 +172,7 @@ class HoveringMenu extends React.Component<any, State> {
         return (
             <div>
                 <Menu
+                    rootElement={menuRootElement!}
                     isVisible={this.state.isMenuVisible}
                     position={this.state.menuPosition}
                     menuRef={this.menuRef}
@@ -198,6 +180,7 @@ class HoveringMenu extends React.Component<any, State> {
                     onChange={this.onChange}
                 />
                 <Editor
+                    autoFocus={true}
                     className="slate-editor"
                     placeholder="Enter some text..."
                     value={this.state.value}

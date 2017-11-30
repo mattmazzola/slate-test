@@ -1,6 +1,18 @@
 header {
   padding: 2em;
+  text-align: center;
 }
 section {
-  padding: 2em;
+  padding: 2em 0 4em 0;
+  background: rgba(0, 0, 0, 0.041);
+}
+
+.container {
+    margin: 0 auto;
+    width: 80%;
+}
+
+.prototype {
+    padding: 2em;
+    background: white;
 }
