@@ -4,6 +4,8 @@ import { Editor } from 'slate-react'
 import { Value } from 'slate'
 import initialValue from './value'
 import './EntityExtraction.css'
+import { IPosition } from '../models'
+import { valueToJSON } from '../utilities';
 
 const root = window.document.querySelector('main')
 
@@ -12,6 +14,8 @@ function CodeNode(props: any) {
 }
 
 interface MenuProps {
+    isVisible: boolean
+    position: IPosition
     menuRef: any
     value: any
     onChange: Function
@@ -51,7 +55,7 @@ class Menu extends React.Component<MenuProps> {
         const { value, onChange } = this.props
         event.preventDefault()
         const change = value.change()
-            .insertBlock('code_block2')
+            // .insertBlock('code_block2')
             // .insertBlock({
             //     type: 'paragraph',
             //     isVoid: true,
@@ -59,7 +63,23 @@ class Menu extends React.Component<MenuProps> {
             //         foo: 'bar'
             //     }
             // })
-            .insertText('custom block text')
+            // .insertText('custom block text')
+            .insertInline({
+                type: 'code_block2',
+                data: {
+                    foo: 'bar'
+                },
+                nodes: [
+                    {
+                        kind: 'text',
+                        leaves: [
+                            {
+                                text: "testing"
+                            }
+                        ]
+                    }
+                ]
+            })
 
         onChange(change)
     }
@@ -67,7 +87,7 @@ class Menu extends React.Component<MenuProps> {
     render() {
         return (
             ReactDOM.createPortal(
-                <div className="menu hover-menu" ref={this.props.menuRef}>
+                <div className={`menu hover-menu custom-toolbar ${this.props.isVisible ? "custom-toolbar--visible" : ""}`} ref={this.props.menuRef}>
                     <button type="button" onClick={this.onClickInsertBlock} onMouseDown={this.onMouseDownInsertBlock}>
                         Insert Block
             </button>
@@ -79,6 +99,8 @@ class Menu extends React.Component<MenuProps> {
 }
 
 interface State {
+    isMenuVisible: boolean
+    menuPosition: IPosition
     value: any
 }
 
@@ -86,40 +108,71 @@ class HoveringMenu extends React.Component<any, State> {
     menu: HTMLElement
 
     state = {
+        isMenuVisible: false,
+        menuPosition: {
+            top: 0,
+            left: 0,
+            bottom: 0
+        },
         value: Value.fromJSON(initialValue)
     }
 
-    componentDidMount() {
-        this.updateMenu()
-    }
+    // componentDidMount() {
+    //     this.updateMenu()
+    // }
 
     componentDidUpdate() {
         this.updateMenu()
     }
 
     updateMenu = () => {
-        const { value } = this.state
+        console.log('updatemenu')
         const menu = this.menu
         if (!menu) return
 
+        const { value } = this.state
         if (value.isBlurred || value.isEmpty) {
+            if (this.state.isMenuVisible !== false) {
+                // this.setState({
+                //     isMenuVisible: false
+                // })
+            }
             menu.removeAttribute('style')
             return
         }
 
         const selection = window.getSelection()
         const range = selection.getRangeAt(0)
-        const rect = range.getBoundingClientRect()
-        menu.style.opacity = '1'
-        menu.style.top = `${rect.top + window.scrollY - menu.offsetHeight}px`
-        menu.style.left = `${rect.left + window.scrollX - menu.offsetWidth / 2 + rect.width / 2}px`
+        const selectionBoundingRect = range.getBoundingClientRect()
+
+        const menuPosition: IPosition = {
+            top: selectionBoundingRect.top + window.scrollY - menu.offsetHeight,
+            left: selectionBoundingRect.left + window.scrollX - menu.offsetWidth / 2 + selectionBoundingRect.width / 2,
+            bottom: 0 // TODO: use real value
+        }
+
+        // this.setState({
+        //     isMenuVisible: true,
+        //     menuPosition
+        // })
+
+        const style: any = {
+            opacity: '1',
+            top: `${menuPosition.top}px`,
+            left: `${menuPosition.left}px`,
+        }
+
+        Object.assign(menu.style, style)
     }
 
     onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>, change: any) => {
         console.log(`onKeyDown`, event, change)
     }
 
-    onChange = ({ value }: any) => {
+    onChange = (change: any) => {
+        const { value } = change
+        const valueJson = valueToJSON(value)
+        console.log(`onChange.value `, valueJson)
         this.setState({ value })
     }
 
@@ -130,7 +183,7 @@ class HoveringMenu extends React.Component<any, State> {
     renderNode = (props: any): React.ReactNode | void => {
         switch (props.node.type) {
             case 'code_block2': return <CodeNode {...props} />
-            case 'paragraph': return <span {...props.attributes}>{props.children}</span>
+            case 'custom_inline': return <CodeNode {...props} />
         }
     }
 
@@ -138,6 +191,8 @@ class HoveringMenu extends React.Component<any, State> {
         return (
             <div>
                 <Menu
+                    isVisible={this.state.isMenuVisible}
+                    position={this.state.menuPosition}
                     menuRef={this.menuRef}
                     value={this.state.value}
                     onChange={this.onChange}

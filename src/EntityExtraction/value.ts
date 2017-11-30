@@ -9,42 +9,6 @@ const value = {
             "kind": "text",
             "leaves": [
               {
-                "text": "This example shows how you can make a hovering menu appear above your content, which you can use to make text "
-              },
-              {
-                "text": "bold",
-                "marks": [
-                  {
-                    "type": "bold"
-                  }
-                ]
-              },
-              {
-                "text": ", "
-              },
-              {
-                "text": "italic",
-                "marks": [
-                  {
-                    "type": "italic"
-                  }
-                ]
-              },
-              {
-                "text": ", or anything else you might want to do!"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "kind": "block",
-        "type": "paragraph",
-        "nodes": [
-          {
-            "kind": "text",
-            "leaves": [
-              {
                 "text": "Try it out yourself! Just "
               },
               {
@@ -59,9 +23,23 @@ const value = {
                 ]
               },
               {
-                "text": "."
+                "text": "    "
               }
             ]
+          },
+          {
+              "kind": "inline",
+              "type": "custom_inline",
+              "nodes": [
+                {
+                    "kind": "text",
+                    "leaves": [
+                      {
+                        "text": "Inline Node with Text"
+                      }
+                    ]
+                  }
+              ]
           }
         ]
       }
