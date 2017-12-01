@@ -1,50 +1,114 @@
 const value = {
-  "document": {
+    "document": {
+        "nodes": [
+            {
+                "kind": "block",
+                "type": "paragraph",
+                "isVoid": false,
+                "data": {},
+                "nodes": [
+                    {
+                        "kind": "text",
+                        "leaves": [
+                            {
+                                "kind": "leaf",
+                                "text": "Test ",
+                                "marks": []
+                            }
+                        ]
+                    },
+                    {
+                        "kind": "inline",
+                        "type": "custom-inline-node",
+                        "isVoid": false,
+                        "data": {
+                            "foo": "bar"
+                        },
+                        "nodes": [
+                            {
+                                "kind": "text",
+                                "leaves": [
+                                    {
+                                        "kind": "leaf",
+                                        "text": "Hey",
+                                        "marks": []
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "kind": "text",
+                        "leaves": [
+                            {
+                                "kind": "leaf",
+                                "text": " Test",
+                                "marks": []
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}
+
+/*
+{
+    "kind": "document",
+    "data": {},
     "nodes": [
       {
         "kind": "block",
         "type": "paragraph",
+        "isVoid": false,
+        "data": {},
         "nodes": [
           {
             "kind": "text",
             "leaves": [
               {
-                "text": "Try it out yourself! Just "
-              },
-              {
-                "text": "select any piece of text and the menu will appear",
-                "marks": [
-                  {
-                    "type": "bold"
-                  },
-                  {
-                    "type": "italic"
-                  }
-                ]
-              },
-              {
-                "text": "    "
+                "kind": "leaf",
+                "text": "Test ",
+                "marks": []
               }
             ]
           },
           {
-              "kind": "inline",
-              "type": "custom_inline",
-              "nodes": [
-                {
-                    "kind": "text",
-                    "leaves": [
-                      {
-                        "text": "Inline Node with Text"
-                      }
-                    ]
+            "kind": "inline",
+            "type": "custom-inline-node",
+            "isVoid": false,
+            "data": {
+              "foo": "bar"
+            },
+            "nodes": [
+              {
+                "kind": "text",
+                "leaves": [
+                  {
+                    "kind": "leaf",
+                    "text": "Hey",
+                    "marks": []
                   }
-              ]
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "text",
+            "leaves": [
+              {
+                "kind": "leaf",
+                "text": " Test",
+                "marks": []
+              }
+            ]
           }
         ]
       }
     ]
   }
-}
+
+  */
 
 export default value

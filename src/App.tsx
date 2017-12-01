@@ -1,8 +1,27 @@
 import * as React from 'react'
 import { EntityExtraction } from './EntityExtraction'
 import './App.css'
+import { ICustomEntity } from './models'
 
-class App extends React.Component {
+interface State {
+    text: string
+    customEntities: ICustomEntity[]
+    preBuiltEntities: ICustomEntity[]
+}
+
+class App extends React.Component<{}, State> {
+    state: State = {
+        text: 'word1 word2 word3',
+        customEntities: [
+            {
+                startIndex: 6,
+                endIndex: 11,
+                data: {}
+            }
+        ],
+        preBuiltEntities: []
+    }
+
     render() {
         return (
             <div className="slate-app">
@@ -31,7 +50,11 @@ class App extends React.Component {
                         </ul>
                         <h3>Prototype</h3>
                         <div className="prototype">
-                            <EntityExtraction />
+                            <EntityExtraction
+                                text={this.state.text}
+                                customEntities={this.state.customEntities}
+                                preBuiltEntities={this.state.preBuiltEntities}
+                            />
                         </div>
                     </div>
                 </section>

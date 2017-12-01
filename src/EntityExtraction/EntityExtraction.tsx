@@ -1,82 +1,26 @@
 import * as React from 'react'
-import * as ReactDOM from 'react-dom'
 import { Editor } from 'slate-react'
 import { Value } from 'slate'
 import initialValue from './value'
 import './EntityExtraction.css'
-import { IPosition } from '../models'
-import { valueToJSON } from '../utilities';
+import { IPosition, ICustomEntity } from '../models'
+import { valueToJSON } from '../utilities'
+import EntityPickerMenu from './EntityPickerMenu'
 
 const menuRootElement = window.document.querySelector('main')
 
-function CodeNode(props: any) {
-    return <span className="code-block" {...props.attributes}>{props.children}</span>
+function CustomBlockNode(props: any) {
+    return <span className="custom-block-node" {...props.attributes}>{props.children}</span>
 }
 
-interface MenuProps {
-    rootElement: Element
-    isVisible: boolean
-    position: IPosition
-    menuRef: any
-    value: any
-    onChange: Function
+function CustomInlineNode(props: any) {
+    return <span className="custom-inline-node" {...props.attributes}>{props.children}</span>
 }
 
-class Menu extends React.Component<MenuProps> {
-    onMouseDownInsertBlock = (event: React.MouseEvent<HTMLElement>) => {
-        // Prevent default to stop focus moving in the editor which would close the menu and preven the click from firing.
-        event.preventDefault()
-    }
-
-    onClickInsertBlock = (event: React.MouseEvent<HTMLElement>) => {
-        console.log(`onClickInsertBlock`, event)
-        const { value, onChange } = this.props
-        event.preventDefault()
-        const change = value.change()
-            // .insertBlock('code_block2')
-            // .insertBlock({
-            //     type: 'paragraph',
-            //     isVoid: true,
-            //     data: {
-            //         foo: 'bar'
-            //     }
-            // })
-            // .insertText('custom block text')
-            .insertInline({
-                type: 'code_block2',
-                data: {
-                    foo: 'bar'
-                },
-                nodes: [
-                    {
-                        kind: 'text',
-                        leaves: [
-                            {
-                                text: "testing"
-                            }
-                        ]
-                    }
-                ]
-            })
-
-        onChange(change)
-    }
-
-    render() {
-        return (
-            ReactDOM.createPortal(
-                <div className={`custom-toolbar ${this.props.isVisible ? "custom-toolbar--visible" : ""}`} ref={this.props.menuRef}>
-                    <button type="button" onClick={this.onClickInsertBlock} onMouseDown={this.onMouseDownInsertBlock}>
-                        Insert Block
-                    </button>
-                    <button type="button" onClick={this.onClickInsertBlock} onMouseDown={this.onMouseDownInsertBlock}>
-                        Insert Block
-                    </button>
-                </div>,
-                this.props.rootElement
-            )
-        )
-    }
+interface Props {
+    text: string
+    customEntities: ICustomEntity[]
+    preBuiltEntities: ICustomEntity[]
 }
 
 interface State {
@@ -85,7 +29,7 @@ interface State {
     value: any
 }
 
-class HoveringMenu extends React.Component<any, State> {
+class HoveringMenu extends React.Component<Props, State> {
     menu: HTMLElement
 
     state = {
@@ -96,6 +40,72 @@ class HoveringMenu extends React.Component<any, State> {
             bottom: 0
         },
         value: Value.fromJSON(initialValue)
+    }
+
+    constructor(props: Props) {
+        super(props)
+
+        const nodes = props.customEntities.reduce((segements, entity) => {
+            return segements
+        }, [
+            {
+                text: props.text,
+                startIndex: 0,
+                endIndex: props.text.length - 1,
+                type: 'normal'
+            }
+        ])
+            .map(segement => {
+                if (segement.type === 'inline') {
+                    return {
+                        "kind": "inline",
+                        "type": "custom-inline-node",
+                        "isVoid": false,
+                        "data": {},
+                        "nodes": [
+                            {
+                                "kind": "text",
+                                "leaves": [
+                                    {
+                                        "kind": "leaf",
+                                        "text": segement.text,
+                                        "marks": []
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                }
+
+                return {
+                    "kind": "text",
+                    "leaves": [
+                        {
+                            "kind": "leaf",
+                            "text": segement.text,
+                            "marks": []
+                        }
+                    ]
+                }
+            })
+
+        const document = {
+            "document": {
+                "nodes": [
+                    {
+                        "kind": "block",
+                        "type": "paragraph",
+                        "isVoid": false,
+                        "data": {},
+                        "nodes": nodes
+                    }
+                ]
+            }
+        }
+
+        const value = Value.fromJSON(document)
+
+        this.state.value = value
     }
 
     // componentDidMount() {
@@ -163,15 +173,15 @@ class HoveringMenu extends React.Component<any, State> {
 
     renderNode = (props: any): React.ReactNode | void => {
         switch (props.node.type) {
-            case 'code_block2': return <CodeNode {...props} />
-            case 'custom_inline': return <CodeNode {...props} />
+            case 'custom-block-node': return <CustomBlockNode {...props} />
+            case 'custom-inline-node': return <CustomInlineNode {...props} />
         }
     }
 
     render() {
         return (
             <div>
-                <Menu
+                <EntityPickerMenu
                     rootElement={menuRootElement!}
                     isVisible={this.state.isMenuVisible}
                     position={this.state.menuPosition}
