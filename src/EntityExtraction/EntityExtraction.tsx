@@ -46,7 +46,37 @@ class HoveringMenu extends React.Component<Props, State> {
         super(props)
 
         const nodes = props.customEntities.reduce((segements, entity) => {
-            return segements
+            const segementIndexWhereEntityBelongs = segements.findIndex(seg => seg.startIndex <= entity.startIndex && entity.endIndex <= seg.endIndex)
+            const prevSegements = segements.slice(0, segementIndexWhereEntityBelongs)
+            const nextSegements = segements.slice(segementIndexWhereEntityBelongs + 1, segements.length)
+            const segementWhereEntityBelongs = segements[segementIndexWhereEntityBelongs]
+
+            const prevSegementEndIndex = entity.startIndex - segementWhereEntityBelongs.startIndex
+            const prevSegementText = segementWhereEntityBelongs.text.substring(0, prevSegementEndIndex)
+            const prevSegement = {
+                text: prevSegementText,
+                startIndex: segementWhereEntityBelongs.startIndex,
+                endIndex: prevSegementEndIndex,
+                type: segementWhereEntityBelongs.type
+            }
+
+            const nextSegementStartIndex = entity.endIndex - segementWhereEntityBelongs.startIndex
+            const nextSegementText = segementWhereEntityBelongs.text.substring(nextSegementStartIndex, segementWhereEntityBelongs.text.length)
+            const nextSegement = {
+                text: nextSegementText,
+                startIndex: nextSegementStartIndex,
+                endIndex: segementWhereEntityBelongs,
+                type: segementWhereEntityBelongs.type
+            }
+
+            const newSegement = {
+                text: segementWhereEntityBelongs.text.substring(prevSegementEndIndex, nextSegementStartIndex),
+                startIndex: entity.startIndex,
+                endIndex: entity.endIndex,
+                type: 'inline'
+            }
+
+            return [...prevSegements, prevSegement, newSegement, nextSegement, ...nextSegements]
         }, [
             {
                 text: props.text,
