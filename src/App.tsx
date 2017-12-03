@@ -19,7 +19,18 @@ class App extends React.Component<{}, State> {
                 data: {}
             }
         ],
-        preBuiltEntities: []
+        preBuiltEntities: [
+            {
+                startIndex: 0,
+                endIndex: 5,
+                data: {}
+            },
+            {
+                startIndex: 12,
+                endIndex: 17,
+                data: {}
+            }
+        ]
     }
 
     render() {

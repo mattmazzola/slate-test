@@ -4,7 +4,7 @@ import { Value } from 'slate'
 import initialValue from './value'
 import './EntityExtraction.css'
 import { IPosition, ICustomEntity } from '../models'
-import { valueToJSON } from '../utilities'
+import { valueToJSON, convertEntitiesAndTextToEditorValue } from './utilities'
 import EntityPickerMenu from './EntityPickerMenu'
 
 const menuRootElement = window.document.querySelector('main')
@@ -27,7 +27,10 @@ interface State {
     isMenuVisible: boolean
     menuPosition: IPosition
     value: any
+    preBuiltEditorValues: any[]
 }
+
+const disallowedOperations = ['insert_text', 'remove_text']
 
 class HoveringMenu extends React.Component<Props, State> {
     menu: HTMLElement
@@ -39,103 +42,15 @@ class HoveringMenu extends React.Component<Props, State> {
             left: 0,
             bottom: 0
         },
-        value: Value.fromJSON(initialValue)
+        value: Value.fromJSON(initialValue),
+        preBuiltEditorValues: [{}]
     }
 
     constructor(props: Props) {
         super(props)
 
-        const nodes = props.customEntities.reduce((segements, entity) => {
-            const segementIndexWhereEntityBelongs = segements.findIndex(seg => seg.startIndex <= entity.startIndex && entity.endIndex <= seg.endIndex)
-            const prevSegements = segements.slice(0, segementIndexWhereEntityBelongs)
-            const nextSegements = segements.slice(segementIndexWhereEntityBelongs + 1, segements.length)
-            const segementWhereEntityBelongs = segements[segementIndexWhereEntityBelongs]
-
-            const prevSegementEndIndex = entity.startIndex - segementWhereEntityBelongs.startIndex
-            const prevSegementText = segementWhereEntityBelongs.text.substring(0, prevSegementEndIndex)
-            const prevSegement = {
-                text: prevSegementText,
-                startIndex: segementWhereEntityBelongs.startIndex,
-                endIndex: prevSegementEndIndex,
-                type: segementWhereEntityBelongs.type
-            }
-
-            const nextSegementStartIndex = entity.endIndex - segementWhereEntityBelongs.startIndex
-            const nextSegementText = segementWhereEntityBelongs.text.substring(nextSegementStartIndex, segementWhereEntityBelongs.text.length)
-            const nextSegement = {
-                text: nextSegementText,
-                startIndex: nextSegementStartIndex,
-                endIndex: segementWhereEntityBelongs,
-                type: segementWhereEntityBelongs.type
-            }
-
-            const newSegement = {
-                text: segementWhereEntityBelongs.text.substring(prevSegementEndIndex, nextSegementStartIndex),
-                startIndex: entity.startIndex,
-                endIndex: entity.endIndex,
-                type: 'inline'
-            }
-
-            return [...prevSegements, prevSegement, newSegement, nextSegement, ...nextSegements]
-        }, [
-            {
-                text: props.text,
-                startIndex: 0,
-                endIndex: props.text.length - 1,
-                type: 'normal'
-            }
-        ])
-            .map(segement => {
-                if (segement.type === 'inline') {
-                    return {
-                        "kind": "inline",
-                        "type": "custom-inline-node",
-                        "isVoid": false,
-                        "data": {},
-                        "nodes": [
-                            {
-                                "kind": "text",
-                                "leaves": [
-                                    {
-                                        "kind": "leaf",
-                                        "text": segement.text,
-                                        "marks": []
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                }
-
-                return {
-                    "kind": "text",
-                    "leaves": [
-                        {
-                            "kind": "leaf",
-                            "text": segement.text,
-                            "marks": []
-                        }
-                    ]
-                }
-            })
-
-        const document = {
-            "document": {
-                "nodes": [
-                    {
-                        "kind": "block",
-                        "type": "paragraph",
-                        "isVoid": false,
-                        "data": {},
-                        "nodes": nodes
-                    }
-                ]
-            }
-        }
-
-        const value = Value.fromJSON(document)
-
-        this.state.value = value
+        this.state.value = convertEntitiesAndTextToEditorValue(props.text, props.customEntities)
+        this.state.preBuiltEditorValues = props.preBuiltEntities.map<any[]>(preBuiltEntity => convertEntitiesAndTextToEditorValue(props.text, [preBuiltEntity]))
     }
 
     // componentDidMount() {
@@ -191,9 +106,22 @@ class HoveringMenu extends React.Component<Props, State> {
     }
 
     onChange = (change: any) => {
-        const { value } = change
+        console.group('onChange')
+        const { value, operations } = change
+        const operationsJs = operations.toJS()
+        console.log(`operations: `, operationsJs.map((o: any) => o.type).join(', '))
+
+        const containsDisallowedOperations = operationsJs.some((o: any) => disallowedOperations.includes(o.type))
+        if (containsDisallowedOperations) {
+            console.log(`containsDisallowedOperations `, containsDisallowedOperations)
+            console.groupEnd()
+            return
+        }
+
         const valueJson = valueToJSON(value)
-        console.log(`onChange.value `, valueJson)
+        console.log(`value `, valueJson)
+        console.groupEnd()
+
         this.setState({ value })
     }
 
@@ -210,37 +138,45 @@ class HoveringMenu extends React.Component<Props, State> {
 
     render() {
         return (
-            <div>
-                <EntityPickerMenu
-                    rootElement={menuRootElement!}
-                    isVisible={this.state.isMenuVisible}
-                    position={this.state.menuPosition}
-                    menuRef={this.menuRef}
-                    value={this.state.value}
-                    onChange={this.onChange}
-                />
-                <Editor
-                    autoFocus={true}
-                    className="slate-editor"
-                    placeholder="Enter some text..."
-                    value={this.state.value}
-                    onKeyDown={this.onKeyDown}
-                    onChange={this.onChange}
-                    renderMark={this.renderMark}
-                    renderNode={this.renderNode}
-                />
+            <div className="entity-labeler">
+                <h3>CustomEntities</h3>
+                <div>
+                    <EntityPickerMenu
+                        rootElement={menuRootElement!}
+                        isVisible={this.state.isMenuVisible}
+                        position={this.state.menuPosition}
+                        menuRef={this.menuRef}
+                        value={this.state.value}
+                        onChange={this.onChange}
+                    />
+                    <Editor
+                        className="slate-editor"
+                        placeholder="Enter some text..."
+                        value={this.state.value}
+                        onKeyDown={this.onKeyDown}
+                        onChange={this.onChange}
+                        renderNode={this.renderNode}
+                    />
+                </div>
+                {this.state.preBuiltEditorValues.length > 0
+                    && <div>
+                        <h3>Pre-Built Entities</h3>
+                        {this.state.preBuiltEditorValues.map(preBuiltEditorValue =>
+                            (
+
+                                <div>
+                                    <Editor
+                                        className="slate-editor"
+                                        placeholder="Enter pre-built some text..."
+                                        value={preBuiltEditorValue}
+                                        renderNode={this.renderNode}
+                                        readOnly={true}
+                                    />
+                                </div>
+                            ))}
+                    </div>}
             </div>
         )
-    }
-
-    renderMark = (props: any): React.ReactNode | void => {
-        const { children, mark } = props
-        switch (mark.type) {
-            case 'bold': return <strong>{children}</strong>
-            case 'code': return <code>{children}</code>
-            case 'italic': return <em>{children}</em>
-            case 'underlined': return <u>{children}</u>
-        }
     }
 }
 

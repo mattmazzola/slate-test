@@ -10,3 +10,10 @@ export interface ICustomEntity {
     endIndex: number
     data: any
 }
+
+export interface ISegement {
+    text: string
+    startIndex: number
+    endIndex: number
+    type: string
+}
