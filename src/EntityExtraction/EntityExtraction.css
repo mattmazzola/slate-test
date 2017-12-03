@@ -42,31 +42,28 @@
     border-bottom: none;
 }
 
-.inline-entity-node {
+.entity-inline-node {
+    direction: inline-block;
+    border: 1px solid rgba(0,0,0,0.3);
+    border-left: none;
+    border-right: none;
+    background: rgba(0,0,0,0.2);
     padding: 4px 0;
     border-radius: 4px;
 }
 
-.custom-inline-node {
-    border: 1px solid var(--custom-entity-color-hover);
-    border-left: none;
-    border-right: none;
-    background: var(--custom-entity-color);
-    padding: 4px 0;
-    border-radius: 4px;
+.entity-inline-node.entity-inline-node--custom {
+    border-color: var(--custom-entity-color-hover);
+    background-color: var(--custom-entity-color);
 }
-.custom-inline-node:hover {
-    background: var(--custom-entity-color-hover);
+.entity-inline-node.entity-inline-node--custom:hover {
+    background-color: var(--custom-entity-color-hover);
 }
 
-.prebuilt-inline-node {
-    border: 1px solid var(--prebuilt-entity-color-hover);
-    border-left: none;
-    border-right: none;
-    background: var(--prebuilt-entity-color);
-    padding: 4px 0;
-    border-radius: 4px;
+.entity-inline-node.entity-inline-node--prebuilt {
+    border-color: var(--prebuilt-entity-color-hover);
+    background-color: var(--prebuilt-entity-color);
 }
-.prebuilt-inline-node:hover {
-    background: var(--prebuilt-entity-color-hover);
+.entity-inline-node.entity-inline-node--prebuilt:hover {
+    background-color: var(--prebuilt-entity-color-hover);
 }

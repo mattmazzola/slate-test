@@ -2,24 +2,14 @@ import * as React from 'react'
 import { Editor } from 'slate-react'
 import { Value } from 'slate'
 import initialValue from './value'
-import './EntityExtraction.css'
 import { IPosition, ICustomEntity } from '../models'
 import { valueToJSON, convertEntitiesAndTextToEditorValue } from './utilities'
+import CustomEntityNode from './CustomEntityNode'
+import PreBuiltEntityNode from './PreBuiltEntityNode'
 import EntityPickerMenu from './EntityPickerMenu'
+import './EntityExtraction.css'
 
 const menuRootElement = window.document.querySelector('main')
-
-function CustomBlockNode(props: any) {
-    return <span className="custom-block-node" {...props.attributes}>{props.children}</span>
-}
-
-function CustomInlineNode(props: any) {
-    return <span className="custom-inline-node" {...props.attributes}>{props.children}</span>
-}
-
-function PreBuiltEntityNode(props: any) {
-    return <span className="prebuilt-inline-node" {...props.attributes}>{props.children}</span>
-}
 
 interface Props {
     text: string
@@ -57,6 +47,7 @@ class HoveringMenu extends React.Component<Props, State> {
         this.state.preBuiltEditorValues = props.preBuiltEntities.map<any[]>(preBuiltEntity => convertEntitiesAndTextToEditorValue(props.text, [preBuiltEntity], "prebuilt-inline-node"))
     }
 
+    // TODO: Is this necessary?
     // componentDidMount() {
     //     this.updateMenu()
     // }
@@ -105,10 +96,6 @@ class HoveringMenu extends React.Component<Props, State> {
         Object.assign(menu.style, style)
     }
 
-    onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>, change: any) => {
-        console.log(`onKeyDown`, event, change)
-    }
-
     onChange = (change: any) => {
         console.group('onChange')
         const { value, operations } = change
@@ -135,8 +122,7 @@ class HoveringMenu extends React.Component<Props, State> {
 
     renderNode = (props: any): React.ReactNode | void => {
         switch (props.node.type) {
-            case 'custom-block-node': return <CustomBlockNode {...props} />
-            case 'custom-inline-node': return <CustomInlineNode {...props} />
+            case 'custom-inline-node': return <CustomEntityNode {...props} />
             case 'prebuilt-inline-node': return <PreBuiltEntityNode {...props} />
         }
     }
@@ -158,7 +144,6 @@ class HoveringMenu extends React.Component<Props, State> {
                         className="slate-editor"
                         placeholder="Enter some text..."
                         value={this.state.value}
-                        onKeyDown={this.onKeyDown}
                         onChange={this.onChange}
                         renderNode={this.renderNode}
                     />
