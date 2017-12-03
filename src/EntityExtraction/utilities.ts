@@ -16,7 +16,7 @@ export const valueToJSON = (value: any) => {
     }
 }
 
-export const convertEntitiesAndTextToEditorValue = (text: string, customEntities: ICustomEntity[]) => {
+export const convertEntitiesAndTextToEditorValue = (text: string, customEntities: ICustomEntity[], inlineType: string) => {
     const nodes = customEntities.reduce<ISegement[]>((segements, entity) => {
         const segementIndexWhereEntityBelongs = segements.findIndex(seg => seg.startIndex <= entity.startIndex && entity.endIndex <= seg.endIndex)
         const prevSegements = segements.slice(0, segementIndexWhereEntityBelongs)
@@ -61,7 +61,7 @@ export const convertEntitiesAndTextToEditorValue = (text: string, customEntities
             if (segement.type === 'inline') {
                 return {
                     "kind": "inline",
-                    "type": "custom-inline-node",
+                    "type": inlineType,
                     "isVoid": false,
                     "data": {},
                     "nodes": [

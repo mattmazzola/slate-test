@@ -17,6 +17,10 @@ function CustomInlineNode(props: any) {
     return <span className="custom-inline-node" {...props.attributes}>{props.children}</span>
 }
 
+function PreBuiltEntityNode(props: any) {
+    return <span className="prebuilt-inline-node" {...props.attributes}>{props.children}</span>
+}
+
 interface Props {
     text: string
     customEntities: ICustomEntity[]
@@ -49,8 +53,8 @@ class HoveringMenu extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props)
 
-        this.state.value = convertEntitiesAndTextToEditorValue(props.text, props.customEntities)
-        this.state.preBuiltEditorValues = props.preBuiltEntities.map<any[]>(preBuiltEntity => convertEntitiesAndTextToEditorValue(props.text, [preBuiltEntity]))
+        this.state.value = convertEntitiesAndTextToEditorValue(props.text, props.customEntities, "custom-inline-node")
+        this.state.preBuiltEditorValues = props.preBuiltEntities.map<any[]>(preBuiltEntity => convertEntitiesAndTextToEditorValue(props.text, [preBuiltEntity], "prebuilt-inline-node"))
     }
 
     // componentDidMount() {
@@ -133,6 +137,7 @@ class HoveringMenu extends React.Component<Props, State> {
         switch (props.node.type) {
             case 'custom-block-node': return <CustomBlockNode {...props} />
             case 'custom-inline-node': return <CustomInlineNode {...props} />
+            case 'prebuilt-inline-node': return <PreBuiltEntityNode {...props} />
         }
     }
 
@@ -159,21 +164,16 @@ class HoveringMenu extends React.Component<Props, State> {
                     />
                 </div>
                 {this.state.preBuiltEditorValues.length > 0
-                    && <div>
+                    && <div className="prebuilt-entity-editors">
                         <h3>Pre-Built Entities</h3>
                         {this.state.preBuiltEditorValues.map(preBuiltEditorValue =>
-                            (
-
-                                <div>
-                                    <Editor
-                                        className="slate-editor"
-                                        placeholder="Enter pre-built some text..."
-                                        value={preBuiltEditorValue}
-                                        renderNode={this.renderNode}
-                                        readOnly={true}
-                                    />
-                                </div>
-                            ))}
+                            <Editor
+                                className="slate-editor"
+                                placeholder="Enter pre-built some text..."
+                                value={preBuiltEditorValue}
+                                renderNode={this.renderNode}
+                                readOnly={true}
+                            />)}
                     </div>}
             </div>
         )
