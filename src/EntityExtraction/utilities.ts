@@ -26,35 +26,35 @@ export const convertEntitiesAndTextToEditorValue = (text: string, customEntities
         const prevSegementEndIndex = entity.startIndex - segementWhereEntityBelongs.startIndex
         const prevSegementText = segementWhereEntityBelongs.text.substring(0, prevSegementEndIndex)
         const prevSegement: ISegement = {
+            ...segementWhereEntityBelongs,
             text: prevSegementText,
-            startIndex: segementWhereEntityBelongs.startIndex,
             endIndex: prevSegementEndIndex,
-            type: segementWhereEntityBelongs.type
         }
 
         const nextSegementStartIndex = entity.endIndex - segementWhereEntityBelongs.startIndex
         const nextSegementText = segementWhereEntityBelongs.text.substring(nextSegementStartIndex, segementWhereEntityBelongs.text.length)
         const nextSegement: ISegement = {
+            ...segementWhereEntityBelongs,
             text: nextSegementText,
             startIndex: nextSegementStartIndex,
-            endIndex: segementWhereEntityBelongs.endIndex,
-            type: segementWhereEntityBelongs.type
         }
 
         const newSegement: ISegement = {
             text: segementWhereEntityBelongs.text.substring(prevSegementEndIndex, nextSegementStartIndex),
             startIndex: entity.startIndex,
             endIndex: entity.endIndex,
-            type: SegementType.Inline
+            type: SegementType.Inline,
+            data: entity.data
         }
 
         return [...prevSegements, prevSegement, newSegement, nextSegement, ...nextSegements]
     }, [
             {
-                text: text,
+                text,
                 startIndex: 0,
                 endIndex: text.length,
-                type: SegementType.Normal
+                type: SegementType.Normal,
+                data: {}
             }
         ])
         .map(segement => {
@@ -63,7 +63,7 @@ export const convertEntitiesAndTextToEditorValue = (text: string, customEntities
                     "kind": "inline",
                     "type": inlineType,
                     "isVoid": false,
-                    "data": {},
+                    "data": segement.data,
                     "nodes": [
                         {
                             "kind": "text",

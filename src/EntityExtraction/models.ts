@@ -26,4 +26,5 @@ export interface ISegement {
     startIndex: number
     endIndex: number
     type: SegementType
+    data: any
 }

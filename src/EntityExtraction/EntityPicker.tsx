@@ -30,7 +30,10 @@ export default class EntityPicker extends React.Component<MenuProps> {
             .wrapInline({
                 type: 'custom-inline-node',
                 data: {
-                    foo: 'bar'
+                    entity: {
+                        id: '1',
+                        name: 'entity1'
+                    }
                 }
             })
             .collapseToEnd()
@@ -59,7 +62,7 @@ export default class EntityPicker extends React.Component<MenuProps> {
                                 </li>
                             )}
                         </ul>}
-                    <div className="custom-toolbar__search">
+                    <div className="custom-toolbar__search" onMouseDown={this.props.onMouseDown}>
                         <label htmlFor="toolbar-input">Search for entities:</label>
                         <input
                             id="toolbar-input"

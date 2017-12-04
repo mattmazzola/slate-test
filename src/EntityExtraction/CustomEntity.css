@@ -1,0 +1,75 @@
+:root {
+    --custom-entity-color: rgba(149, 228, 169, 0.836);
+    --custom-entity-color-hover: rgb(149, 228, 169);
+    --prebuilt-entity-color: rgba(149, 174, 228, 0.836);
+    --prebuilt-entity-color-hover: rgb(149, 174, 228);
+}
+
+.blis-custom-entity {
+  position: relative;
+}
+
+.blis-custom-entity__text {
+  display: inline-block;
+  /* Causes jump in text when applied
+     find out how to make it inset */
+  /* border: 1px solid transparent; */
+  position: relative;
+  border-radius: 3px;
+  line-height: 1.6em;
+}
+
+.blis-custom-entity--is-editing .blis-custom-entity__text {
+  background: var(--custom-entity-color);
+}
+
+.blis-custom-entity-indicator {
+  display: inline-block;
+  position: absolute;
+  width: 100%;
+  line-height: 1em;
+  font-size: 0.75rem;
+  text-align: center;
+  z-index: 1;
+  bottom: calc(2em);
+  color: var(--custom-entity-color);
+}
+
+.blis-custom-entity-indicator__mincontent {
+  position: absolute;
+  bottom: 8px;
+  width: 600%;
+  left: -250%;
+}
+
+.blis-custom-entity-indicator__controls {
+}
+
+.blis-custom-entity-indicator__controls button {
+  font-size: 0.75rem;
+  padding: 0.0em 0.3em;
+  margin: 0;
+  background: var(--custom-entity-color);
+  border: none;
+  cursor: pointer;
+  color: white;
+  border-radius: 50%;
+}
+
+.blis-custom-entity-indicator__name {
+  cursor: pointer;
+}
+.blis-custom-entity-indicator__name button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--custom-entity-color);
+  margin: 0;
+  padding: 0;
+}
+
+.blis-custom-entity-indicator__bracket {
+  height: 5px;
+  border: 2px solid var(--custom-entity-color);
+  border-bottom: none;
+}

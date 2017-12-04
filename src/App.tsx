@@ -10,39 +10,63 @@ interface State {
     preBuiltEntities: ICustomEntity[]
 }
 
+const fixtureCustomEntities: IOption[] = [
+    {
+        id: '1',
+        name: 'entity1'
+    },
+    {
+        id: '2',
+        name: 'entity2'
+    },
+    {
+        id: '3',
+        name: 'entity3'
+    },
+]
+
+const fixturePreBuiltEntities: IOption[] = [
+    {
+        id: '1',
+        name: 'preBuiltEntity1'
+    },
+    {
+        id: '2',
+        name: 'preBuiltEntity2'
+    },
+    {
+        id: '3',
+        name: 'preBuiltEntity3'
+    },
+]
+
 class App extends React.Component<{}, State> {
     state: State = {
-        options: [
-            {
-                id: '1',
-                name: 'entity1'
-            },
-            {
-                id: '2',
-                name: 'entity2'
-            },{
-                id: '3',
-                name: 'entity3'
-            },
-        ],
+        options: fixtureCustomEntities,
         text: 'word1 word2 word3',
         customEntities: [
             {
                 startIndex: 6,
                 endIndex: 11,
-                data: {}
+                data: {
+                    entity: fixtureCustomEntities[1]
+                }
             }
         ],
         preBuiltEntities: [
             {
                 startIndex: 0,
                 endIndex: 5,
-                data: {}
+                data: {
+                    entity: fixturePreBuiltEntities[0]
+                }
             },
             {
                 startIndex: 12,
                 endIndex: 17,
-                data: {}
+                data: {
+                    entity: fixturePreBuiltEntities[1]
+                }
             }
         ]
     }

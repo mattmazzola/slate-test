@@ -78,7 +78,7 @@ class HoveringMenu extends React.Component<Props, State> {
         const selectionBoundingRect = range.getBoundingClientRect()
 
         const menuPosition: IPosition = {
-            top: selectionBoundingRect.top + window.scrollY - menu.offsetHeight,
+            top: selectionBoundingRect.top + window.scrollY - menu.offsetHeight - 20,
             left: selectionBoundingRect.left + window.scrollX - menu.offsetWidth / 2 + selectionBoundingRect.width / 2,
             bottom: 0 // TODO: use real value
         }
