@@ -1,8 +1,10 @@
 :root {
-    --custom-entity-color: rgba(149, 228, 169, 0.836);
-    --custom-entity-color-hover: rgb(149, 228, 169);
-    --prebuilt-entity-color: rgba(149, 174, 228, 0.836);
-    --prebuilt-entity-color-hover: rgb(149, 174, 228);
+    --color-custom-entity-bg: rgba(149, 228, 169, 0.836);
+    --color-custom-entity-label: rgb(42, 161, 68);
+    --color-custom-entity-hover: rgb(149, 228, 169);
+    --color-prebuilt-entity-bg: rgba(149, 174, 228, 0.836);
+    --color-prebuilt-entity-label: rgb(72, 110, 192);
+    --color-prebuilt-entity-hover: rgb(149, 174, 228);
 }
 
 .blis-custom-entity {
@@ -16,11 +18,14 @@
     /* border: 1px solid transparent; */
     position: relative;
     border-radius: 3px;
-    line-height: 1.6em;
+    /* line-height: 1.6em; */
 }
 
-.blis-custom-entity--is-editing .blis-custom-entity__text {
-    background: var(--custom-entity-color);
+.blis-entity--custom.blis-custom-entity--is-editing .blis-custom-entity__text {
+    background: var(--color-custom-entity-bg);
+}
+.blis-entity--prebuilt.blis-custom-entity--is-editing .blis-custom-entity__text {
+    background: var(--color-prebuilt-entity-bg);
 }
 
 .blis-custom-entity-indicator {
@@ -31,15 +36,19 @@
     font-size: 0.75rem;
     text-align: center;
     z-index: 1;
-    bottom: calc(2em);
-    color: var(--custom-entity-color);
+    bottom: calc(1.6em);
+}
+
+.blis-entity--custom .blis-custom-entity-indicator {
+    color: var(--color-custom-entity-label);
+}
+.blis-entity--prebuilt .blis-custom-entity-indicator {
+    color: var(--color-prebuilt-entity-label);
 }
 
 .blis-custom-entity-indicator__mincontent {
     position: absolute;
     bottom: 8px;
-    width: 600%;
-    left: -250%;
 }
 
 .blis-custom-entity-indicator__controls {}
@@ -48,28 +57,49 @@
     font-size: 0.75rem;
     padding: 0.0em 0.3em;
     margin: 0;
-    background: var(--custom-entity-color);
     border: none;
     cursor: pointer;
     color: white;
     border-radius: 50%;
 }
 
+.blis-entity--custom .blis-custom-entity-indicator__controls button {
+    background: var(--color-custom-entity-label);
+}
+.blis-entity--prebuilt .blis-custom-entity-indicator__controls button {
+    background: var(--color-prebuilt-entity-label);
+}
+
 .blis-custom-entity-indicator__name {
-    cursor: pointer;
+    cursor: default;
 }
 
 .blis-custom-entity-indicator__name button {
     border: none;
     background: none;
     cursor: pointer;
-    color: var(--custom-entity-color);
     margin: 0;
     padding: 0;
 }
 
+.blis-entity--custom .blis-custom-entity-indicator__name,
+.blis-entity--custom .blis-custom-entity-indicator__name button {
+    color: var(--color-custom-entity-label);
+}
+.blis-entity--prebuilt .blis-custom-entity-indicator__name,
+.blis-entity--prebuilt .blis-custom-entity-indicator__name button {
+    color: var(--color-prebuilt-entity-label);
+}
+
 .blis-custom-entity-indicator__bracket {
     height: 5px;
-    border: 2px solid var(--custom-entity-color);
+    border: 2px solid var(--color-custom-entity-hover);
     border-bottom: none;
+}
+
+.blis-entity--custom .blis-custom-entity-indicator__bracket {
+    border-color: var(--color-custom-entity-bg);
+}
+.blis-entity--prebuilt .blis-custom-entity-indicator__bracket {
+    border-color: var(--color-prebuilt-entity-bg);
 }

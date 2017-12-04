@@ -14,17 +14,17 @@ interface Props extends EntityComponentProps {
 export const CustomEntity = (props: Props) => {
     const { option } = props
     return (
-        <span className="blis-entity blis-entity--prebuilt">
-            <div className="blis-entity-indicator noselect">
-                <div className="blis-entity-indicator__mincontent">
-                    <div className="blis-entity-indicator__name">
+        <span className="blis-custom-entity blis-entity--prebuilt">
+            <div className="blis-custom-entity-indicator noselect">
+                <div className="blis-custom-entity-indicator__mincontent">
+                    <div className="blis-custom-entity-indicator__name">
                         {option.name}
                     </div>
                 </div>
-                <div className="blis-entity-indicator__bracket">
+                <div className="blis-custom-entity-indicator__bracket">
                 </div>
             </div>
-            <span className="blis-entity__text">
+            <span className="blis-custom-entity__text">
                 {props.children}
             </span>
         </span>

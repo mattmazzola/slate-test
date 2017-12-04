@@ -2,37 +2,20 @@
 }
 
 .slate-editor {
-    padding: 1em;
-    border: 1px solid black;
-    line-height: 2em;
+    padding: 2em 1em 0.5em 1em;
+    border: 1px solid rgba(0,0,0,0.25);
 }
 
 .prebuilt-entity-editors .slate-editor:not(:last-of-type) {
     border-bottom: none;
 }
 
-.entity-inline-node {
-    direction: inline-block;
-    border: 1px solid rgba(0,0,0,0.3);
-    border-left: none;
-    border-right: none;
-    background: rgba(0,0,0,0.2);
-    padding: 4px 0;
-    border-radius: 4px;
-}
-
-.entity-inline-node.entity-inline-node--custom {
-    border-color: var(--custom-entity-color-hover);
-    background-color: var(--custom-entity-color);
-}
-.entity-inline-node.entity-inline-node--custom:hover {
-    background-color: var(--custom-entity-color-hover);
-}
-
-.entity-inline-node.entity-inline-node--prebuilt {
-    border-color: var(--prebuilt-entity-color-hover);
-    background-color: var(--prebuilt-entity-color);
-}
-.entity-inline-node.entity-inline-node--prebuilt:hover {
-    background-color: var(--prebuilt-entity-color-hover);
-}
+.noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+      -webkit-user-select: none; /* Safari */
+       -khtml-user-select: none; /* Konqueror HTML */
+         -moz-user-select: none; /* Firefox */
+          -ms-user-select: none; /* Internet Explorer/Edge */
+              user-select: none; /* Non-prefixed version, currently
+                                    supported by Chrome and Opera */
+  }
