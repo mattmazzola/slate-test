@@ -8,82 +8,19 @@ interface MenuProps {
     isVisible: boolean
     matchedOptions: IOption[]
     maxDisplayedOptions: number
+    onKeyDown: (event: React.KeyboardEvent<HTMLElement>) => void
+    onMouseDown: (event: React.MouseEvent<HTMLElement>) => void
     onChangeSearchText: (value: string) => void
+    onChange: (change: any) => void
     onClickOption: (o: IOption) => void
     rootElement: Element
     position: IPosition
     menuRef: any
-    onChange: Function
     searchText: string
     value: any
 }
 
 export default class EntityPicker extends React.Component<MenuProps> {
-    onMouseDown = (event: React.MouseEvent<HTMLElement>) => {
-        console.log(`onMouseDown`)
-        // Prevent default to stop focus moving in the editor which would close the menu and preven the click from firing.
-        event.preventDefault()
-        event.stopPropagation()
-    }
-
-    onClickInsertBlock = (event: React.MouseEvent<HTMLElement>) => {
-        console.log(`onClickInsertBlock`, event)
-        const { value, onChange } = this.props
-        const selectedText = (value.characters ? value.characters.toJSON() : [])
-            .reduce((s: string, node: any) => s += node.text, '')
-
-        event.preventDefault()
-        const change = value.change()
-            .insertBlock({
-                type: 'custom-block-node',
-                data: {
-                    foo: 'bar'
-                },
-                nodes: [
-                    {
-                        kind: 'text',
-                        leaves: [
-                            {
-                                text: selectedText
-                            }
-                        ]
-                    }
-                ]
-            })
-            .collapseToEnd()
-
-        onChange(change)
-    }
-
-    onClickInsertInline = (event: React.MouseEvent<HTMLElement>) => {
-        console.log(`onClickInsertInline`, event)
-        const { value, onChange } = this.props
-        const selectedText = (value.characters ? value.characters.toJSON() : [])
-            .reduce((s: string, node: any) => s += node.text, '')
-
-        event.preventDefault()
-        const change = value.change()
-            .insertInline({
-                type: 'custom-inline-node',
-                data: {
-                    foo: 'baz'
-                },
-                nodes: [
-                    {
-                        kind: 'text',
-                        leaves: [
-                            {
-                                text: selectedText
-                            }
-                        ]
-                    }
-                ]
-            })
-            .collapseToEnd()
-
-        onChange(change)
-    }
-
     onClickWrapInline = (event: React.MouseEvent<HTMLElement>) => {
         console.log(`onClickWrapInline`, event)
         const { value, onChange } = this.props
@@ -106,7 +43,8 @@ export default class EntityPicker extends React.Component<MenuProps> {
             ReactDOM.createPortal(
                 <div
                     className={`custom-toolbar ${this.props.isVisible ? "custom-toolbar--visible" : ""}`}
-                    onMouseDown={this.onMouseDown}
+                    onMouseDown={this.props.onMouseDown}
+                    onKeyDown={this.props.onKeyDown}
                     ref={this.props.menuRef}
                 >
                     {this.props.matchedOptions.length !== 0
@@ -132,12 +70,6 @@ export default class EntityPicker extends React.Component<MenuProps> {
                         />
                     </div>
                     <div>
-                        <button type="button" onClick={this.onClickInsertBlock}>
-                            Insert Block
-                        </button>
-                        <button type="button" onClick={this.onClickInsertInline}>
-                            Insert Inline
-                        </button>
                         <button type="button" onClick={this.onClickWrapInline}>
                             Wrap Inline
                         </button>
