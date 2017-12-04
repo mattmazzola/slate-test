@@ -1,5 +1,5 @@
 import { Value } from 'slate'
-import { ISegement, ICustomEntity } from '../models'
+import { ISegement, ICustomEntity, SegementType } from './models'
 
 export const valueToJSON = (value: any) => {
     const characters = value.characters ? value.characters.toJSON() : [];
@@ -45,7 +45,7 @@ export const convertEntitiesAndTextToEditorValue = (text: string, customEntities
             text: segementWhereEntityBelongs.text.substring(prevSegementEndIndex, nextSegementStartIndex),
             startIndex: entity.startIndex,
             endIndex: entity.endIndex,
-            type: 'inline'
+            type: SegementType.Inline
         }
 
         return [...prevSegements, prevSegement, newSegement, nextSegement, ...nextSegements]
@@ -54,7 +54,7 @@ export const convertEntitiesAndTextToEditorValue = (text: string, customEntities
                 text: text,
                 startIndex: 0,
                 endIndex: text.length,
-                type: 'normal'
+                type: SegementType.Normal
             }
         ])
         .map(segement => {

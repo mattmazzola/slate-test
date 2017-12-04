@@ -1,9 +1,10 @@
 import * as React from 'react'
 import { EntityExtraction } from './EntityExtraction'
 import './App.css'
-import { ICustomEntity } from './models'
+import { IOption, ICustomEntity } from './EntityExtraction/models'
 
 interface State {
+    options: IOption[]
     text: string
     customEntities: ICustomEntity[]
     preBuiltEntities: ICustomEntity[]
@@ -11,6 +12,19 @@ interface State {
 
 class App extends React.Component<{}, State> {
     state: State = {
+        options: [
+            {
+                id: '1',
+                name: 'entity1'
+            },
+            {
+                id: '2',
+                name: 'entity2'
+            },{
+                id: '3',
+                name: 'entity3'
+            },
+        ],
         text: 'word1 word2 word3',
         customEntities: [
             {
@@ -62,6 +76,7 @@ class App extends React.Component<{}, State> {
                         <h3>Prototype</h3>
                         <div className="prototype">
                             <EntityExtraction
+                                options={this.state.options}
                                 text={this.state.text}
                                 customEntities={this.state.customEntities}
                                 preBuiltEntities={this.state.preBuiltEntities}

@@ -2,16 +2,17 @@ import * as React from 'react'
 import { Editor } from 'slate-react'
 import { Value } from 'slate'
 import initialValue from './value'
-import { IPosition, ICustomEntity } from '../models'
+import { IOption, IPosition, ICustomEntity } from './models'
 import { valueToJSON, convertEntitiesAndTextToEditorValue } from './utilities'
 import CustomEntityNode from './CustomEntityNode'
 import PreBuiltEntityNode from './PreBuiltEntityNode'
-import EntityPickerMenu from './EntityPickerMenu'
+import EntityPicker from './EntityPicker'
 import './EntityExtraction.css'
 
 const menuRootElement = window.document.querySelector('main')
 
 interface Props {
+    options: IOption[]
     text: string
     customEntities: ICustomEntity[]
     preBuiltEntities: ICustomEntity[]
@@ -132,12 +133,19 @@ class HoveringMenu extends React.Component<Props, State> {
             <div className="entity-labeler">
                 <h3>CustomEntities</h3>
                 <div>
-                    <EntityPickerMenu
-                        rootElement={menuRootElement!}
+                    <EntityPicker
+                        highlightIndex={1}
                         isVisible={this.state.isMenuVisible}
-                        position={this.state.menuPosition}
+                        matchedOptions={this.props.options}
+                        maxDisplayedOptions={4}
                         menuRef={this.menuRef}
+                        position={this.state.menuPosition}
+                        rootElement={menuRootElement!}
+                        searchText={"searc"}
                         value={this.state.value}
+
+                        onChangeSearchText={() => {}}
+                        onClickOption={() => {}}
                         onChange={this.onChange}
                     />
                     <Editor
@@ -151,8 +159,9 @@ class HoveringMenu extends React.Component<Props, State> {
                 {this.state.preBuiltEditorValues.length > 0
                     && <div className="prebuilt-entity-editors">
                         <h3>Pre-Built Entities</h3>
-                        {this.state.preBuiltEditorValues.map(preBuiltEditorValue =>
+                        {this.state.preBuiltEditorValues.map((preBuiltEditorValue, i) =>
                             <Editor
+                                key={i}
                                 className="slate-editor"
                                 placeholder="Enter pre-built some text..."
                                 value={preBuiltEditorValue}
