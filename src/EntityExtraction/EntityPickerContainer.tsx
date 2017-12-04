@@ -10,7 +10,7 @@ interface Props {
     position: IPosition
     rootElement: Element
     value: any
-    
+
     onSelectOption: (o: IOption) => void
     onChange: (change: any) => void
 }

@@ -1,5 +1,28 @@
 import * as React from 'react'
+import PreBuiltEntity from './PreBuiltEntity'
 
-export default function PreBuiltEntityNode(props: any) {
-    return <span className="entity-inline-node entity-inline-node--prebuilt" {...props.attributes}>{props.children}</span>
+/* Simulate entity component props which have children */
+interface EntityComponentProps {
+    node: any
+    attributes: any
+    children: any
 }
+
+interface Props extends EntityComponentProps {
+}
+
+export const PreBuiltEntityNode = (props: Props) => {
+    const nodeData = props.node.data.toJS()
+    const option = nodeData.entity
+
+    return (
+        <PreBuiltEntity
+            option={option}
+            {...props.attributes}
+        >
+            {...props.children}
+        </PreBuiltEntity>
+    )
+}
+
+export default PreBuiltEntityNode
