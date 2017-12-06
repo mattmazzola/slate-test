@@ -21,26 +21,6 @@ interface MenuProps {
 }
 
 export default class EntityPicker extends React.Component<MenuProps> {
-    onClickWrapInline = (event: React.MouseEvent<HTMLElement>) => {
-        console.log(`onClickWrapInline`, event)
-        const { value, onChange } = this.props
-
-        event.preventDefault()
-        const change = value.change()
-            .wrapInline({
-                type: 'custom-inline-node',
-                data: {
-                    entity: {
-                        id: '1',
-                        name: 'entity1'
-                    }
-                }
-            })
-            .collapseToEnd()
-
-        onChange(change)
-    }
-
     render() {
         return (
             ReactDOM.createPortal(
@@ -72,11 +52,6 @@ export default class EntityPicker extends React.Component<MenuProps> {
                             className="custom-toolbar__input"
                             onChange={event => this.props.onChangeSearchText(event.target.value)}
                         />
-                    </div>
-                    <div>
-                        <button type="button" onClick={this.onClickWrapInline} tabIndex={-1}>
-                            Wrap Inline
-                        </button>
                     </div>
                 </div>,
                 this.props.rootElement

@@ -1,4 +1,5 @@
 :root {
+    --color-warning: rgb(197, 31, 31);
     --color-custom-entity-bg: rgba(149, 228, 169, 0.836);
     --color-custom-entity-label: rgb(42, 161, 68);
     --color-custom-entity-hover: rgb(149, 228, 169);
@@ -63,10 +64,10 @@
 }
 
 .blis-entity--custom .blis-entity-indicator__controls button {
-    background: var(--color-custom-entity-label);
+    background: var(--color-warning);
 }
 .blis-entity--prebuilt .blis-entity-indicator__controls button {
-    background: var(--color-prebuilt-entity-label);
+    background: var(--color-warning);
 }
 
 .blis-entity-indicator__name {

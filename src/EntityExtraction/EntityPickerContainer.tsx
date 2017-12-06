@@ -60,7 +60,7 @@ export default class EntityPickerContainer extends React.Component<Props, State>
     }
 
     onKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
-        console.log(`onKeyDown `, event.key)
+        // console.log(`EntityPickerContainer.onKeyDown `, event.key)
         let modifyFunction: IndexFunction = id
 
         switch (event.key) {

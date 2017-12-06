@@ -30,7 +30,7 @@
 */
 
 .custom-toolbar__search {
-    padding: 0.5em 0.25em;
+    padding: 0.5em 0.25em 0.25em 0.25em;
 }
 
 .custom-toolbar__search label {
@@ -56,6 +56,7 @@
 }
 
 .custom-toolbar__result {
+    margin-bottom: 1px;
     padding: 0.25em 0.5em;
     cursor: pointer;
 }
