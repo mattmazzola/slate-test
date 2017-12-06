@@ -16,7 +16,7 @@ interface Props extends EntityComponentProps {
 
 export const CustomEntity = (props: Props) => {
     const { option, isEditing } = props
-    console.log(`CustomEntity.data: `, option)
+    
     return (
         <span className={`blis-entity blis-entity--custom ${isEditing ? 'blis-entity--is-editing' : ''}`}>
             <div className="blis-entity-indicator noselect">

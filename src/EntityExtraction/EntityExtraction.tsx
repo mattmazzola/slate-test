@@ -58,7 +58,6 @@ class HoveringMenu extends React.Component<Props, State> {
     }
 
     updateMenu = () => {
-        console.log('updatemenu')
         const menu = this.menu
         if (!menu) return
 
@@ -86,11 +85,6 @@ class HoveringMenu extends React.Component<Props, State> {
             left: selectionBoundingRect.left + window.scrollX - menu.offsetWidth / 2 + selectionBoundingRect.width / 2,
             bottom: -(selectionBoundingRect.top + window.scrollY - 10)
         }
-
-        console.log(`selectionBoundingRect: `, selectionBoundingRect)
-        console.log(`menuElement: `, menu)
-        console.log(`window: `, window)
-        console.log(`menuPosition: `, menuPosition)
 
         // this.setState({
         //     isMenuVisible: true,

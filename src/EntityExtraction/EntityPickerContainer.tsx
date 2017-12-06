@@ -60,7 +60,6 @@ export default class EntityPickerContainer extends React.Component<Props, State>
     }
 
     onKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
-        // console.log(`EntityPickerContainer.onKeyDown `, event.key)
         let modifyFunction: IndexFunction = id
 
         switch (event.key) {
@@ -105,7 +104,6 @@ export default class EntityPickerContainer extends React.Component<Props, State>
     }
 
     onClickResult = (option: IOption) => {
-        console.log(`EntityPickerContainer.onClickResult: `, option)
         this.props.onSelectOption(option)
         this.setState({
             ...initialState

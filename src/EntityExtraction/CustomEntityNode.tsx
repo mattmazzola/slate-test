@@ -24,31 +24,18 @@ export class CustomEntityContainer extends React.Component<Props, State> {
     }
 
     onClickName = () => {
-        console.log(`CustomEntityContainer.onClickEdit`)
         this.setState(prevState => ({
             isEditing: !prevState.isEditing
         }))
     }
 
     onClickDelete = () => {
-        console.log(`CustomEntityContainer.onClickDelete`)
         this.setState({
             isEditing: false
         })
-
-        const nodeData = this.props.node.data.toJS()
-        const option = nodeData.entity
-        console.log(`delete: `, option)
 
         this.props.editor.change((change: any) => {
             change.unwrapInlineByKey(this.props.node.key, this.props.node.type)
-        })
-    }
-
-    onClickComplete = () => {
-        console.log(`onClickComplete`)
-        this.setState({
-            isEditing: false
         })
     }
 
