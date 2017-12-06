@@ -1,5 +1,5 @@
 import { Value } from 'slate'
-import { ISegement, ICustomEntity, SegementType } from './models'
+import { ISegement, ICustomEntity, SegementType, MatchedOption } from './models'
 
 export const valueToJSON = (value: any) => {
     const characters = value.characters ? value.characters.toJSON() : [];
@@ -106,4 +106,76 @@ export const convertEntitiesAndTextToEditorValue = (text: string, customEntities
     }
 
     return Value.fromJSON(document)
+}
+
+export const convertMatchedTextIntoStyledStrings = <T>(text: string, matches: [number, number][], original: T): MatchedOption<T> => {
+    const matchedStrings = matches.reduce<ISegement[]>((segements, [startIndex, endIndex]) => {
+        if (startIndex === endIndex) {
+            return segements
+        }
+
+        const segementIndexWhereEntityBelongs = segements.findIndex(seg => seg.startIndex <= startIndex && endIndex <= seg.endIndex)
+        const prevSegements = segements.slice(0, segementIndexWhereEntityBelongs)
+        const nextSegements = segements.slice(segementIndexWhereEntityBelongs + 1, segements.length)
+        const segementWhereEntityBelongs = segements[segementIndexWhereEntityBelongs]
+
+        const prevSegementEndIndex = startIndex - segementWhereEntityBelongs.startIndex
+        const prevSegementText = segementWhereEntityBelongs.text.substring(0, prevSegementEndIndex)
+        const prevSegement: ISegement = {
+            ...segementWhereEntityBelongs,
+            text: prevSegementText,
+            endIndex: prevSegementEndIndex,
+        }
+
+        const nextSegementStartIndex = endIndex - segementWhereEntityBelongs.startIndex
+        const nextSegementText = segementWhereEntityBelongs.text.substring(nextSegementStartIndex, segementWhereEntityBelongs.text.length)
+        const nextSegement: ISegement = {
+            ...segementWhereEntityBelongs,
+            text: nextSegementText,
+            startIndex: nextSegementStartIndex,
+        }
+
+        const newSegement: ISegement = {
+            text: segementWhereEntityBelongs.text.substring(prevSegementEndIndex, nextSegementStartIndex),
+            startIndex: startIndex,
+            endIndex: endIndex,
+            type: SegementType.Inline,
+            data: {
+                matched: true
+            }
+        }
+
+        const newSegements = prevSegements
+        if (prevSegement.startIndex !== prevSegement.endIndex) {
+            newSegements.push(prevSegement)
+        }
+
+        if (newSegement.startIndex !== newSegement.endIndex) {
+            newSegements.push(newSegement)
+        }
+
+        if (nextSegement.startIndex !== nextSegement.endIndex) {
+            newSegements.push(nextSegement)
+        }
+        
+        return [...newSegements, ...nextSegements]
+    }, [
+            {
+                text,
+                startIndex: 0,
+                endIndex: text.length,
+                type: SegementType.Normal,
+                data: {
+                    matched: false
+                }
+            }
+        ]).map(({ text, data }) => ({
+            text,
+            matched: data.matched
+        }))
+
+    return {
+        original,
+        matchedStrings
+    }
 }

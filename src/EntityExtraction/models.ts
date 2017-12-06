@@ -28,3 +28,23 @@ export interface ISegement {
     type: SegementType
     data: any
 }
+
+export interface FuseResult<T> {
+    item: T
+    matches: FuseMatch[]
+}
+
+export interface FuseMatch {
+    indices: [number, number][]
+    key: string
+}
+
+export interface MatchedOption<T> {
+    matchedStrings: MatchedString[]
+    original: T
+}
+
+export interface MatchedString {
+    text: string
+    matched: boolean
+}

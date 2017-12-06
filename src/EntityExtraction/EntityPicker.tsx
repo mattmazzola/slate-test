@@ -1,12 +1,13 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
-import { IOption, IPosition } from './models'
+import { IOption, IPosition, MatchedOption } from './models'
+import FuseMatch from './FuseMatch'
 import './EntityPicker.css'
 
 interface MenuProps {
     highlightIndex: number
     isVisible: boolean
-    matchedOptions: IOption[]
+    matchedOptions: MatchedOption<IOption>[]
     maxDisplayedOptions: number
     onKeyDown: (event: React.KeyboardEvent<HTMLElement>) => void
     onChangeSearchText: (value: string) => void
@@ -30,13 +31,13 @@ export default class EntityPicker extends React.Component<MenuProps> {
                 >
                     {this.props.matchedOptions.length !== 0
                         && <ul className="custom-toolbar__results">
-                            {this.props.matchedOptions.map((option, i) =>
+                            {this.props.matchedOptions.map((matchedOption, i) =>
                                 <li
-                                    key={option.id}
-                                    onClick={() => this.props.onClickOption(option)}
+                                    key={matchedOption.original.id}
+                                    onClick={() => this.props.onClickOption(matchedOption.original)}
                                     className={`custom-toolbar__result ${this.props.highlightIndex === i ? 'custom-toolbar__result--highlight' : ''}`}
                                 >
-                                    {option.name}
+                                    <FuseMatch matches={matchedOption.matchedStrings} />
                                 </li>
                             )}
                         </ul>}

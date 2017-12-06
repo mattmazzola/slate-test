@@ -1,6 +1,21 @@
 import * as React from 'react'
 import EntityPicker from './EntityPicker'
-import { IOption, IPosition } from './models'
+import * as Fuse from 'fuse.js'
+import { IOption, IPosition, FuseResult, MatchedOption } from './models'
+import { convertMatchedTextIntoStyledStrings } from './utilities'
+
+const fuseOptions: Fuse.FuseOptions = {
+    shouldSort: true,
+    includeMatches: true,
+    threshold: 0.6,
+    location: 0,
+    distance: 100,
+    maxPatternLength: 32,
+    minMatchCharLength: 1,
+    keys: [
+        "name"
+    ]
+}
 
 interface Props {
     isVisible: boolean
@@ -18,7 +33,7 @@ interface Props {
 interface State {
     highlightIndex: number
     searchText: string
-    matchedOptions: IOption[]
+    matchedOptions: MatchedOption<IOption>[]
 }
 
 const initialState: State = {
@@ -34,6 +49,7 @@ const increment = (x: number, limit: number) => (x + 1) > limit ? 0 : x + 1
 const decrement = (x: number, limit: number) => (x - 1) < 0 ? limit : x - 1
 
 export default class EntityPickerContainer extends React.Component<Props, State> {
+    fuse: Fuse
     element: HTMLElement
 
     state = initialState
@@ -41,15 +57,24 @@ export default class EntityPickerContainer extends React.Component<Props, State>
     constructor(props: Props) {
         super(props)
 
+        this.onChangeSearchText = this.onChangeSearchText.bind(this)
+        this.fuse = new Fuse(this.props.options, fuseOptions)
         this.state.matchedOptions = props.options.filter((_, i) => i < props.maxDisplayedOptions)
+            .map<MatchedOption<IOption>>(option => ({
+                matchedStrings: [{ text: option.name, matched: false }],
+                original: option
+            }))
     }
 
     componentWillReceiveProps(nextProps: Props) {
         if (this.props.isVisible === false
             && nextProps.isVisible === true) {
-            const matchedOptions = this.props.options
-                .filter(option => option.name.startsWith(this.state.searchText))
+
+            this.fuse = new Fuse(this.props.options, fuseOptions)
+
+            const matchedOptions = this.fuse.search<FuseResult<IOption>>(this.state.searchText)
                 .filter((_, i) => i < nextProps.maxDisplayedOptions)
+                .map(result => convertMatchedTextIntoStyledStrings(result.item.name, result.matches[0].indices, result.item))
 
             this.setState(prevState => ({
                 ...initialState,
@@ -89,17 +114,24 @@ export default class EntityPickerContainer extends React.Component<Props, State>
     }
 
     onSelectHighlightedOption = () => {
-        const option = this.state.matchedOptions[this.state.highlightIndex]
-        this.props.onSelectOption(option)
+        const matchedOption = this.state.matchedOptions[this.state.highlightIndex]
+        this.props.onSelectOption(matchedOption.original)
         this.setState({
             ...initialState
         })
     }
 
-    onChangeSearchText = (searchText: string) => {
-        const matchedOptions = this.props.options
-            .filter(option => option.name.startsWith(searchText))
+    onChangeSearchText(searchText: string) {
+        console.log(`searchText `, searchText)
+        const matchedOptions = this.fuse.search<FuseResult<IOption>>(searchText)
             .filter((_, i) => i < this.props.maxDisplayedOptions)
+            .map(result => {
+                const indices = result.matches[0].indices.map<[number, number]>(([start, end]) => [start, end+1])
+                console.log(`indices: `, indices)
+                const matchedOption = convertMatchedTextIntoStyledStrings(result.item.name, indices, result.item)
+                console.log(`matchedOption: `, matchedOption)
+                return matchedOption
+            })
 
         this.setState(prevState => ({
             searchText,
