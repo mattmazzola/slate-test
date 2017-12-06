@@ -1,8 +1,9 @@
 :root {
     --color-warning: rgb(197, 31, 31);
+    --color-custom-entity-bg-hover: rgba(149, 228, 169, 0.4);
     --color-custom-entity-bg: rgba(149, 228, 169, 0.836);
     --color-custom-entity-label: rgb(42, 161, 68);
-    --color-custom-entity-hover: rgb(149, 228, 169);
+    --color-custom-entity-bracket: rgb(149, 228, 169);
     --color-prebuilt-entity-bg: rgba(149, 174, 228, 0.836);
     --color-prebuilt-entity-label: rgb(72, 110, 192);
     --color-prebuilt-entity-hover: rgb(149, 174, 228);
@@ -16,6 +17,9 @@
     display: inline-block;
     position: relative;
     border-radius: 3px;
+}
+.blis-entity__text:hover {
+    background: var(--color-custom-entity-bg-hover);
 }
 
 .blis-entity--custom.blis-entity--is-editing .blis-entity__text {
@@ -93,7 +97,7 @@
 
 .blis-entity-indicator__bracket {
     height: 5px;
-    border: 2px solid var(--color-custom-entity-hover);
+    border: 2px solid var(--color-custom-entity-bracket);
     border-bottom: none;
 }
 
