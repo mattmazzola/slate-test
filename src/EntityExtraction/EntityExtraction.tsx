@@ -63,7 +63,8 @@ class HoveringMenu extends React.Component<Props, State> {
         if (!menu) return
 
         const { value } = this.state
-        if (value.isBlurred || value.isEmpty) {
+        // if (value.isBlurred || value.isEmpty) {
+        if (value.isEmpty) {
             if (this.state.isMenuVisible !== false) {
                 // this.setState({
                 //     isMenuVisible: false
@@ -74,14 +75,22 @@ class HoveringMenu extends React.Component<Props, State> {
         }
 
         const selection = window.getSelection()
+        if (!selection || selection.isCollapsed) {
+            return
+        }
         const range = selection.getRangeAt(0)
         const selectionBoundingRect = range.getBoundingClientRect()
 
         const menuPosition: IPosition = {
-            top: selectionBoundingRect.top + window.scrollY - menu.offsetHeight - 20,
+            top: (selectionBoundingRect.top - menu.offsetHeight) + window.scrollY - 20,
             left: selectionBoundingRect.left + window.scrollX - menu.offsetWidth / 2 + selectionBoundingRect.width / 2,
-            bottom: 0 // TODO: use real value
+            bottom: -(selectionBoundingRect.top + window.scrollY - 10)
         }
+
+        console.log(`selectionBoundingRect: `, selectionBoundingRect)
+        console.log(`menuElement: `, menu)
+        console.log(`window: `, window)
+        console.log(`menuPosition: `, menuPosition)
 
         // this.setState({
         //     isMenuVisible: true,
@@ -90,8 +99,9 @@ class HoveringMenu extends React.Component<Props, State> {
 
         const style: any = {
             opacity: '1',
-            top: `${menuPosition.top}px`,
+            // top: `${menuPosition.top}px`,
             left: `${menuPosition.left}px`,
+            bottom: `${menuPosition.bottom}px`
         }
 
         Object.assign(menu.style, style)
@@ -130,13 +140,34 @@ class HoveringMenu extends React.Component<Props, State> {
 
     onSelectOption = (option: IOption) => {
         console.log(`onSelectOption`, option)
+        const change = this.state.value.change()
+            .wrapInline({
+                type: 'custom-inline-node',
+                data: {
+                    entity: option
+                }
+            })
+            .collapseToEnd()
+
+        this.onChange(change)
+    }
+
+    onMouseDown = (event: React.MouseEvent<HTMLElement>) => {
+        console.log(`EntityExtraction.onMouseDown`, event)
     }
 
     render() {
         return (
-            <div className="entity-labeler">
-                <h3>CustomEntities</h3>
-                <div>
+            <div className="entity-labeler" onMouseDown={this.onMouseDown}>
+                <div className="entity-labeler__title">Custom Entities:</div>
+                <div className="entity-labeler__editor">
+                    <Editor
+                        className="slate-editor"
+                        placeholder="Enter some text..."
+                        value={this.state.value}
+                        onChange={this.onChange}
+                        renderNode={this.renderNode}
+                    />
                     <EntityPicker
                         isVisible={this.state.isMenuVisible}
                         options={this.props.options}
@@ -149,26 +180,21 @@ class HoveringMenu extends React.Component<Props, State> {
                         onSelectOption={this.onSelectOption}
                         onChange={this.onChange}
                     />
-                    <Editor
-                        className="slate-editor"
-                        placeholder="Enter some text..."
-                        value={this.state.value}
-                        onChange={this.onChange}
-                        renderNode={this.renderNode}
-                    />
                 </div>
                 {this.state.preBuiltEditorValues.length > 0
-                    && <div className="prebuilt-entity-editors">
-                        <h3>Pre-Built Entities</h3>
-                        {this.state.preBuiltEditorValues.map((preBuiltEditorValue, i) =>
-                            <Editor
-                                key={i}
-                                className="slate-editor"
-                                placeholder="Enter pre-built some text..."
-                                value={preBuiltEditorValue}
-                                renderNode={this.renderNode}
-                                readOnly={true}
-                            />)}
+                    && <div className="entity-labeler__prebuilt-editors">
+                        <div className="entity-labeler__title">Pre-Built Entities:</div>
+                        <div className="entity-labeler__editor entity-labeler__editor--prebuilt">
+                            {this.state.preBuiltEditorValues.map((preBuiltEditorValue, i) =>
+                                <Editor
+                                    key={i}
+                                    className="slate-editor"
+                                    placeholder="Enter pre-built some text..."
+                                    value={preBuiltEditorValue}
+                                    renderNode={this.renderNode}
+                                    readOnly={true}
+                                />)}
+                        </div>
                     </div>}
             </div>
         )

@@ -13,12 +13,8 @@
 
 .blis-entity__text {
     display: inline-block;
-    /* Causes jump in text when applied
-     find out how to make it inset */
-    /* border: 1px solid transparent; */
     position: relative;
     border-radius: 3px;
-    /* line-height: 1.6em; */
 }
 
 .blis-entity--custom.blis-entity--is-editing .blis-entity__text {
@@ -51,7 +47,9 @@
     bottom: 8px;
 }
 
-.blis-entity-indicator__controls {}
+.blis-entity-indicator__controls {
+    margin-bottom: 2px;
+}
 
 .blis-entity-indicator__controls button {
     font-size: 0.75rem;
@@ -61,6 +59,7 @@
     cursor: pointer;
     color: white;
     border-radius: 50%;
+    font-size: 0.75rem;
 }
 
 .blis-entity--custom .blis-entity-indicator__controls button {

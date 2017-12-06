@@ -62,18 +62,19 @@ export default class EntityPicker extends React.Component<MenuProps> {
                                 </li>
                             )}
                         </ul>}
-                    <div className="custom-toolbar__search" onMouseDown={this.props.onMouseDown}>
+                    <div className="custom-toolbar__search">
                         <label htmlFor="toolbar-input">Search for entities:</label>
                         <input
                             id="toolbar-input"
                             type="text"
+                            placeholder="Search input"
                             value={this.props.searchText}
                             className="custom-toolbar__input"
                             onChange={event => this.props.onChangeSearchText(event.target.value)}
                         />
                     </div>
                     <div>
-                        <button type="button" onClick={this.onClickWrapInline}>
+                        <button type="button" onClick={this.onClickWrapInline} tabIndex={-1}>
                             Wrap Inline
                         </button>
                     </div>

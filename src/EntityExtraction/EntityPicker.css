@@ -1,13 +1,17 @@
+.toolbar-container {
+    position: relative;
+}
+
 .custom-toolbar {
     background: white;
     border-radius: 4px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
-    left: -10000px;
     min-width: 200px;
     opacity: 0;
     padding: 0.25em;
     position: absolute;
-    top: -10000px;
+    left: -10000px;
+    bottom: 10000px;
     transition: opacity .75s;
     z-index: 2;
 }
@@ -26,7 +30,7 @@
 */
 
 .custom-toolbar__search {
-    padding: 0.5em;
+    padding: 0.5em 0.25em;
 }
 
 .custom-toolbar__search label {
@@ -40,12 +44,14 @@
     padding: 0.25em;
     border: 1px solid lightgrey;
     width: 100%;
+    font-size: 1rem;
 }
 
 .custom-toolbar__results {
     margin: 0;
     list-style: none;
-    padding: 0.5em 0;
+    padding: 0;
+    padding-bottom: 0.25em;
     border-bottom: 1px solid lightgrey;
 }
 
@@ -55,7 +61,7 @@
 }
 
 .custom-toolbar__result:hover:not(.custom-toolbar__result--highlight) {
-    background: rgba(187, 255, 187, 0.2);
+    background: rgba(187, 255, 187, 0.5);
 }
 
 .custom-toolbar__result--highlight {

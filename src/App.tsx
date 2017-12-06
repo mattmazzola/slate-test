@@ -105,6 +105,13 @@ class App extends React.Component<{}, State> {
                                 customEntities={this.state.customEntities}
                                 preBuiltEntities={this.state.preBuiltEntities}
                             />
+
+                            <EntityExtraction
+                                options={this.state.options}
+                                text={this.state.text}
+                                customEntities={this.state.customEntities}
+                                preBuiltEntities={this.state.preBuiltEntities}
+                            />
                         </div>
                     </div>
                 </section>

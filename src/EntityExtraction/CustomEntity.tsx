@@ -25,7 +25,7 @@ export const CustomEntity = (props: Props) => {
                         {isEditing && <button type="button" onClick={props.onClickDelete}>&#10006;</button>}
                     </div>
                     <div className="blis-entity-indicator__name noselect">
-                        <button type="button" onClick={props.onClickName}>
+                        <button type="button" onClick={props.onClickName} tabIndex={-1}>
                             {option.name}
                         </button>
                     </div>
@@ -33,7 +33,7 @@ export const CustomEntity = (props: Props) => {
                 <div className="blis-entity-indicator__bracket">
                 </div>
             </div>
-            <span className="blis-entity__text">
+            <span className="blis-entity__text" onClick={props.onClickName}>
                 {props.children}
             </span>
         </span>

@@ -1,13 +1,23 @@
 .entity-labeler {
+    border: 1px solid rgba(0,0,0,0.25);
+}
+.entity-labeler__title {
+    color: rgba(0,0,0,0.5);
+    padding: 1em 0 0 1em;
+    font-size: 11px;
+}
+.entity-labeler__editor {
+    position: relative;
+}
+.entity-labeler__prebuilt-editors {
+    background-color: rgba(0,0,0,0.025);
 }
 
 .slate-editor {
     padding: 2em 1em 0.5em 1em;
-    border: 1px solid rgba(0,0,0,0.25);
 }
 
 .prebuilt-entity-editors .slate-editor:not(:last-of-type) {
-    border-bottom: none;
 }
 
 .noselect {

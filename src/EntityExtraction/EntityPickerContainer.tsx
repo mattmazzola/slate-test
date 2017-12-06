@@ -93,8 +93,8 @@ export default class EntityPickerContainer extends React.Component<Props, State>
     }
 
     onMouseDown = (event: React.MouseEvent<any>) => {
-        console.log('onMouseDown', event)
-        event.preventDefault()
+        console.log('EntityPickerContainer.onMouseDown', event.target, event.currentTarget)
+        // event.preventDefault()
         // event.stopPropagation()
     }
 
@@ -111,7 +111,7 @@ export default class EntityPickerContainer extends React.Component<Props, State>
     }
 
     onClickResult = (option: IOption) => {
-        console.log(`CustomToolbar.onClickResult: `, option)
+        console.log(`EntityPickerContainer.onClickResult: `, option)
         this.props.onSelectOption(option)
         this.setState({
             ...initialState
