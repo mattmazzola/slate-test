@@ -152,13 +152,9 @@ class HoveringMenu extends React.Component<Props, State> {
         this.onChange(change)
     }
 
-    onMouseDown = (event: React.MouseEvent<HTMLElement>) => {
-        console.log(`EntityExtraction.onMouseDown`, event)
-    }
-
     render() {
         return (
-            <div className="entity-labeler" onMouseDown={this.onMouseDown}>
+            <div className="entity-labeler">
                 <div className="entity-labeler__title">Custom Entities:</div>
                 <div className="entity-labeler__editor">
                     <Editor

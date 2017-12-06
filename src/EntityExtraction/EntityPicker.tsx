@@ -9,7 +9,6 @@ interface MenuProps {
     matchedOptions: IOption[]
     maxDisplayedOptions: number
     onKeyDown: (event: React.KeyboardEvent<HTMLElement>) => void
-    onMouseDown: (event: React.MouseEvent<HTMLElement>) => void
     onChangeSearchText: (value: string) => void
     onChange: (change: any) => void
     onClickOption: (o: IOption) => void
@@ -26,7 +25,6 @@ export default class EntityPicker extends React.Component<MenuProps> {
             ReactDOM.createPortal(
                 <div
                     className={`custom-toolbar ${this.props.isVisible ? "custom-toolbar--visible" : ""}`}
-                    onMouseDown={this.props.onMouseDown}
                     onKeyDown={this.props.onKeyDown}
                     ref={this.props.menuRef}
                 >

@@ -92,12 +92,6 @@ export default class EntityPickerContainer extends React.Component<Props, State>
         })
     }
 
-    onMouseDown = (event: React.MouseEvent<any>) => {
-        console.log('EntityPickerContainer.onMouseDown', event.target, event.currentTarget)
-        // event.preventDefault()
-        // event.stopPropagation()
-    }
-
     onChangeSearchText = (searchText: string) => {
         const matchedOptions = this.props.options
             .filter(option => option.name.startsWith(searchText))
@@ -146,7 +140,6 @@ export default class EntityPickerContainer extends React.Component<Props, State>
                 onChangeSearchText={this.onChangeSearchText}
                 onClickOption={this.onClickResult}
                 onKeyDown={this.onKeyDown}
-                onMouseDown={this.onMouseDown}
                 onChange={this.props.onChange}
             />
         )
