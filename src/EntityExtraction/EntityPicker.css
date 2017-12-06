@@ -20,15 +20,10 @@
 }
 
 /* 
-.custom-toolbar {
-  transform: translate(-50%) scale(0);
-}
-
 .custom-toolbar--visible {
   visibility: visible;
   opacity: 1;
-  transform: translate(-50%) scale(1);
-  transition: transform 0.15s cubic-bezier(.3,1.2,.2,1);
+  transform: scale(1);
 }
 */
 
