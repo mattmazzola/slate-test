@@ -92,10 +92,12 @@ class HoveringMenu extends React.Component<Props, State> {
         // })
 
         const style: any = {
+            visibility: 'visible',
             opacity: '1',
             // top: `${menuPosition.top}px`,
             left: `${menuPosition.left}px`,
-            bottom: `${menuPosition.bottom}px`
+            bottom: `${menuPosition.bottom}px`,
+            transform: 'scale(1)'
         }
 
         Object.assign(menu.style, style)

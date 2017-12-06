@@ -72,6 +72,11 @@ export default class EntityPickerContainer extends React.Component<Props, State>
                 break;
             case 'Enter':
             case 'Tab':
+                // It's possible to tab into the entity picker without their being a selection
+                if (this.props.value.selection.isCollapsed) {
+                    console.warn(`preventing action because entity picker is focused without selection`)
+                    return
+                }
                 this.onSelectHighlightedOption()
                 event.stopPropagation()
                 event.preventDefault()
