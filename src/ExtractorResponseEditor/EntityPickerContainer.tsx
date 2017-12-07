@@ -23,7 +23,6 @@ interface Props {
     maxDisplayedOptions: number
     menuRef: any
     position: IPosition
-    rootElement: Element
     value: any
 
     onSelectOption: (o: IOption) => void
@@ -84,6 +83,10 @@ export default class EntityPickerContainer extends React.Component<Props, State>
         }
     }
 
+    componentWillUpdate() {
+        console.log(`highlightIndex`, this.state.highlightIndex)
+    }
+
     onKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
         let modifyFunction: IndexFunction = id
 
@@ -97,6 +100,11 @@ export default class EntityPickerContainer extends React.Component<Props, State>
                 break;
             case 'Enter':
             case 'Tab':
+                // Only simulate completion on 'forward' tab
+                if (event.shiftKey) {
+                    return
+                }
+
                 // It's possible to tab into the entity picker without their being a selection
                 if (this.props.value.selection.isCollapsed) {
                     console.warn(`preventing action because entity picker is focused without selection`)
@@ -115,6 +123,13 @@ export default class EntityPickerContainer extends React.Component<Props, State>
 
     onSelectHighlightedOption = () => {
         const matchedOption = this.state.matchedOptions[this.state.highlightIndex]
+        // It's possible that highlight option is 0 even though there are no matched options becuase text doesn't match any
+        // in this case matchedOption will be null
+        if (!matchedOption) {
+            console.warn(`onSelectOption was skipped because matchedOption was null`)
+            return
+        }
+
         this.props.onSelectOption(matchedOption.original)
         this.setState({
             ...initialState
@@ -133,6 +148,7 @@ export default class EntityPickerContainer extends React.Component<Props, State>
                 return matchedOption
             })
 
+        console.log
         this.setState(prevState => ({
             searchText,
             matchedOptions,
@@ -169,7 +185,6 @@ export default class EntityPickerContainer extends React.Component<Props, State>
                 position={this.props.position}
                 menuRef={this.props.menuRef}
                 searchText={this.state.searchText}
-                rootElement={this.props.rootElement}
                 value={this.props.value}
 
                 onChangeSearchText={this.onChangeSearchText}

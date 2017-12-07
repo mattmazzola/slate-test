@@ -3,13 +3,11 @@ import { Editor } from 'slate-react'
 import { Value } from 'slate'
 import initialValue from './value'
 import { IOption, IPosition, ICustomEntity } from './models'
-import { valueToJSON, convertEntitiesAndTextToEditorValue } from './utilities'
+import { valueToJSON, convertEntitiesAndTextToEditorValue, getRelativeParent } from './utilities'
 import CustomEntityNode from './CustomEntityNode'
 import PreBuiltEntityNode from './PreBuiltEntityNode'
 import EntityPicker from './EntityPickerContainer'
-import './EntityExtraction.css'
-
-const menuRootElement = window.document.querySelector('main')
+import './ExtractorResponseEditor.css'
 
 interface Props {
     options: IOption[]
@@ -73,6 +71,9 @@ class HoveringMenu extends React.Component<Props, State> {
             return
         }
 
+        const relativeParent = getRelativeParent(this.menu.parentElement)
+        const relativeRect = relativeParent.getBoundingClientRect()
+
         const selection = window.getSelection()
         if (!selection || selection.isCollapsed) {
             return
@@ -80,11 +81,19 @@ class HoveringMenu extends React.Component<Props, State> {
         const range = selection.getRangeAt(0)
         const selectionBoundingRect = range.getBoundingClientRect()
 
-        const menuPosition: IPosition = {
+        const menuPositionAbsolute: IPosition = {
             top: (selectionBoundingRect.top - menu.offsetHeight) + window.scrollY - 20,
             left: selectionBoundingRect.left + window.scrollX - menu.offsetWidth / 2 + selectionBoundingRect.width / 2,
             bottom: -(selectionBoundingRect.top + window.scrollY - 10)
         }
+
+        const menuPosition: IPosition = {
+            top: ((selectionBoundingRect.top - relativeRect.top) - menu.offsetHeight) + window.scrollY - 20,
+            left: (selectionBoundingRect.left - relativeRect.left) + window.scrollX - menu.offsetWidth / 2 + selectionBoundingRect.width / 2,
+            bottom: relativeRect.height - (selectionBoundingRect.top - relativeRect.top) + 10
+        }
+        console.log(`menuPositionAbsolute: `, menuPositionAbsolute)
+        console.log(`menuPosition: `, menuPosition)
 
         // this.setState({
         //     isMenuVisible: true,
@@ -166,7 +175,6 @@ class HoveringMenu extends React.Component<Props, State> {
                         maxDisplayedOptions={4}
                         menuRef={this.menuRef}
                         position={this.state.menuPosition}
-                        rootElement={menuRootElement!}
                         value={this.state.value}
 
                         onSelectOption={this.onSelectOption}

@@ -13,7 +13,7 @@ const value = {
                             {
                                 "kind": "leaf",
                                 "text": "Test ",
-                                "marks": []
+                                "marks": [] as any[]
                             }
                         ]
                     },
@@ -31,7 +31,7 @@ const value = {
                                     {
                                         "kind": "leaf",
                                         "text": "Hey",
-                                        "marks": []
+                                        "marks": [] as any[]
                                     }
                                 ]
                             }
@@ -43,7 +43,7 @@ const value = {
                             {
                                 "kind": "leaf",
                                 "text": " Test",
-                                "marks": []
+                                "marks": [] as any[]
                             }
                         ]
                     }

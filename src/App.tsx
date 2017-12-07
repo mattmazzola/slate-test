@@ -1,16 +1,15 @@
 import * as React from 'react'
-import { EntityExtraction } from './EntityExtraction'
+import * as ExtractorResponseEditor from './ExtractorResponseEditor'
 import './App.css'
-import { IOption, ICustomEntity } from './EntityExtraction/models'
 
 interface State {
-    options: IOption[]
+    options: ExtractorResponseEditor.Models.IOption[]
     text: string
-    customEntities: ICustomEntity[]
-    preBuiltEntities: ICustomEntity[]
+    customEntities: ExtractorResponseEditor.Models.ICustomEntity[]
+    preBuiltEntities: ExtractorResponseEditor.Models.ICustomEntity[]
 }
 
-const fixtureCustomEntities: IOption[] = [
+const fixtureCustomEntities: ExtractorResponseEditor.Models.IOption[] = [
     {
         id: '1',
         name: 'entity1'
@@ -25,7 +24,7 @@ const fixtureCustomEntities: IOption[] = [
     },
 ]
 
-const fixturePreBuiltEntities: IOption[] = [
+const fixturePreBuiltEntities: ExtractorResponseEditor.Models.IOption[] = [
     {
         id: '1',
         name: 'preBuiltEntity1'
@@ -99,14 +98,14 @@ class App extends React.Component<{}, State> {
                         </ul>
                         <h3>Prototype</h3>
                         <div className="prototype">
-                            <EntityExtraction
+                            <ExtractorResponseEditor.Editor
                                 options={this.state.options}
                                 text={this.state.text}
                                 customEntities={this.state.customEntities}
                                 preBuiltEntities={this.state.preBuiltEntities}
                             />
 
-                            <EntityExtraction
+                            <ExtractorResponseEditor.Editor
                                 options={this.state.options}
                                 text={this.state.text}
                                 customEntities={this.state.customEntities}

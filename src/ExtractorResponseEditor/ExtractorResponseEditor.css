@@ -1,4 +1,5 @@
 .entity-labeler {
+    position: relative;
     border: 1px solid rgba(0,0,0,0.25);
 }
 .entity-labeler__title {
