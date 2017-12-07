@@ -5,11 +5,11 @@ import './App.css'
 interface State {
     options: ExtractorResponseEditor.Models.IOption[]
     text: string
-    customEntities: ExtractorResponseEditor.Models.ICustomEntity[]
-    preBuiltEntities: ExtractorResponseEditor.Models.ICustomEntity[]
+    customEntities: ExtractorResponseEditor.Models.IGenericEntity<any>[]
+    preBuiltEntities: ExtractorResponseEditor.Models.IGenericEntity<any>[]
 }
 
-const fixtureCustomEntities: ExtractorResponseEditor.Models.IOption[] = [
+const fixtureCustomEntityOptions: ExtractorResponseEditor.Models.IOption[] = [
     {
         id: '1',
         name: 'entity1'
@@ -32,7 +32,7 @@ const fixtureCustomEntities: ExtractorResponseEditor.Models.IOption[] = [
     },
 ]
 
-const fixturePreBuiltEntities: ExtractorResponseEditor.Models.IOption[] = [
+const fixturePreBuiltEntityOptions: ExtractorResponseEditor.Models.IOption[] = [
     {
         id: '1',
         name: 'preBuiltEntity1'
@@ -49,14 +49,15 @@ const fixturePreBuiltEntities: ExtractorResponseEditor.Models.IOption[] = [
 
 class App extends React.Component<{}, State> {
     state: State = {
-        options: fixtureCustomEntities,
+        options: fixtureCustomEntityOptions,
         text: 'word1 word2 word3',
         customEntities: [
             {
                 startIndex: 6,
                 endIndex: 11,
+                name: fixtureCustomEntityOptions[1].name,
                 data: {
-                    entity: fixtureCustomEntities[1]
+                    option: fixtureCustomEntityOptions[1]
                 }
             }
         ],
@@ -64,15 +65,17 @@ class App extends React.Component<{}, State> {
             {
                 startIndex: 0,
                 endIndex: 5,
+                name: fixturePreBuiltEntityOptions[0].name,
                 data: {
-                    entity: fixturePreBuiltEntities[0]
+                    option: fixturePreBuiltEntityOptions[0]
                 }
             },
             {
                 startIndex: 12,
                 endIndex: 17,
+                name: fixturePreBuiltEntityOptions[1].name,
                 data: {
-                    entity: fixturePreBuiltEntities[1]
+                    option: fixturePreBuiltEntityOptions[1]
                 }
             }
         ]

@@ -1,5 +1,5 @@
 import { Value } from 'slate'
-import { ISegement, ICustomEntity, SegementType, MatchedOption } from './models'
+import { ISegement, IGenericEntity, SegementType, MatchedOption } from './models'
 
 /**
  * Recursively walk up DOM tree until root or parent with non-static position is found.
@@ -33,7 +33,7 @@ export const valueToJSON = (value: any) => {
     }
 }
 
-export const convertEntitiesAndTextToEditorValue = (text: string, customEntities: ICustomEntity[], inlineType: string) => {
+export const convertEntitiesAndTextToEditorValue = (text: string, customEntities: IGenericEntity<any>[], inlineType: string) => {
     const nodes = customEntities.reduce<ISegement[]>((segements, entity) => {
         const segementIndexWhereEntityBelongs = segements.findIndex(seg => seg.startIndex <= entity.startIndex && entity.endIndex <= seg.endIndex)
         const prevSegements = segements.slice(0, segementIndexWhereEntityBelongs)

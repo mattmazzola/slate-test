@@ -10,10 +10,11 @@ export interface IOption {
     name: string
 }
 
-export interface ICustomEntity {
+export interface IGenericEntity<T> {
     startIndex: number
     endIndex: number
-    data: any
+    name: string
+    data: T
 }
 
 export enum NodeType {

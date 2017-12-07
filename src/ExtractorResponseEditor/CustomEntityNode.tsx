@@ -41,12 +41,12 @@ export class CustomEntityContainer extends React.Component<Props, State> {
 
     render() {
         const nodeData = this.props.node.data.toJS()
-        const option = nodeData.entity
+        const option: IOption = nodeData.option
 
         return (
             <CustomEntity
                 isEditing={this.state.isEditing}
-                option={option}
+                name={option.name}
                 onClickName={this.onClickName}
                 onClickDelete={this.onClickDelete}
                 {...this.props.attributes}

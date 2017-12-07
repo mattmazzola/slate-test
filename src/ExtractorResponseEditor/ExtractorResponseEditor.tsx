@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Editor } from 'slate-react'
 import { Value } from 'slate'
 import initialValue from './value'
-import { IOption, IPosition, ICustomEntity, NodeType } from './models'
+import { IOption, IPosition, IGenericEntity, NodeType } from './models'
 import { valueToJSON, convertEntitiesAndTextToEditorValue, getRelativeParent } from './utilities'
 import CustomEntityNode from './CustomEntityNode'
 import PreBuiltEntityNode from './PreBuiltEntityNode'
@@ -15,8 +15,8 @@ export type SlateValue = any
 interface Props {
     options: IOption[]
     text: string
-    customEntities: ICustomEntity[]
-    preBuiltEntities: ICustomEntity[]
+    customEntities: IGenericEntity<any>[]
+    preBuiltEntities: IGenericEntity<any>[]
 }
 
 interface State {
@@ -144,7 +144,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
             .wrapInline({
                 type: NodeType.CustomEntityNodeType,
                 data: {
-                    entity: option
+                    option
                 }
             })
             .collapseToEnd()
