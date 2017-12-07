@@ -22,6 +22,14 @@ const fixtureCustomEntities: ExtractorResponseEditor.Models.IOption[] = [
         id: '3',
         name: 'entity3'
     },
+    {
+        id: '4',
+        name: 'entity4'
+    },
+    {
+        id: '5',
+        name: 'entity5'
+    },
 ]
 
 const fixturePreBuiltEntities: ExtractorResponseEditor.Models.IOption[] = [

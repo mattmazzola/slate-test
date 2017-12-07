@@ -16,6 +16,11 @@ export interface ICustomEntity {
     data: any
 }
 
+export enum NodeType {
+    CustomEntityNodeType = "custom-inline-node",
+    PreBuiltEntityNodeType = "prebuilt-inline-node"
+}
+
 export enum SegementType {
     Normal = "normal",
     Inline = "inline"

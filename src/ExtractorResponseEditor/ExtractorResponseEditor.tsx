@@ -2,12 +2,15 @@ import * as React from 'react'
 import { Editor } from 'slate-react'
 import { Value } from 'slate'
 import initialValue from './value'
-import { IOption, IPosition, ICustomEntity } from './models'
+import { IOption, IPosition, ICustomEntity, NodeType } from './models'
 import { valueToJSON, convertEntitiesAndTextToEditorValue, getRelativeParent } from './utilities'
 import CustomEntityNode from './CustomEntityNode'
 import PreBuiltEntityNode from './PreBuiltEntityNode'
 import EntityPicker from './EntityPickerContainer'
 import './ExtractorResponseEditor.css'
+
+// Slate doesn't have type definitions but we still want type consistency and references so we make custom type
+export type SlateValue = any
 
 interface Props {
     options: IOption[]
@@ -19,13 +22,13 @@ interface Props {
 interface State {
     isMenuVisible: boolean
     menuPosition: IPosition
-    value: any
-    preBuiltEditorValues: any[]
+    value: SlateValue
+    preBuiltEditorValues: SlateValue[]
 }
 
 const disallowedOperations = ['insert_text', 'remove_text']
 
-class HoveringMenu extends React.Component<Props, State> {
+class ExtractorResponseEditor extends React.Component<Props, State> {
     menu: HTMLElement
 
     state = {
@@ -42,8 +45,8 @@ class HoveringMenu extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props)
 
-        this.state.value = convertEntitiesAndTextToEditorValue(props.text, props.customEntities, "custom-inline-node")
-        this.state.preBuiltEditorValues = props.preBuiltEntities.map<any[]>(preBuiltEntity => convertEntitiesAndTextToEditorValue(props.text, [preBuiltEntity], "prebuilt-inline-node"))
+        this.state.value = convertEntitiesAndTextToEditorValue(props.text, props.customEntities, NodeType.CustomEntityNodeType)
+        this.state.preBuiltEditorValues = props.preBuiltEntities.map<any[]>(preBuiltEntity => convertEntitiesAndTextToEditorValue(props.text, [preBuiltEntity], NodeType.PreBuiltEntityNodeType))
     }
 
     // TODO: Is this necessary?
@@ -81,19 +84,11 @@ class HoveringMenu extends React.Component<Props, State> {
         const range = selection.getRangeAt(0)
         const selectionBoundingRect = range.getBoundingClientRect()
 
-        const menuPositionAbsolute: IPosition = {
-            top: (selectionBoundingRect.top - menu.offsetHeight) + window.scrollY - 20,
-            left: selectionBoundingRect.left + window.scrollX - menu.offsetWidth / 2 + selectionBoundingRect.width / 2,
-            bottom: -(selectionBoundingRect.top + window.scrollY - 10)
-        }
-
         const menuPosition: IPosition = {
             top: ((selectionBoundingRect.top - relativeRect.top) - menu.offsetHeight) + window.scrollY - 20,
             left: (selectionBoundingRect.left - relativeRect.left) + window.scrollX - menu.offsetWidth / 2 + selectionBoundingRect.width / 2,
             bottom: relativeRect.height - (selectionBoundingRect.top - relativeRect.top) + 10
         }
-        console.log(`menuPositionAbsolute: `, menuPositionAbsolute)
-        console.log(`menuPosition: `, menuPosition)
 
         // this.setState({
         //     isMenuVisible: true,
@@ -138,8 +133,8 @@ class HoveringMenu extends React.Component<Props, State> {
 
     renderNode = (props: any): React.ReactNode | void => {
         switch (props.node.type) {
-            case 'custom-inline-node': return <CustomEntityNode {...props} />
-            case 'prebuilt-inline-node': return <PreBuiltEntityNode {...props} />
+            case NodeType.CustomEntityNodeType: return <CustomEntityNode {...props} />
+            case NodeType.PreBuiltEntityNodeType: return <PreBuiltEntityNode {...props} />
         }
     }
 
@@ -147,7 +142,7 @@ class HoveringMenu extends React.Component<Props, State> {
         console.log(`onSelectOption`, option)
         const change = this.state.value.change()
             .wrapInline({
-                type: 'custom-inline-node',
+                type: NodeType.CustomEntityNodeType,
                 data: {
                     entity: option
                 }
@@ -201,4 +196,4 @@ class HoveringMenu extends React.Component<Props, State> {
     }
 }
 
-export default HoveringMenu
+export default ExtractorResponseEditor
