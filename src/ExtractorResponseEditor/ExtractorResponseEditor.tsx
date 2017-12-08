@@ -13,12 +13,16 @@ import './ExtractorResponseEditor.css'
 export type SlateValue = any
 
 interface Props {
+    canEdit: boolean
+    isPrimary: boolean
+    isValid: boolean
     options: IOption[]
     text: string
     customEntities: IGenericEntity<any>[]
     onChangeCustomEntities: (customEntities: IGenericEntity<any>[]) => void
     preBuiltEntities: IGenericEntity<any>[]
     onClickNewEntity: () => void
+    onClickRemove: () => void
 }
 
 interface State {
@@ -166,27 +170,32 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
     render() {
         return (
             <div className="entity-labeler">
-                <div className="entity-labeler__title">Custom Entities:</div>
-                <div className="entity-labeler__editor">
-                    <Editor
-                        className="slate-editor"
-                        placeholder="Enter some text..."
-                        value={this.state.value}
-                        onChange={this.onChange}
-                        renderNode={this.renderNode}
-                    />
-                    <EntityPicker
-                        isVisible={this.state.isMenuVisible}
-                        options={this.props.options}
-                        maxDisplayedOptions={4}
-                        menuRef={this.menuRef}
-                        position={this.state.menuPosition}
-                        value={this.state.value}
+                <div className="entity-labeler__custom-editor">
+                    <div className="entity-labeler__editor">
+                        <Editor
+                            className="slate-editor"
+                            placeholder="Enter some text..."
+                            value={this.state.value}
+                            onChange={this.onChange}
+                            renderNode={this.renderNode}
+                        />
+                        <EntityPicker
+                            isVisible={this.state.isMenuVisible}
+                            options={this.props.options}
+                            maxDisplayedOptions={4}
+                            menuRef={this.menuRef}
+                            position={this.state.menuPosition}
+                            value={this.state.value}
 
-                        onChange={this.onChange}
-                        onClickNewEntity={this.props.onClickNewEntity}
-                        onSelectOption={this.onSelectOption}
-                    />
+                            onChange={this.onChange}
+                            onClickNewEntity={this.props.onClickNewEntity}
+                            onSelectOption={this.onSelectOption}
+                        />
+                    </div>
+                    <div className="entity-labeler__icons">
+                        {!this.props.isPrimary && <button type="button" onClick={this.props.onClickRemove}>Remove</button>}
+                        {!this.props.isValid && <span>Warning</span>}
+                    </div>
                 </div>
                 {this.state.preBuiltEditorValues.length > 0
                     && <div className="entity-labeler__prebuilt-editors">

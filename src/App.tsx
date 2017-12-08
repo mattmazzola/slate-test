@@ -149,6 +149,10 @@ class App extends React.Component<{}, State> {
         console.log(`onClickNewEntity`)
     }
 
+    onClickRemove = () => {
+        console.log(`onClickRemove`)
+    }
+
     render() {
         return (
             <div className="slate-app">
@@ -183,6 +187,9 @@ class App extends React.Component<{}, State> {
                         </div>
                         <div className="prototype">
                             <ExtractorResponseEditor.Editor
+                                canEdit={true}
+                                isPrimary={true}
+                                isValid={true}
                                 options={this.state.options}
                                 text={this.state.text}
                                 customEntities={this.state.customEntities}
@@ -190,9 +197,13 @@ class App extends React.Component<{}, State> {
 
                                 onChangeCustomEntities={this.onChangeCustomEntities}
                                 onClickNewEntity={this.onClickNewEntity}
+                                onClickRemove={this.onClickRemove}
                             />
 
                             <ExtractorResponseEditor.Editor
+                                canEdit={true}
+                                isPrimary={false}
+                                isValid={false}
                                 options={this.state.options}
                                 text={this.state.text}
                                 customEntities={this.state.customEntities}
@@ -200,6 +211,7 @@ class App extends React.Component<{}, State> {
                                 
                                 onChangeCustomEntities={this.onChangeCustomEntities}
                                 onClickNewEntity={this.onClickNewEntity}
+                                onClickRemove={this.onClickRemove}
                             />
                         </div>
                     </div>
