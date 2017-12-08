@@ -17,22 +17,22 @@ export const CustomEntity = (props: Props) => {
     const { name, isEditing } = props
     
     return (
-        <span className={`blis-entity blis-entity--custom ${isEditing ? 'blis-entity--is-editing' : ''}`}>
-            <div className="blis-entity-indicator noselect">
-                <div className="blis-entity-indicator__mincontent">
-                    <div className="blis-entity-indicator__controls">
+        <span className={`blis-entity-node blis-entity-node--custom ${isEditing ? 'blis-entity-node--is-editing' : ''}`}>
+            <div className="blis-entity-node-indicator noselect">
+                <div className="blis-entity-node-indicator__mincontent">
+                    <div className="blis-entity-node-indicator__controls">
                         {isEditing && <button type="button" onClick={props.onClickDelete}>&#10006;</button>}
                     </div>
-                    <div className="blis-entity-indicator__name noselect" spellCheck={false}>
+                    <div className="blis-entity-node-indicator__name noselect" spellCheck={false}>
                         <button type="button" onClick={props.onClickName} tabIndex={-1}>
                             {name}
                         </button>
                     </div>
                 </div>
-                <div className="blis-entity-indicator__bracket">
+                <div className="blis-entity-node-indicator__bracket">
                 </div>
             </div>
-            <span className="blis-entity__text" onClick={props.onClickName}>
+            <span className="blis-entity-node__text" onClick={props.onClickName}>
                 {props.children}
             </span>
         </span>

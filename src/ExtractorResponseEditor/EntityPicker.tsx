@@ -12,6 +12,7 @@ interface MenuProps {
     onChangeSearchText: (value: string) => void
     onChange: (change: any) => void
     onClickOption: (o: IOption) => void
+    onClickNewEntity: () => void
     position: IPosition
     menuRef: any
     searchText: string
@@ -37,6 +38,12 @@ export default class EntityPicker extends React.Component<MenuProps> {
                                 <FuseMatch matches={matchedOption.matchedStrings} />
                             </li>
                         )}
+                        <li
+                            onClick={this.props.onClickNewEntity}
+                            className="custom-toolbar__result"
+                        >
+                            New Entity
+                        </li>
                     </ul>}
                 <div className="custom-toolbar__search">
                     <label htmlFor="toolbar-input">Search for entities:</label>

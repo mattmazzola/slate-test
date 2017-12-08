@@ -1,6 +1,7 @@
 import * as React from 'react'
 import * as ExtractorResponseEditor from './ExtractorResponseEditor'
 import './App.css'
+import { IGenericEntity } from './ExtractorResponseEditor/models';
 
 interface State {
     options: ExtractorResponseEditor.Models.IOption[]
@@ -48,6 +49,8 @@ const fixturePreBuiltEntityOptions: ExtractorResponseEditor.Models.IOption[] = [
 ]
 
 class App extends React.Component<{}, State> {
+    customEntityButtonClicks: number = 0
+
     state: State = {
         options: fixtureCustomEntityOptions,
         text: 'word1 word2 word3',
@@ -81,6 +84,71 @@ class App extends React.Component<{}, State> {
         ]
     }
 
+    onClickChangeText = () => {
+        this.setState(prevState => ({
+            text: `${prevState.text} addedText`
+        }))
+    }
+
+    onClickAddCustomEntity = () => {
+        switch (this.customEntityButtonClicks) {
+            case 0: {
+                this.setState(prevState => ({
+                    customEntities: [...prevState.customEntities, {
+                        startIndex: 0,
+                        endIndex: 5,
+                        name: fixtureCustomEntityOptions[0].name,
+                        data: {
+                            option: fixtureCustomEntityOptions[0]
+                        }
+                    }]
+                }))
+                break;
+            }
+            case 1: {
+                this.setState(prevState => ({
+                    customEntities: [...prevState.customEntities, {
+                        startIndex: 12,
+                        endIndex: 17,
+                        name: fixtureCustomEntityOptions[2].name,
+                        data: {
+                            option: fixtureCustomEntityOptions[2]
+                        }
+                    }]
+                }))
+                break;
+            }
+        }
+
+        this.customEntityButtonClicks++
+    }
+
+    onClickAddPrebuiltEntity = () => {
+        this.setState(prevState => ({
+            preBuiltEntities: [...prevState.preBuiltEntities,
+                {
+                    startIndex: 0,
+                    endIndex: 5,
+                    name: fixturePreBuiltEntityOptions[0].name,
+                    data: {
+                        option: fixturePreBuiltEntityOptions[0]
+                    }
+                }
+            ]
+        }))
+    }
+
+    onChangeCustomEntities = (customEntities: IGenericEntity<any>[]) => {
+        console.log(`App.onChangeCustomEntities: `, customEntities)
+        this.setState({
+            customEntities
+        })
+    }
+
+    onClickNewEntity = () => {
+        console.log(`onClickNewEntity`)
+    }
+
     render() {
         return (
             <div className="slate-app">
@@ -108,12 +176,20 @@ class App extends React.Component<{}, State> {
                             </li>
                         </ul>
                         <h3>Prototype</h3>
+                        <div>
+                            <button type="button" onClick={this.onClickChangeText}>Add Text</button>
+                            <button type="button" onClick={this.onClickAddCustomEntity}>Add Custom Entity</button>
+                            <button type="button" onClick={this.onClickAddPrebuiltEntity}>Add PreBuilt Entity</button>
+                        </div>
                         <div className="prototype">
                             <ExtractorResponseEditor.Editor
                                 options={this.state.options}
                                 text={this.state.text}
                                 customEntities={this.state.customEntities}
                                 preBuiltEntities={this.state.preBuiltEntities}
+
+                                onChangeCustomEntities={this.onChangeCustomEntities}
+                                onClickNewEntity={this.onClickNewEntity}
                             />
 
                             <ExtractorResponseEditor.Editor
@@ -121,6 +197,9 @@ class App extends React.Component<{}, State> {
                                 text={this.state.text}
                                 customEntities={this.state.customEntities}
                                 preBuiltEntities={this.state.preBuiltEntities}
+                                
+                                onChangeCustomEntities={this.onChangeCustomEntities}
+                                onClickNewEntity={this.onClickNewEntity}
                             />
                         </div>
                     </div>

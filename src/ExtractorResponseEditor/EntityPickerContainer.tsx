@@ -25,8 +25,9 @@ interface Props {
     position: IPosition
     value: any
 
-    onSelectOption: (o: IOption) => void
     onChange: (change: any) => void
+    onClickNewEntity: () => void
+    onSelectOption: (o: IOption) => void
 }
 
 interface State {
@@ -81,10 +82,6 @@ export default class EntityPickerContainer extends React.Component<Props, State>
                 highlightIndex: prevState.highlightIndex > (matchedOptions.length - 1) ? 0 : prevState.highlightIndex
             }))
         }
-    }
-
-    componentWillUpdate() {
-        console.log(`highlightIndex`, this.state.highlightIndex)
     }
 
     onKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
@@ -189,6 +186,7 @@ export default class EntityPickerContainer extends React.Component<Props, State>
 
                 onChangeSearchText={this.onChangeSearchText}
                 onClickOption={this.onClickResult}
+                onClickNewEntity={this.props.onClickNewEntity}
                 onKeyDown={this.onKeyDown}
                 onChange={this.props.onChange}
             />

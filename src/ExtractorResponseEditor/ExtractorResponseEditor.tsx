@@ -3,7 +3,7 @@ import { Editor } from 'slate-react'
 import { Value } from 'slate'
 import initialValue from './value'
 import { IOption, IPosition, IGenericEntity, NodeType } from './models'
-import { valueToJSON, convertEntitiesAndTextToEditorValue, getRelativeParent } from './utilities'
+import { valueToJSON, convertEntitiesAndTextToEditorValue, getRelativeParent, getEntitiesFromValue } from './utilities'
 import CustomEntityNode from './CustomEntityNode'
 import PreBuiltEntityNode from './PreBuiltEntityNode'
 import EntityPicker from './EntityPickerContainer'
@@ -16,7 +16,9 @@ interface Props {
     options: IOption[]
     text: string
     customEntities: IGenericEntity<any>[]
+    onChangeCustomEntities: (customEntities: IGenericEntity<any>[]) => void
     preBuiltEntities: IGenericEntity<any>[]
+    onClickNewEntity: () => void
 }
 
 interface State {
@@ -47,6 +49,13 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
         this.state.value = convertEntitiesAndTextToEditorValue(props.text, props.customEntities, NodeType.CustomEntityNodeType)
         this.state.preBuiltEditorValues = props.preBuiltEntities.map<any[]>(preBuiltEntity => convertEntitiesAndTextToEditorValue(props.text, [preBuiltEntity], NodeType.PreBuiltEntityNodeType))
+    }
+
+    componentWillReceiveProps(nextProps: Props) {
+        this.setState({
+            value: convertEntitiesAndTextToEditorValue(nextProps.text, nextProps.customEntities, NodeType.CustomEntityNodeType),
+            preBuiltEditorValues: nextProps.preBuiltEntities.map<any[]>(preBuiltEntity => convertEntitiesAndTextToEditorValue(nextProps.text, [preBuiltEntity], NodeType.PreBuiltEntityNodeType))
+        })
     }
 
     // TODO: Is this necessary?
@@ -122,8 +131,10 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
         const valueJson = valueToJSON(value)
         console.log(`value `, valueJson)
-        console.groupEnd()
+        const customEntities = getEntitiesFromValue(change)
+        console.log(`customEntities: `, customEntities)
 
+        console.groupEnd()
         this.setState({ value })
     }
 
@@ -172,8 +183,9 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                         position={this.state.menuPosition}
                         value={this.state.value}
 
-                        onSelectOption={this.onSelectOption}
                         onChange={this.onChange}
+                        onClickNewEntity={this.props.onClickNewEntity}
+                        onSelectOption={this.onSelectOption}
                     />
                 </div>
                 {this.state.preBuiltEditorValues.length > 0

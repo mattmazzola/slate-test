@@ -1,5 +1,5 @@
 import { Value } from 'slate'
-import { ISegement, IGenericEntity, SegementType, MatchedOption } from './models'
+import { ISegement, IGenericEntity, SegementType, MatchedOption, NodeType } from './models'
 
 /**
  * Recursively walk up DOM tree until root or parent with non-static position is found.
@@ -195,4 +195,40 @@ export const convertMatchedTextIntoStyledStrings = <T>(text: string, matches: [n
         original,
         matchedStrings
     }
+}
+
+export const getEntitiesFromValue = (change: any) => {
+    const inlineNodes = change.value.document.filterDescendants((node: any) => node.type === NodeType.CustomEntityNodeType)
+
+    /**
+     * TODO: Find out how to properly convert inline nodes back to entities
+     * Currently the issue is that the anchorOffset and focusOffset are relative to the node they are within
+     * but the entities we operate on are absolute values relative to the start of the entire text and I know
+     * how to convert those back to absolute values.
+     * 
+     * The current implementation is kind of hack to compare selectedText with all text; however, this has issue with repeated
+     * entities on repeated words which must then be deduped.  This is relying on fact that it will hopefully not occur often.
+     * However, it should be improved.
+     */
+    return inlineNodes.map((node: any, i: number) => {
+        const selectionChange = change
+            .moveToRangeOf(node)
+        const text = selectionChange.value.document.text
+        const selectedText = (selectionChange.value.characters ? selectionChange.value.characters.toJSON() : []).reduce((s: string, node: any) => s += node.text, '')
+        const startIndex = text.search(selectedText)
+        const endIndex = startIndex + selectedText.length
+
+        return {
+            startIndex,
+            endIndex,
+            text: selectedText,
+            data: node.data.toJS()
+        }
+    })
+        .toJS()
+        .reduce((entities: any[], entity: IGenericEntity<any>) => {
+            return entities.some(e => e.startIndex === entity.startIndex && e.endIndex === entity.endIndex)
+                ? entities
+                : [...entities, entity]
+        }, [])
 }
