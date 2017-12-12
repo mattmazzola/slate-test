@@ -59,7 +59,39 @@ class App extends React.Component<{}, State> {
         options: fixtureCustomEntityOptions,
         editors: [
             {
-                text: 'word1 word2 word3',
+                text: `It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English.`,
+                customEntities: [
+                    {
+                        startIndex: 0,
+                        endIndex: 2,
+                        name: fixtureCustomEntityOptions[1].name,
+                        data: {
+                            option: fixtureCustomEntityOptions[1]
+                        }
+                    }
+                ],
+                preBuiltEntities: [
+                    {
+                        startIndex: 0,
+                        endIndex: 5,
+                        name: fixturePreBuiltEntityOptions[0].name,
+                        data: {
+                            option: fixturePreBuiltEntityOptions[0]
+                        }
+                    },
+                    {
+                        startIndex: 12,
+                        endIndex: 17,
+                        name: fixturePreBuiltEntityOptions[1].name,
+                        data: {
+                            option: fixturePreBuiltEntityOptions[1]
+                        }
+                    }
+                ]
+            },
+            {
+                text: `This is the starting text for the second editor.
+This is another paragraph`,
                 customEntities: [
                     {
                         startIndex: 6,
@@ -90,7 +122,8 @@ class App extends React.Component<{}, State> {
                 ]
             },
             {
-                text: 'This is the starting text for the second editor.',
+                text: `This is the starting text for the second editor.
+This is another paragraph`,
                 customEntities: [
                     {
                         startIndex: 6,

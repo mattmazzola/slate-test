@@ -32,7 +32,8 @@
 }
 
 .slate-editor {
-    padding: 2em 1em 0.5em 1em;
+    padding: 1em 1em 0.5em 1em;
+    line-height: 3em;
 }
 
 .prebuilt-entity-editors .slate-editor:not(:last-of-type) {
