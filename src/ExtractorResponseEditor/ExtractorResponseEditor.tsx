@@ -33,6 +33,15 @@ interface State {
 const disallowedOperations = ['insert_text', 'remove_text']
 const externalChangeOperations = ['insert_node', 'remove_node']
 
+/**
+ * The higher level goal behind this component is for consumers to think of it like a normal controlled <input value={value} onChange={this.onChangeValue} />
+ * However, instead of editing a simple string of text we are editing an extractorResponse object. Then it becomes easy to understand the 
+ * abstractions and encapsulation.  Example: for normal <input /> the user can change cursor position and selection, but only when characters are changed,
+ * does the onChange get called.  For the ExtractorResponse allows certain operations to change and only exposes the changes externally
+ * 
+ * The other important concept is the translation of state from the external domain to internal domain.  Externally the consumers know extractorResponses / entities
+ * however internally it stores as generic options list and a Slate.js value object.
+ */
 class ExtractorResponseEditor extends React.Component<Props, State> {
     menu: HTMLElement
 
@@ -76,7 +85,6 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         if (!menu) return
 
         const { value } = this.state
-        // if (value.isBlurred || value.isEmpty) {
         if (value.isEmpty) {
             if (this.state.isMenuVisible !== false) {
                 // this.setState({
