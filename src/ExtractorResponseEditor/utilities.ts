@@ -1,5 +1,5 @@
 import { Value } from 'slate'
-import { ISegement, IGenericEntity, SegementType, MatchedOption, NodeType } from './models'
+import { IOption, ISegement, IGenericEntity, IGenericEntityData, SegementType, MatchedOption, NodeType } from './models'
 
 /**
  * Recursively walk up DOM tree until root or parent with non-static position is found.
@@ -231,4 +231,61 @@ export const getEntitiesFromValue = (change: any) => {
                 ? entities
                 : [...entities, entity]
         }, [])
+}
+
+export const convertPredictedEntityToGenericEntity = (pe: any /* PredictedEntity */): IGenericEntity<IGenericEntityData<any>> =>
+    ({
+        startIndex: pe.startCharIndex,
+        endIndex: pe.endCharIndex + 1,
+        name: pe.entityName,
+        data: {
+            option: {
+                id: pe.entityId,
+                name: pe.entityName
+            },
+            original: pe
+        }
+    })
+
+export const convertGenericEntityToPredictedEntity = (ge: IGenericEntity<any>): any => ge.data.original
+
+// TODO: Use strong types from blis-models
+export const convertExtractorResponseToEditorModels = (extractResponse: any, entities: any[]) => {
+    const options = entities
+        .filter(e => !e.entityName.startsWith('luis-'))
+        .map<IOption>(e =>
+        ({
+            id: e.entityId,
+            name: e.entityName
+        }))
+
+    const text = extractResponse.text
+
+    const predictedEntitiesWithNames = extractResponse.predictedEntities.map((pe: any) => {
+        const entity = entities.find(e => e.entityId === pe.entityId)
+        return {
+            ...pe,
+            entityName: entity.entityName,
+            // TODO: predictedEntities from TeachSession has full values with builtinType and entityName
+            // However, when viewing TrainDialog predictedEntities does not have builtinType or entityName
+            // We could merge back with extractResponse.definitions
+            // Better solution might be to do better conversion
+            isPreBuilt: entity.entityName.startsWith('luis-')
+        }
+    })
+
+    const customEntities = predictedEntitiesWithNames
+        .filter((pe: any) => !pe.isPreBuilt)
+        .map(convertPredictedEntityToGenericEntity)
+
+    const preBuiltEntities = predictedEntitiesWithNames
+        .filter((pe: any) => pe.isPreBuilt)
+        .map(convertPredictedEntityToGenericEntity)
+
+    return {
+        options,
+        text,
+        customEntities,
+        preBuiltEntities
+    }
 }

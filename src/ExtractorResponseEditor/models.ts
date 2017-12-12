@@ -17,6 +17,11 @@ export interface IGenericEntity<T> {
     data: T
 }
 
+export interface IGenericEntityData<T> {
+    option: IOption,
+    original: T
+}
+
 export enum NodeType {
     CustomEntityNodeType = "custom-inline-node",
     PreBuiltEntityNodeType = "prebuilt-inline-node"
