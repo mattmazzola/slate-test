@@ -15,6 +15,9 @@
     display: grid;
     grid-template-columns: 1fr min-content;
 }
+.entity-labeler__custom-editor--read-only {
+    background-color: rgba(0,0,0,0.025);
+}
 .entity-labeler__icons {
     display: grid;
     grid-auto-flow: row;

@@ -1,13 +1,17 @@
 import * as React from 'react'
 import * as ExtractorResponseEditor from './ExtractorResponseEditor'
 import './App.css'
-import { IGenericEntity } from './ExtractorResponseEditor/models';
+import { IGenericEntity } from './ExtractorResponseEditor/models'
 
-interface State {
-    options: ExtractorResponseEditor.Models.IOption[]
+interface EditorState {
     text: string
     customEntities: ExtractorResponseEditor.Models.IGenericEntity<any>[]
     preBuiltEntities: ExtractorResponseEditor.Models.IGenericEntity<any>[]
+}
+
+interface State {
+    options: ExtractorResponseEditor.Models.IOption[]
+    editors: EditorState[]
 }
 
 const fixtureCustomEntityOptions: ExtractorResponseEditor.Models.IOption[] = [
@@ -53,48 +57,94 @@ class App extends React.Component<{}, State> {
 
     state: State = {
         options: fixtureCustomEntityOptions,
-        text: 'word1 word2 word3',
-        customEntities: [
+        editors: [
             {
-                startIndex: 6,
-                endIndex: 11,
-                name: fixtureCustomEntityOptions[1].name,
-                data: {
-                    option: fixtureCustomEntityOptions[1]
-                }
-            }
-        ],
-        preBuiltEntities: [
-            {
-                startIndex: 0,
-                endIndex: 5,
-                name: fixturePreBuiltEntityOptions[0].name,
-                data: {
-                    option: fixturePreBuiltEntityOptions[0]
-                }
+                text: 'word1 word2 word3',
+                customEntities: [
+                    {
+                        startIndex: 6,
+                        endIndex: 11,
+                        name: fixtureCustomEntityOptions[1].name,
+                        data: {
+                            option: fixtureCustomEntityOptions[1]
+                        }
+                    }
+                ],
+                preBuiltEntities: [
+                    {
+                        startIndex: 0,
+                        endIndex: 5,
+                        name: fixturePreBuiltEntityOptions[0].name,
+                        data: {
+                            option: fixturePreBuiltEntityOptions[0]
+                        }
+                    },
+                    {
+                        startIndex: 12,
+                        endIndex: 17,
+                        name: fixturePreBuiltEntityOptions[1].name,
+                        data: {
+                            option: fixturePreBuiltEntityOptions[1]
+                        }
+                    }
+                ]
             },
             {
-                startIndex: 12,
-                endIndex: 17,
-                name: fixturePreBuiltEntityOptions[1].name,
-                data: {
-                    option: fixturePreBuiltEntityOptions[1]
-                }
+                text: 'This is the starting text for the second editor.',
+                customEntities: [
+                    {
+                        startIndex: 6,
+                        endIndex: 11,
+                        name: fixtureCustomEntityOptions[1].name,
+                        data: {
+                            option: fixtureCustomEntityOptions[1]
+                        }
+                    }
+                ],
+                preBuiltEntities: [
+                    {
+                        startIndex: 0,
+                        endIndex: 5,
+                        name: fixturePreBuiltEntityOptions[0].name,
+                        data: {
+                            option: fixturePreBuiltEntityOptions[0]
+                        }
+                    },
+                    {
+                        startIndex: 12,
+                        endIndex: 17,
+                        name: fixturePreBuiltEntityOptions[1].name,
+                        data: {
+                            option: fixturePreBuiltEntityOptions[1]
+                        }
+                    }
+                ]
             }
         ]
     }
 
-    onClickChangeText = () => {
-        this.setState(prevState => ({
-            text: `${prevState.text} addedText`
-        }))
+    onClickChangeText = (editorState: EditorState) => {
+        this.setState((prevState: State) => {
+            const editorStateIndex = prevState.editors.findIndex(es => es === editorState)
+            
+            const newEditorState = {
+                ...editorState,
+                text: `${editorState.text} addedText${Math.floor(Math.random() * 100)}`
+            }
+
+            return {
+                editors: [...prevState.editors.slice(0, editorStateIndex), newEditorState, ...prevState.editors.slice(editorStateIndex + 1)]
+            }
+        })
     }
 
-    onClickAddCustomEntity = () => {
+    onClickAddCustomEntity = (editorState: EditorState) => {
         switch (this.customEntityButtonClicks) {
             case 0: {
-                this.setState(prevState => ({
-                    customEntities: [...prevState.customEntities, {
+                this.setState(prevState => {
+                    const editorStateIndex = prevState.editors.findIndex(es => es === editorState)
+
+                    const newCustomEntities = [...editorState.customEntities, {
                         startIndex: 0,
                         endIndex: 5,
                         name: fixtureCustomEntityOptions[0].name,
@@ -102,12 +152,23 @@ class App extends React.Component<{}, State> {
                             option: fixtureCustomEntityOptions[0]
                         }
                     }]
-                }))
+
+                    const newEditorState = {
+                        ...editorState,
+                        customEntities: newCustomEntities
+                    }
+
+                    return {
+                        editors: [...prevState.editors.slice(0, editorStateIndex), newEditorState, ...prevState.editors.slice(editorStateIndex + 1)]
+                    }
+                })
                 break;
             }
             case 1: {
-                this.setState(prevState => ({
-                    customEntities: [...prevState.customEntities, {
+                this.setState(prevState => {
+                    const editorStateIndex = prevState.editors.findIndex(es => es === editorState)
+
+                    const newCustomEntities = [...editorState.customEntities, {
                         startIndex: 12,
                         endIndex: 17,
                         name: fixtureCustomEntityOptions[2].name,
@@ -115,7 +176,16 @@ class App extends React.Component<{}, State> {
                             option: fixtureCustomEntityOptions[2]
                         }
                     }]
-                }))
+
+                    const newEditorState = {
+                        ...editorState,
+                        customEntities: newCustomEntities
+                    }
+
+                    return {
+                        editors: [...prevState.editors.slice(0, editorStateIndex), newEditorState, ...prevState.editors.slice(editorStateIndex + 1)]
+                    }
+                })
                 break;
             }
         }
@@ -123,25 +193,41 @@ class App extends React.Component<{}, State> {
         this.customEntityButtonClicks++
     }
 
-    onClickAddPrebuiltEntity = () => {
-        this.setState(prevState => ({
-            preBuiltEntities: [...prevState.preBuiltEntities,
-                {
-                    startIndex: 0,
-                    endIndex: 5,
-                    name: fixturePreBuiltEntityOptions[0].name,
-                    data: {
-                        option: fixturePreBuiltEntityOptions[0]
-                    }
+    onClickAddPrebuiltEntity = (editorState: EditorState) => {
+        this.setState(prevState => {
+            const editorStateIndex = prevState.editors.findIndex(es => es === editorState)
+
+            const newPreBuiltEntities = [...editorState.preBuiltEntities, {
+                startIndex: 0,
+                endIndex: 5,
+                name: fixturePreBuiltEntityOptions[2].name,
+                data: {
+                    option: fixturePreBuiltEntityOptions[2]
                 }
-            ]
-        }))
+            }]
+
+            const newEditorState = {
+                ...editorState,
+                preBuiltEntities: newPreBuiltEntities
+            }
+
+            return {
+                editors: [...prevState.editors.slice(0, editorStateIndex), newEditorState, ...prevState.editors.slice(editorStateIndex + 1)]
+            }
+        })
     }
 
-    onChangeCustomEntities = (customEntities: IGenericEntity<any>[]) => {
+    onChangeCustomEntities = (editorState: EditorState, customEntities: IGenericEntity<any>[]) => {
+        const editorStateIndex = this.state.editors.findIndex(es => es === editorState)
+        const updatedEditorState = {
+            ...editorState,
+            customEntities
+        }
+
+        const newEditors = [...this.state.editors.slice(0, editorStateIndex), updatedEditorState, ...this.state.editors.slice(editorStateIndex + 1)]
         console.log(`App.onChangeCustomEntities: `, customEntities)
         this.setState({
-            customEntities
+            editors: newEditors
         })
     }
 
@@ -180,39 +266,33 @@ class App extends React.Component<{}, State> {
                             </li>
                         </ul>
                         <h3>Prototype</h3>
-                        <div>
-                            <button type="button" onClick={this.onClickChangeText}>Add Text</button>
-                            <button type="button" onClick={this.onClickAddCustomEntity}>Add Custom Entity</button>
-                            <button type="button" onClick={this.onClickAddPrebuiltEntity}>Add PreBuilt Entity</button>
-                        </div>
+
                         <div className="prototype">
-                            <ExtractorResponseEditor.Editor
-                                canEdit={true}
-                                isPrimary={true}
-                                isValid={true}
-                                options={this.state.options}
-                                text={this.state.text}
-                                customEntities={this.state.customEntities}
-                                preBuiltEntities={this.state.preBuiltEntities}
+                            {this.state.editors.map((editorState, i) => (
+                                <div>
+                                    <div>
+                                        <button type="button" onClick={() => this.onClickChangeText(editorState)}>Add Text</button>
+                                        <button type="button" onClick={() => this.onClickAddCustomEntity(editorState)}>Add Custom Entity</button>
+                                        <button type="button" onClick={() => this.onClickAddPrebuiltEntity(editorState)}>Add PreBuilt Entity</button>
+                                    </div>
+                                    <ExtractorResponseEditor.Editor
+                                        key={i}
+                                        canEdit={true}
+                                        readOnly={i % 2 === 1}
+                                        isPrimary={true}
+                                        isValid={true}
+                                        options={this.state.options}
+                                        text={editorState.text}
+                                        customEntities={editorState.customEntities}
+                                        preBuiltEntities={editorState.preBuiltEntities}
 
-                                onChangeCustomEntities={this.onChangeCustomEntities}
-                                onClickNewEntity={this.onClickNewEntity}
-                                onClickRemove={this.onClickRemove}
-                            />
-
-                            <ExtractorResponseEditor.Editor
-                                canEdit={true}
-                                isPrimary={false}
-                                isValid={false}
-                                options={this.state.options}
-                                text={this.state.text}
-                                customEntities={this.state.customEntities}
-                                preBuiltEntities={this.state.preBuiltEntities}
-                                
-                                onChangeCustomEntities={this.onChangeCustomEntities}
-                                onClickNewEntity={this.onClickNewEntity}
-                                onClickRemove={this.onClickRemove}
-                            />
+                                        onChangeCustomEntities={customEntities => this.onChangeCustomEntities(editorState, customEntities)}
+                                        onClickNewEntity={this.onClickNewEntity}
+                                        onClickRemove={this.onClickRemove}
+                                    />
+                                </div>
+                            )
+                            )}
                         </div>
                     </div>
                 </section>

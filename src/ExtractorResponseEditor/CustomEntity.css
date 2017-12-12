@@ -70,6 +70,9 @@
     border-radius: 50%;
     font-size: 0.75rem;
 }
+.blis-entity-node--read-only .blis-entity-node-indicator__controls button {
+    cursor: default;
+}
 
 .blis-entity-node--custom .blis-entity-node-indicator__controls button {
     background: var(--color-warning);
@@ -88,6 +91,9 @@
     cursor: pointer;
     margin: 0;
     padding: 0;
+}
+.blis-entity-node--read-only .blis-entity-node-indicator__name button {
+    cursor: default;
 }
 
 .blis-entity-node--custom .blis-entity-node-indicator__name,

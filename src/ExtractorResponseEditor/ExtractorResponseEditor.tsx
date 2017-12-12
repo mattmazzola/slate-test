@@ -14,6 +14,7 @@ export type SlateValue = any
 
 interface Props {
     canEdit: boolean
+    readOnly: boolean
     isPrimary: boolean
     isValid: boolean
     options: IOption[]
@@ -33,6 +34,7 @@ interface State {
 }
 
 const disallowedOperations = ['insert_text', 'remove_text']
+const externalChangeOperations = ['insert_node', 'remove_node']
 
 class ExtractorResponseEditor extends React.Component<Props, State> {
     menu: HTMLElement
@@ -56,6 +58,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
     }
 
     componentWillReceiveProps(nextProps: Props) {
+        console.log(`ExtractorResponseEditor.componentWillReceiveProps: nextProps `, nextProps)
         this.setState({
             value: convertEntitiesAndTextToEditorValue(nextProps.text, nextProps.customEntities, NodeType.CustomEntityNodeType),
             preBuiltEditorValues: nextProps.preBuiltEntities.map<any[]>(preBuiltEntity => convertEntitiesAndTextToEditorValue(nextProps.text, [preBuiltEntity], NodeType.PreBuiltEntityNodeType))
@@ -128,18 +131,25 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
         const containsDisallowedOperations = operationsJs.some((o: any) => disallowedOperations.includes(o.type))
         if (containsDisallowedOperations) {
-            console.log(`containsDisallowedOperations `, containsDisallowedOperations)
+            console.log(`containsDisallowedOperations `)
             console.groupEnd()
             return
         }
 
-        const valueJson = valueToJSON(value)
-        console.log(`value `, valueJson)
-        const customEntities = getEntitiesFromValue(change)
-        console.log(`customEntities: `, customEntities)
+        // This must alwasy be called to allow normal interaction with editor such as text selection
+        this.setState({ value })
+
+        const containsExternalChangeOperation = operationsJs.some((o: any) => externalChangeOperations.includes(o.type))
+        if (containsExternalChangeOperation) {
+            console.log(`containsExternalChangeOperation `)
+            const valueJson = valueToJSON(value)
+            console.log(`value `, valueJson)
+            const customEntities = getEntitiesFromValue(change)
+            console.log(`customEntities: `, customEntities)
+            this.props.onChangeCustomEntities(customEntities)
+        }
 
         console.groupEnd()
-        this.setState({ value })
     }
 
     menuRef = (menu: any) => {
@@ -170,7 +180,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
     render() {
         return (
             <div className="entity-labeler">
-                <div className="entity-labeler__custom-editor">
+                <div className={`entity-labeler__custom-editor ${this.props.readOnly ? 'entity-labeler__custom-editor--read-only' : ''}`}>
                     <div className="entity-labeler__editor">
                         <Editor
                             className="slate-editor"
@@ -178,6 +188,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                             value={this.state.value}
                             onChange={this.onChange}
                             renderNode={this.renderNode}
+                            readOnly={this.props.readOnly}
                         />
                         <EntityPicker
                             isVisible={this.state.isMenuVisible}

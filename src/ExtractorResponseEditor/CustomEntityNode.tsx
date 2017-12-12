@@ -8,6 +8,7 @@ interface EntityComponentProps {
     node: any
     attributes: any
     children: any
+    readOnly: boolean
 }
 
 interface Props extends EntityComponentProps {
@@ -24,12 +25,20 @@ export class CustomEntityContainer extends React.Component<Props, State> {
     }
 
     onClickName = () => {
+        if (this.props.readOnly) {
+            return
+        }
+
         this.setState(prevState => ({
             isEditing: !prevState.isEditing
         }))
     }
 
     onClickDelete = () => {
+        if (this.props.readOnly) {
+            return
+        }
+        
         this.setState({
             isEditing: false
         })
@@ -49,6 +58,7 @@ export class CustomEntityContainer extends React.Component<Props, State> {
                 name={option.name}
                 onClickName={this.onClickName}
                 onClickDelete={this.onClickDelete}
+                readOnly={this.props.readOnly}
                 {...this.props.attributes}
             >
                 {...this.props.children}
