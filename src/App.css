@@ -16,3 +16,11 @@ section {
     padding: 2em;
     background: white;
 }
+
+.editor-container {
+    display: grid;
+    grid-template-columns: 1fr min-content;
+}
+.editor-container__icons {
+    padding-left: 0.5em;
+}

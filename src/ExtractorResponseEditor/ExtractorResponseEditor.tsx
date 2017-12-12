@@ -13,9 +13,7 @@ import './ExtractorResponseEditor.css'
 export type SlateValue = any
 
 interface Props {
-    canEdit: boolean
     readOnly: boolean
-    isPrimary: boolean
     isValid: boolean
     options: IOption[]
     text: string
@@ -23,7 +21,6 @@ interface Props {
     onChangeCustomEntities: (customEntities: IGenericEntity<any>[]) => void
     preBuiltEntities: IGenericEntity<any>[]
     onClickNewEntity: () => void
-    onClickRemove: () => void
 }
 
 interface State {
@@ -127,11 +124,10 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
         console.group('onChange')
         const { value, operations } = change
         const operationsJs = operations.toJS()
-        console.log(`operations: `, operationsJs.map((o: any) => o.type).join(', '))
 
         const containsDisallowedOperations = operationsJs.some((o: any) => disallowedOperations.includes(o.type))
         if (containsDisallowedOperations) {
-            console.log(`containsDisallowedOperations `)
+            console.log(`containsDisallowedOperations `, operationsJs.map((o: any) => o.type).join(', '))
             console.groupEnd()
             return
         }
@@ -141,7 +137,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
         const containsExternalChangeOperation = operationsJs.some((o: any) => externalChangeOperations.includes(o.type))
         if (containsExternalChangeOperation) {
-            console.log(`containsExternalChangeOperation `)
+            console.log(`containsExternalChangeOperation `, operationsJs.map((o: any) => o.type).join(', '))
             const valueJson = valueToJSON(value)
             console.log(`value `, valueJson)
             const customEntities = getEntitiesFromValue(change)
@@ -180,7 +176,7 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
     render() {
         return (
             <div className="entity-labeler">
-                <div className={`entity-labeler__custom-editor ${this.props.readOnly ? 'entity-labeler__custom-editor--read-only' : ''}`}>
+                <div className={`entity-labeler__custom-editor ${this.props.readOnly ? 'entity-labeler__custom-editor--read-only' : ''} ${this.props.isValid ? '' : 'entity-labeler__custom-editor--error'}`}>
                     <div className="entity-labeler__editor">
                         <Editor
                             className="slate-editor"
@@ -204,7 +200,6 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                         />
                     </div>
                     <div className="entity-labeler__icons">
-                        {!this.props.isPrimary && <button type="button" onClick={this.props.onClickRemove}>Remove</button>}
                         {!this.props.isValid && <span>Warning</span>}
                     </div>
                 </div>

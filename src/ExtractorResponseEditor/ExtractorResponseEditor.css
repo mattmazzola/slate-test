@@ -14,10 +14,17 @@
 .entity-labeler__custom-editor {
     display: grid;
     grid-template-columns: 1fr min-content;
+    border: 1px solid transparent;
+    /* This is to allow the border of this box to overlap container */
+    margin: -1px;
 }
 .entity-labeler__custom-editor--read-only {
     background-color: rgba(0,0,0,0.025);
 }
+.entity-labeler__custom-editor--error {
+    border-color: red;
+}
+
 .entity-labeler__icons {
     display: grid;
     grid-auto-flow: row;

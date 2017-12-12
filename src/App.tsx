@@ -159,7 +159,7 @@ This is another paragraph`,
     onClickChangeText = (editorState: EditorState) => {
         this.setState((prevState: State) => {
             const editorStateIndex = prevState.editors.findIndex(es => es === editorState)
-            
+
             const newEditorState = {
                 ...editorState,
                 text: `${editorState.text} addedText${Math.floor(Math.random() * 100)}`
@@ -268,8 +268,11 @@ This is another paragraph`,
         console.log(`onClickNewEntity`)
     }
 
-    onClickRemove = () => {
+    onClickRemove = (editorState: EditorState) => {
         console.log(`onClickRemove`)
+        this.setState(prevState => ({
+            editors: prevState.editors.filter(es => es !== editorState)
+        }))
     }
 
     render() {
@@ -302,30 +305,32 @@ This is another paragraph`,
 
                         <div className="prototype">
                             {this.state.editors.map((editorState, i) => (
-                                <div>
+                                <div
+                                    key={i}
+                                >
                                     <div>
                                         <button type="button" onClick={() => this.onClickChangeText(editorState)}>Add Text</button>
                                         <button type="button" onClick={() => this.onClickAddCustomEntity(editorState)}>Add Custom Entity</button>
                                         <button type="button" onClick={() => this.onClickAddPrebuiltEntity(editorState)}>Add PreBuilt Entity</button>
                                     </div>
-                                    <ExtractorResponseEditor.Editor
-                                        key={i}
-                                        canEdit={true}
-                                        readOnly={i % 2 === 1}
-                                        isPrimary={true}
-                                        isValid={true}
-                                        options={this.state.options}
-                                        text={editorState.text}
-                                        customEntities={editorState.customEntities}
-                                        preBuiltEntities={editorState.preBuiltEntities}
+                                    <div className="editor-container">
+                                        <ExtractorResponseEditor.Editor
+                                            readOnly={i % 2 === 1}
+                                            isValid={i % 3 === 0}
+                                            options={this.state.options}
+                                            text={editorState.text}
+                                            customEntities={editorState.customEntities}
+                                            preBuiltEntities={editorState.preBuiltEntities}
 
-                                        onChangeCustomEntities={customEntities => this.onChangeCustomEntities(editorState, customEntities)}
-                                        onClickNewEntity={this.onClickNewEntity}
-                                        onClickRemove={this.onClickRemove}
-                                    />
+                                            onChangeCustomEntities={customEntities => this.onChangeCustomEntities(editorState, customEntities)}
+                                            onClickNewEntity={this.onClickNewEntity}
+                                        />
+                                        {(i !== 0) && <div className="editor-container__icons">
+                                            <button type="button" onClick={() => this.onClickRemove(editorState)}>Remove</button>
+                                        </div>}
+                                    </div>
                                 </div>
-                            )
-                            )}
+                            ))}
                         </div>
                     </div>
                 </section>

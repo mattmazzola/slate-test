@@ -18,6 +18,7 @@
     display: inline-block;
     position: relative;
     border-radius: 3px;
+    line-height: 1.7em;
 }
 .blis-entity-node--custom .blis-entity-node__text:hover {
     background: var(--color-custom-entity-bg-hover);
