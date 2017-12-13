@@ -62,7 +62,7 @@ class App extends React.Component<{}, State> {
                 predictedEntities: [
                     {
                         startCharIndex: 0,
-                        endCharIndex: 4,
+                        endCharIndex: 5,
                         entityName: fixtureEntities[0].entityName,
                         entityId: fixtureEntities[0].entityId,
                         entityText: '',
@@ -71,9 +71,18 @@ class App extends React.Component<{}, State> {
                     },
                     {
                         startCharIndex: 6,
-                        endCharIndex: 10,
+                        endCharIndex: 11,
                         entityName: fixtureEntities[1].entityName,
                         entityId: fixtureEntities[1].entityId,
+                        entityText: '',
+                        resolution: {},
+                        builtinType: ''
+                    },
+                    {
+                        startCharIndex: 12,
+                        endCharIndex: 16,
+                        entityName: fixtureEntities[5].entityName,
+                        entityId: fixtureEntities[5].entityId,
                         entityText: '',
                         resolution: {},
                         builtinType: ''
@@ -85,7 +94,7 @@ class App extends React.Component<{}, State> {
                 predictedEntities: [
                     {
                         startCharIndex: 37,
-                        endCharIndex: 42,
+                        endCharIndex: 43,
                         entityName: fixtureEntities[0].entityName,
                         entityId: fixtureEntities[0].entityId,
                         entityText: '',
@@ -94,7 +103,7 @@ class App extends React.Component<{}, State> {
                     },
                     {
                         startCharIndex: 13,
-                        endCharIndex: 23,
+                        endCharIndex: 24,
                         entityName: fixtureEntities[1].entityName,
                         entityId: fixtureEntities[1].entityId,
                         entityText: '',
@@ -109,7 +118,7 @@ This is another paragraph`,
                 predictedEntities: [
                     {
                         startCharIndex: 0,
-                        endCharIndex: 3,
+                        endCharIndex: 4,
                         entityName: fixtureEntities[1].entityName,
                         entityId: fixtureEntities[1].entityId,
                         entityText: '',
@@ -118,7 +127,7 @@ This is another paragraph`,
                     },
                     {
                         startCharIndex: 12,
-                        endCharIndex: 15,
+                        endCharIndex: 20,
                         entityName: fixtureEntities[2].entityName,
                         entityId: fixtureEntities[2].entityId,
                         entityText: '',
@@ -126,7 +135,7 @@ This is another paragraph`,
                         builtinType: ''
                     },
                     {
-                        startCharIndex: 17,
+                        startCharIndex: 21,
                         endCharIndex: 25,
                         entityName: fixtureEntities[3].entityName,
                         entityId: fixtureEntities[3].entityId,
@@ -142,7 +151,7 @@ This is another paragraph`,
                 predictedEntities: [
                     {
                         startCharIndex: 0,
-                        endCharIndex: 5,
+                        endCharIndex: 6,
                         entityName: fixtureEntities[1].entityName,
                         entityId: fixtureEntities[1].entityId,
                         entityText: '',

@@ -38,14 +38,16 @@ export default class EntityPicker extends React.Component<MenuProps> {
                                 <FuseMatch matches={matchedOption.matchedStrings} />
                             </li>
                         )}
-                        <li
-                            onClick={this.props.onClickNewEntity}
-                            className="custom-toolbar__result"
-                        >
-                            New Entity
-                        </li>
+
                     </ul>}
                 <div className="custom-toolbar__search">
+                    <button
+                        type="button"
+                        onClick={this.props.onClickNewEntity}
+                        className="custom-toolbar__result"
+                    >
+                        New Entity
+                    </button>
                     <label htmlFor="toolbar-input">Search for entities:</label>
                     <input
                         id="toolbar-input"

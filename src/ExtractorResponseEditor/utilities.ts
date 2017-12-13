@@ -254,10 +254,11 @@ export const getEntitiesFromValue = (change: any) => {
         }, [])
 }
 
-export const convertPredictedEntityToGenericEntity = (pe: models.PredictedEntity): models.IGenericEntity<models.IGenericEntityData<any>> =>
+export const convertPredictedEntityToGenericEntity = (pe: models.PredictedEntity): models.IGenericEntity<models.IGenericEntityData<models.PredictedEntity>> =>
     ({
         startIndex: pe.startCharIndex,
-        endIndex: pe.endCharIndex + 1,
+        // TODO: It seems some predicted entities come back with the endCharIndex one less that it should be, perhaps this is only for pre-builts?
+        endIndex: (pe as any).isPreBuilt ? pe.endCharIndex + 1 : pe.endCharIndex,
         name: pe.entityName,
         data: {
             option: {
@@ -268,7 +269,25 @@ export const convertPredictedEntityToGenericEntity = (pe: models.PredictedEntity
         }
     })
 
-export const convertGenericEntityToPredictedEntity = (ge: models.IGenericEntity<any>): any => ge.data.original
+export const convertGenericEntityToPredictedEntity = (ge: models.IGenericEntity<models.IGenericEntityData<models.PredictedEntity>>): any => {
+    const predictedEntity = ge.data.original
+    if (predictedEntity) {
+        return predictedEntity
+    }
+
+    // If predicted entity doesn't exist, re-construct predicted entity object using the option/entity chosen by the user and the selected text
+    // Such as the case where we're editing the extract response and adding a new entity
+    const option = ge.data.option
+    return {
+        startCharIndex: ge.startIndex,
+        endCharIndex: ge.endIndex,
+        entityId: option.id,
+        entityName: option.name,
+        entityText: '',
+        resolution: {},
+        builtinType: ''
+    }
+}
 
 // TODO: Use strong types from blis-models
 export const convertExtractorResponseToEditorModels = (extractResponse: models.ExtractResponse, entities: models.EntityBase[]) => {

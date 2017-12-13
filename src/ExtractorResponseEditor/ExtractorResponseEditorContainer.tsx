@@ -1,7 +1,7 @@
 import * as React from 'react'
 import ExtractorResponseEditor from './ExtractorResponseEditor'
 import { convertExtractorResponseToEditorModels, convertGenericEntityToPredictedEntity } from './utilities'
-import { IGenericEntity, ExtractResponse, EntityBase } from './models';
+import { IGenericEntity, IGenericEntityData, PredictedEntity, ExtractResponse, EntityBase } from './models';
 
 // Slate doesn't have type definitions but we still want type consistency and references so we make custom type
 export type SlateValue = any
@@ -16,7 +16,7 @@ interface Props {
 }
 
 class ExtractorResponseEditorContainer extends React.Component<Props, {}> {
-    onChangeCustomEntities = (customEntities: IGenericEntity<any>[]) => {
+    onChangeCustomEntities = (customEntities: IGenericEntity<IGenericEntityData<PredictedEntity>>[]) => {
         const newExtractResponse = {
             ...this.props.extractorResponse,
             predictedEntities: customEntities.map(convertGenericEntityToPredictedEntity)
