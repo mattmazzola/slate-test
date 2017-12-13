@@ -34,7 +34,7 @@ export const valueToJSON = (value: any) => {
 }
 
 export const convertEntitiesAndTextToEditorValue = (text: string, customEntities: models.IGenericEntity<any>[], inlineType: string) => {
-    const nodes = customEntities.reduce<models.ISegement[]>((segements, entity) => {
+    const normalizedSegements = customEntities.reduce<models.ISegement[]>((segements, entity) => {
         const segementIndexWhereEntityBelongs = segements.findIndex(seg => seg.startIndex <= entity.startIndex && entity.endIndex <= seg.endIndex)
         if (segementIndexWhereEntityBelongs === -1) {
             throw new Error(`When attempting to convert entities to editor value, could not find text segement to place entity. Entity indicies are: [${entity.startIndex}, ${entity.endIndex}] but available segement ranges are: ${segements.map(s => `[${s.startIndex}, ${s.endIndex}]`).join(`, `)}`)
@@ -43,24 +43,26 @@ export const convertEntitiesAndTextToEditorValue = (text: string, customEntities
         const nextSegements = segements.slice(segementIndexWhereEntityBelongs + 1, segements.length)
         const segementWhereEntityBelongs = segements[segementIndexWhereEntityBelongs]
 
-        const prevSegementEndIndex = entity.startIndex - segementWhereEntityBelongs.startIndex
-        const prevSegementText = segementWhereEntityBelongs.text.substring(0, prevSegementEndIndex)
+        const absolutePrevSegementEndIndex = entity.startIndex
+        const relativePrevSegementEndIndex = entity.startIndex - segementWhereEntityBelongs.startIndex
+        const prevSegementText = segementWhereEntityBelongs.text.substring(0, relativePrevSegementEndIndex)
         const prevSegement: models.ISegement = {
             ...segementWhereEntityBelongs,
             text: prevSegementText,
-            endIndex: prevSegementEndIndex,
+            endIndex: absolutePrevSegementEndIndex,
         }
 
-        const nextSegementStartIndex = entity.endIndex - segementWhereEntityBelongs.startIndex
-        const nextSegementText = segementWhereEntityBelongs.text.substring(nextSegementStartIndex, segementWhereEntityBelongs.text.length)
+        const absoluteNextSegementStartIndex = entity.endIndex
+        const relativeNextSegementStartIndex = entity.endIndex - segementWhereEntityBelongs.startIndex
+        const nextSegementText = segementWhereEntityBelongs.text.substring(relativeNextSegementStartIndex)
         const nextSegement: models.ISegement = {
             ...segementWhereEntityBelongs,
             text: nextSegementText,
-            startIndex: nextSegementStartIndex,
+            startIndex: absoluteNextSegementStartIndex,
         }
 
         const newSegement: models.ISegement = {
-            text: segementWhereEntityBelongs.text.substring(prevSegementEndIndex, nextSegementStartIndex),
+            text: segementWhereEntityBelongs.text.substring(relativePrevSegementEndIndex, relativeNextSegementStartIndex),
             startIndex: entity.startIndex,
             endIndex: entity.endIndex,
             type: models.SegementType.Inline,
@@ -90,6 +92,9 @@ export const convertEntitiesAndTextToEditorValue = (text: string, customEntities
                 data: {}
             }
         ])
+
+    console.log(`convertEntitiesAndTextToEditorValue: `, normalizedSegements.map(s => `[${s.startIndex}, '${s.text}', ${s.endIndex}]`).join(', '))
+    const nodes = normalizedSegements
         .map(segement => {
             if (segement.type === 'inline') {
                 return {

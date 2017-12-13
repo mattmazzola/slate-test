@@ -109,7 +109,7 @@ This is another paragraph`,
                 predictedEntities: [
                     {
                         startCharIndex: 0,
-                        endCharIndex: 5,
+                        endCharIndex: 3,
                         entityName: fixtureEntities[1].entityName,
                         entityId: fixtureEntities[1].entityId,
                         entityText: '',
@@ -117,7 +117,7 @@ This is another paragraph`,
                         builtinType: ''
                     },
                     {
-                        startCharIndex: 10,
+                        startCharIndex: 12,
                         endCharIndex: 15,
                         entityName: fixtureEntities[2].entityName,
                         entityId: fixtureEntities[2].entityId,
@@ -150,8 +150,8 @@ This is another paragraph`,
                         builtinType: ''
                     },
                     {
-                        startCharIndex: 7,
-                        endCharIndex: 14,
+                        startCharIndex: 8,
+                        endCharIndex: 19,
                         entityName: fixtureEntities[5].entityName,
                         entityId: fixtureEntities[5].entityId,
                         entityText: '',
@@ -159,8 +159,8 @@ This is another paragraph`,
                         builtinType: ''
                     },
                     {
-                        startCharIndex: 20,
-                        endCharIndex: 25,
+                        startCharIndex: 21,
+                        endCharIndex: 24,
                         entityName: fixtureEntities[6].entityName,
                         entityId: fixtureEntities[6].entityId,
                         entityText: '',
