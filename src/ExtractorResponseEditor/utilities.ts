@@ -1,5 +1,5 @@
 import { Value } from 'slate'
-import { IOption, ISegement, IGenericEntity, IGenericEntityData, SegementType, MatchedOption, NodeType } from './models'
+import * as models from './models'
 
 /**
  * Recursively walk up DOM tree until root or parent with non-static position is found.
@@ -33,16 +33,19 @@ export const valueToJSON = (value: any) => {
     }
 }
 
-export const convertEntitiesAndTextToEditorValue = (text: string, customEntities: IGenericEntity<any>[], inlineType: string) => {
-    const nodes = customEntities.reduce<ISegement[]>((segements, entity) => {
+export const convertEntitiesAndTextToEditorValue = (text: string, customEntities: models.IGenericEntity<any>[], inlineType: string) => {
+    const nodes = customEntities.reduce<models.ISegement[]>((segements, entity) => {
         const segementIndexWhereEntityBelongs = segements.findIndex(seg => seg.startIndex <= entity.startIndex && entity.endIndex <= seg.endIndex)
+        if (segementIndexWhereEntityBelongs === -1) {
+            throw new Error(`When attempting to convert entities to editor value, could not find text segement to place entity. Entity indicies are: [${entity.startIndex}, ${entity.endIndex}] but available segement ranges are: ${segements.map(s => `[${s.startIndex}, ${s.endIndex}]`).join(`, `)}`)
+        }
         const prevSegements = segements.slice(0, segementIndexWhereEntityBelongs)
         const nextSegements = segements.slice(segementIndexWhereEntityBelongs + 1, segements.length)
         const segementWhereEntityBelongs = segements[segementIndexWhereEntityBelongs]
 
         const prevSegementEndIndex = entity.startIndex - segementWhereEntityBelongs.startIndex
         const prevSegementText = segementWhereEntityBelongs.text.substring(0, prevSegementEndIndex)
-        const prevSegement: ISegement = {
+        const prevSegement: models.ISegement = {
             ...segementWhereEntityBelongs,
             text: prevSegementText,
             endIndex: prevSegementEndIndex,
@@ -50,27 +53,40 @@ export const convertEntitiesAndTextToEditorValue = (text: string, customEntities
 
         const nextSegementStartIndex = entity.endIndex - segementWhereEntityBelongs.startIndex
         const nextSegementText = segementWhereEntityBelongs.text.substring(nextSegementStartIndex, segementWhereEntityBelongs.text.length)
-        const nextSegement: ISegement = {
+        const nextSegement: models.ISegement = {
             ...segementWhereEntityBelongs,
             text: nextSegementText,
             startIndex: nextSegementStartIndex,
         }
 
-        const newSegement: ISegement = {
+        const newSegement: models.ISegement = {
             text: segementWhereEntityBelongs.text.substring(prevSegementEndIndex, nextSegementStartIndex),
             startIndex: entity.startIndex,
             endIndex: entity.endIndex,
-            type: SegementType.Inline,
+            type: models.SegementType.Inline,
             data: entity.data
         }
 
-        return [...prevSegements, prevSegement, newSegement, nextSegement, ...nextSegements]
+        const newSegements = prevSegements
+        if (prevSegement.startIndex !== prevSegement.endIndex) {
+            newSegements.push(prevSegement)
+        }
+
+        if (newSegement.startIndex !== newSegement.endIndex) {
+            newSegements.push(newSegement)
+        }
+
+        if (nextSegement.startIndex !== nextSegement.endIndex) {
+            newSegements.push(nextSegement)
+        }
+
+        return [...newSegements, ...nextSegements]
     }, [
             {
                 text,
                 startIndex: 0,
                 endIndex: text.length,
-                type: SegementType.Normal,
+                type: models.SegementType.Normal,
                 data: {}
             }
         ])
@@ -125,8 +141,8 @@ export const convertEntitiesAndTextToEditorValue = (text: string, customEntities
     return Value.fromJSON(document)
 }
 
-export const convertMatchedTextIntoStyledStrings = <T>(text: string, matches: [number, number][], original: T): MatchedOption<T> => {
-    const matchedStrings = matches.reduce<ISegement[]>((segements, [startIndex, endIndex]) => {
+export const convertMatchedTextIntoStyledStrings = <T>(text: string, matches: [number, number][], original: T): models.MatchedOption<T> => {
+    const matchedStrings = matches.reduce<models.ISegement[]>((segements, [startIndex, endIndex]) => {
         if (startIndex === endIndex) {
             return segements
         }
@@ -138,7 +154,7 @@ export const convertMatchedTextIntoStyledStrings = <T>(text: string, matches: [n
 
         const prevSegementEndIndex = startIndex - segementWhereEntityBelongs.startIndex
         const prevSegementText = segementWhereEntityBelongs.text.substring(0, prevSegementEndIndex)
-        const prevSegement: ISegement = {
+        const prevSegement: models.ISegement = {
             ...segementWhereEntityBelongs,
             text: prevSegementText,
             endIndex: prevSegementEndIndex,
@@ -146,17 +162,17 @@ export const convertMatchedTextIntoStyledStrings = <T>(text: string, matches: [n
 
         const nextSegementStartIndex = endIndex - segementWhereEntityBelongs.startIndex
         const nextSegementText = segementWhereEntityBelongs.text.substring(nextSegementStartIndex, segementWhereEntityBelongs.text.length)
-        const nextSegement: ISegement = {
+        const nextSegement: models.ISegement = {
             ...segementWhereEntityBelongs,
             text: nextSegementText,
             startIndex: nextSegementStartIndex,
         }
 
-        const newSegement: ISegement = {
+        const newSegement: models.ISegement = {
             text: segementWhereEntityBelongs.text.substring(prevSegementEndIndex, nextSegementStartIndex),
             startIndex: startIndex,
             endIndex: endIndex,
-            type: SegementType.Inline,
+            type: models.SegementType.Inline,
             data: {
                 matched: true
             }
@@ -181,7 +197,7 @@ export const convertMatchedTextIntoStyledStrings = <T>(text: string, matches: [n
                 text,
                 startIndex: 0,
                 endIndex: text.length,
-                type: SegementType.Normal,
+                type: models.SegementType.Normal,
                 data: {
                     matched: false
                 }
@@ -198,7 +214,7 @@ export const convertMatchedTextIntoStyledStrings = <T>(text: string, matches: [n
 }
 
 export const getEntitiesFromValue = (change: any) => {
-    const inlineNodes = change.value.document.filterDescendants((node: any) => node.type === NodeType.CustomEntityNodeType)
+    const inlineNodes = change.value.document.filterDescendants((node: any) => node.type === models.NodeType.CustomEntityNodeType)
 
     /**
      * TODO: Find out how to properly convert inline nodes back to entities
@@ -226,14 +242,14 @@ export const getEntitiesFromValue = (change: any) => {
         }
     })
         .toJS()
-        .reduce((entities: any[], entity: IGenericEntity<any>) => {
+        .reduce((entities: any[], entity: models.IGenericEntity<any>) => {
             return entities.some(e => e.startIndex === entity.startIndex && e.endIndex === entity.endIndex)
                 ? entities
                 : [...entities, entity]
         }, [])
 }
 
-export const convertPredictedEntityToGenericEntity = (pe: any /* PredictedEntity */): IGenericEntity<IGenericEntityData<any>> =>
+export const convertPredictedEntityToGenericEntity = (pe: models.PredictedEntity): models.IGenericEntity<models.IGenericEntityData<any>> =>
     ({
         startIndex: pe.startCharIndex,
         endIndex: pe.endCharIndex + 1,
@@ -247,13 +263,13 @@ export const convertPredictedEntityToGenericEntity = (pe: any /* PredictedEntity
         }
     })
 
-export const convertGenericEntityToPredictedEntity = (ge: IGenericEntity<any>): any => ge.data.original
+export const convertGenericEntityToPredictedEntity = (ge: models.IGenericEntity<any>): any => ge.data.original
 
 // TODO: Use strong types from blis-models
-export const convertExtractorResponseToEditorModels = (extractResponse: any, entities: any[]) => {
+export const convertExtractorResponseToEditorModels = (extractResponse: models.ExtractResponse, entities: models.EntityBase[]) => {
     const options = entities
         .filter(e => !e.entityName.startsWith('luis-'))
-        .map<IOption>(e =>
+        .map<models.IOption>(e =>
         ({
             id: e.entityId,
             name: e.entityName
@@ -261,8 +277,12 @@ export const convertExtractorResponseToEditorModels = (extractResponse: any, ent
 
     const text = extractResponse.text
 
-    const predictedEntitiesWithNames = extractResponse.predictedEntities.map((pe: any) => {
+    const predictedEntitiesWithNames = extractResponse.predictedEntities.map(pe => {
         const entity = entities.find(e => e.entityId === pe.entityId)
+        if (!entity) {
+            throw new Error(`Attempted to find entity: ${pe.entityName} by id: ${pe.entityId} but could not find it in list of entities: `)
+        }
+
         return {
             ...pe,
             entityName: entity.entityName,

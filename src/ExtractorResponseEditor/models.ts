@@ -1,3 +1,23 @@
+export interface ExtractResponse {
+    text: string;
+    predictedEntities: PredictedEntity[]
+}
+
+export interface PredictedEntity {
+    startCharIndex: number
+    endCharIndex: number
+    entityId: string
+    entityName: string
+    entityText: string
+    resolution: {}
+    builtinType: string
+}
+
+export interface EntityBase {
+    entityId: string
+    entityName: string
+    entityType: string
+}
 
 export interface IPosition {
     top: number

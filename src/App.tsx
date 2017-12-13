@@ -1,54 +1,53 @@
 import * as React from 'react'
 import * as ExtractorResponseEditor from './ExtractorResponseEditor'
+import { replace } from './utilities'
 import './App.css'
-import { IGenericEntity } from './ExtractorResponseEditor/models'
-
-interface EditorState {
-    text: string
-    customEntities: ExtractorResponseEditor.Models.IGenericEntity<any>[]
-    preBuiltEntities: ExtractorResponseEditor.Models.IGenericEntity<any>[]
-}
 
 interface State {
-    options: ExtractorResponseEditor.Models.IOption[]
-    editors: EditorState[]
+    entities: ExtractorResponseEditor.Models.EntityBase[]
+    extractResponses: ExtractorResponseEditor.Models.ExtractResponse[]
 }
 
-const fixtureCustomEntityOptions: ExtractorResponseEditor.Models.IOption[] = [
+const fixtureEntities: ExtractorResponseEditor.Models.EntityBase[] = [
     {
-        id: '1',
-        name: 'entity1'
+        entityId: '1',
+        entityName: 'entity1',
+        entityType: 'custom',
     },
     {
-        id: '2',
-        name: 'entity2'
+        entityId: '2',
+        entityName: 'entity2',
+        entityType: 'custom',
     },
     {
-        id: '3',
-        name: 'entity3'
+        entityId: '3',
+        entityName: 'entity3',
+        entityType: 'custom',
     },
     {
-        id: '4',
-        name: 'entity4'
+        entityId: '4',
+        entityName: 'entity4',
+        entityType: 'custom',
     },
     {
-        id: '5',
-        name: 'entity5'
-    },
-]
-
-const fixturePreBuiltEntityOptions: ExtractorResponseEditor.Models.IOption[] = [
-    {
-        id: '1',
-        name: 'preBuiltEntity1'
+        entityId: '5',
+        entityName: 'entity5',
+        entityType: 'custom',
     },
     {
-        id: '2',
-        name: 'preBuiltEntity2'
+        entityId: '10',
+        entityName: 'luis-preBuiltEntity1',
+        entityType: 'custom',
     },
     {
-        id: '3',
-        name: 'preBuiltEntity3'
+        entityId: '20',
+        entityName: 'luis-preBuiltEntity2',
+        entityType: 'custom',
+    },
+    {
+        entityId: '30',
+        entityName: 'luis-preBuiltEntity3',
+        entityType: 'custom',
     },
 ]
 
@@ -56,169 +55,170 @@ class App extends React.Component<{}, State> {
     customEntityButtonClicks: number = 0
 
     state: State = {
-        options: fixtureCustomEntityOptions,
-        editors: [
+        entities: fixtureEntities,
+        extractResponses: [
             {
-                text: `It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English.`,
-                customEntities: [
+                text: `Word1 Word2 Word3`,
+                predictedEntities: [
                     {
-                        startIndex: 10,
-                        endIndex: 15,
-                        name: fixtureCustomEntityOptions[1].name,
-                        data: {
-                            option: fixtureCustomEntityOptions[1]
-                        }
-                    }
-                ],
-                preBuiltEntities: [
-                    {
-                        startIndex: 0,
-                        endIndex: 5,
-                        name: fixturePreBuiltEntityOptions[0].name,
-                        data: {
-                            option: fixturePreBuiltEntityOptions[0]
-                        }
+                        startCharIndex: 0,
+                        endCharIndex: 4,
+                        entityName: fixtureEntities[0].entityName,
+                        entityId: fixtureEntities[0].entityId,
+                        entityText: '',
+                        resolution: {},
+                        builtinType: ''
                     },
                     {
-                        startIndex: 12,
-                        endIndex: 17,
-                        name: fixturePreBuiltEntityOptions[1].name,
-                        data: {
-                            option: fixturePreBuiltEntityOptions[1]
-                        }
+                        startCharIndex: 6,
+                        endCharIndex: 10,
+                        entityName: fixtureEntities[1].entityName,
+                        entityId: fixtureEntities[1].entityId,
+                        entityText: '',
+                        resolution: {},
+                        builtinType: ''
+                    }
+                ]
+            },
+            {
+                text: `It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.`,
+                predictedEntities: [
+                    {
+                        startCharIndex: 37,
+                        endCharIndex: 42,
+                        entityName: fixtureEntities[0].entityName,
+                        entityId: fixtureEntities[0].entityId,
+                        entityText: '',
+                        resolution: {},
+                        builtinType: ''
+                    },
+                    {
+                        startCharIndex: 13,
+                        endCharIndex: 23,
+                        entityName: fixtureEntities[1].entityName,
+                        entityId: fixtureEntities[1].entityId,
+                        entityText: '',
+                        resolution: {},
+                        builtinType: ''
                     }
                 ]
             },
             {
                 text: `This is the starting text for the second editor.
 This is another paragraph`,
-                customEntities: [
+                predictedEntities: [
                     {
-                        startIndex: 6,
-                        endIndex: 11,
-                        name: fixtureCustomEntityOptions[1].name,
-                        data: {
-                            option: fixtureCustomEntityOptions[1]
-                        }
-                    }
-                ],
-                preBuiltEntities: [
-                    {
-                        startIndex: 0,
-                        endIndex: 5,
-                        name: fixturePreBuiltEntityOptions[0].name,
-                        data: {
-                            option: fixturePreBuiltEntityOptions[0]
-                        }
+                        startCharIndex: 0,
+                        endCharIndex: 5,
+                        entityName: fixtureEntities[1].entityName,
+                        entityId: fixtureEntities[1].entityId,
+                        entityText: '',
+                        resolution: {},
+                        builtinType: ''
                     },
                     {
-                        startIndex: 12,
-                        endIndex: 17,
-                        name: fixturePreBuiltEntityOptions[1].name,
-                        data: {
-                            option: fixturePreBuiltEntityOptions[1]
-                        }
+                        startCharIndex: 10,
+                        endCharIndex: 15,
+                        entityName: fixtureEntities[2].entityName,
+                        entityId: fixtureEntities[2].entityId,
+                        entityText: '',
+                        resolution: {},
+                        builtinType: ''
+                    },
+                    {
+                        startCharIndex: 17,
+                        endCharIndex: 25,
+                        entityName: fixtureEntities[3].entityName,
+                        entityId: fixtureEntities[3].entityId,
+                        entityText: '',
+                        resolution: {},
+                        builtinType: ''
                     }
                 ]
             },
             {
-                text: `This is the starting text for the second editor.
+                text: `This is the starting text for the THIRD editor.
 This is another paragraph`,
-                customEntities: [
+                predictedEntities: [
                     {
-                        startIndex: 6,
-                        endIndex: 11,
-                        name: fixtureCustomEntityOptions[1].name,
-                        data: {
-                            option: fixtureCustomEntityOptions[1]
-                        }
-                    }
-                ],
-                preBuiltEntities: [
-                    {
-                        startIndex: 0,
-                        endIndex: 5,
-                        name: fixturePreBuiltEntityOptions[0].name,
-                        data: {
-                            option: fixturePreBuiltEntityOptions[0]
-                        }
+                        startCharIndex: 0,
+                        endCharIndex: 5,
+                        entityName: fixtureEntities[1].entityName,
+                        entityId: fixtureEntities[1].entityId,
+                        entityText: '',
+                        resolution: {},
+                        builtinType: ''
                     },
                     {
-                        startIndex: 12,
-                        endIndex: 17,
-                        name: fixturePreBuiltEntityOptions[1].name,
-                        data: {
-                            option: fixturePreBuiltEntityOptions[1]
-                        }
+                        startCharIndex: 7,
+                        endCharIndex: 14,
+                        entityName: fixtureEntities[5].entityName,
+                        entityId: fixtureEntities[5].entityId,
+                        entityText: '',
+                        resolution: {},
+                        builtinType: ''
+                    },
+                    {
+                        startCharIndex: 20,
+                        endCharIndex: 25,
+                        entityName: fixtureEntities[6].entityName,
+                        entityId: fixtureEntities[6].entityId,
+                        entityText: '',
+                        resolution: {},
+                        builtinType: ''
                     }
                 ]
             }
         ]
     }
 
-    onClickChangeText = (editorState: EditorState) => {
+    onClickChangeText = (extractResponse: ExtractorResponseEditor.Models.ExtractResponse) => {
         this.setState((prevState: State) => {
-            const editorStateIndex = prevState.editors.findIndex(es => es === editorState)
+            const extractResponseIndex = prevState.extractResponses.findIndex(es => es === extractResponse)
 
-            const newEditorState = {
-                ...editorState,
-                text: `${editorState.text} addedText${Math.floor(Math.random() * 100)}`
+            const newExtractResponse = {
+                ...extractResponse,
+                text: `${extractResponse.text} addedText${Math.floor(Math.random() * 100)}`
             }
 
             return {
-                editors: [...prevState.editors.slice(0, editorStateIndex), newEditorState, ...prevState.editors.slice(editorStateIndex + 1)]
+                extractResponses: [...prevState.extractResponses.slice(0, extractResponseIndex), newExtractResponse, ...prevState.extractResponses.slice(extractResponseIndex + 1)]
             }
         })
     }
 
-    onClickAddCustomEntity = (editorState: EditorState) => {
+    onClickAddCustomEntity = (extractResponse: ExtractorResponseEditor.Models.ExtractResponse) => {
+        console.log(`App.onClickAddCustomEntity`)
         switch (this.customEntityButtonClicks) {
             case 0: {
                 this.setState(prevState => {
-                    const editorStateIndex = prevState.editors.findIndex(es => es === editorState)
+                    const extractResponseIndex = prevState.extractResponses.findIndex(es => es === extractResponse)
 
-                    const newCustomEntities = [...editorState.customEntities, {
-                        startIndex: 0,
-                        endIndex: 5,
-                        name: fixtureCustomEntityOptions[0].name,
-                        data: {
-                            option: fixtureCustomEntityOptions[0]
+                    const newPredictedEntities: ExtractorResponseEditor.Models.PredictedEntity[] = [
+                        ...extractResponse.predictedEntities,
+                        {
+                            startCharIndex: 30,
+                            endCharIndex: 35,
+                            entityName: fixtureEntities[4].entityName,
+                            entityId: fixtureEntities[4].entityId,
+                            entityText: '',
+                            resolution: {},
+                            builtinType: ''
                         }
-                    }]
+                    ]
 
-                    const newEditorState = {
-                        ...editorState,
-                        customEntities: newCustomEntities
+                    const newExtractResponse = {
+                        ...extractResponse,
+                        predictedEntities: newPredictedEntities
                     }
 
                     return {
-                        editors: [...prevState.editors.slice(0, editorStateIndex), newEditorState, ...prevState.editors.slice(editorStateIndex + 1)]
+                        extractResponses: [...prevState.extractResponses.slice(0, extractResponseIndex), newExtractResponse, ...prevState.extractResponses.slice(extractResponseIndex + 1)]
                     }
                 })
                 break;
             }
             case 1: {
-                this.setState(prevState => {
-                    const editorStateIndex = prevState.editors.findIndex(es => es === editorState)
-
-                    const newCustomEntities = [...editorState.customEntities, {
-                        startIndex: 12,
-                        endIndex: 17,
-                        name: fixtureCustomEntityOptions[2].name,
-                        data: {
-                            option: fixtureCustomEntityOptions[2]
-                        }
-                    }]
-
-                    const newEditorState = {
-                        ...editorState,
-                        customEntities: newCustomEntities
-                    }
-
-                    return {
-                        editors: [...prevState.editors.slice(0, editorStateIndex), newEditorState, ...prevState.editors.slice(editorStateIndex + 1)]
-                    }
-                })
                 break;
             }
         }
@@ -226,41 +226,39 @@ This is another paragraph`,
         this.customEntityButtonClicks++
     }
 
-    onClickAddPrebuiltEntity = (editorState: EditorState) => {
+    onClickAddPrebuiltEntity = (extractResponse: ExtractorResponseEditor.Models.ExtractResponse) => {
+        console.log(`App.onClickAddPrebuiltEntity`)
         this.setState(prevState => {
-            const editorStateIndex = prevState.editors.findIndex(es => es === editorState)
+            const extractResponseIndex = prevState.extractResponses.findIndex(es => es === extractResponse)
 
-            const newPreBuiltEntities = [...editorState.preBuiltEntities, {
-                startIndex: 0,
-                endIndex: 5,
-                name: fixturePreBuiltEntityOptions[2].name,
-                data: {
-                    option: fixturePreBuiltEntityOptions[2]
+            const newPredictedEntities: ExtractorResponseEditor.Models.PredictedEntity[] = [
+                ...extractResponse.predictedEntities,
+                {
+                    startCharIndex: 10,
+                    endCharIndex: 20,
+                    entityName: fixtureEntities[7].entityName,
+                    entityId: fixtureEntities[7].entityId,
+                    entityText: '',
+                    resolution: {},
+                    builtinType: ''
                 }
-            }]
+            ]
 
-            const newEditorState = {
-                ...editorState,
-                preBuiltEntities: newPreBuiltEntities
+            const newExtractResponse = {
+                ...extractResponse,
+                predictedEntities: newPredictedEntities
             }
 
             return {
-                editors: [...prevState.editors.slice(0, editorStateIndex), newEditorState, ...prevState.editors.slice(editorStateIndex + 1)]
+                extractResponses: [...prevState.extractResponses.slice(0, extractResponseIndex), newExtractResponse, ...prevState.extractResponses.slice(extractResponseIndex + 1)]
             }
         })
     }
 
-    onChangeCustomEntities = (editorState: EditorState, customEntities: IGenericEntity<any>[]) => {
-        const editorStateIndex = this.state.editors.findIndex(es => es === editorState)
-        const updatedEditorState = {
-            ...editorState,
-            customEntities
-        }
-
-        const newEditors = [...this.state.editors.slice(0, editorStateIndex), updatedEditorState, ...this.state.editors.slice(editorStateIndex + 1)]
-        console.log(`App.onChangeCustomEntities: `, customEntities)
+    onChangeExtractResponse = (extractResponse: ExtractorResponseEditor.Models.ExtractResponse) => {
+        console.log(`App.onChangeExtractResponse: `, extractResponse)
         this.setState({
-            editors: newEditors
+            extractResponses: replace(this.state.extractResponses, extractResponse, x => x.text)
         })
     }
 
@@ -268,10 +266,10 @@ This is another paragraph`,
         console.log(`onClickNewEntity`)
     }
 
-    onClickRemove = (editorState: EditorState) => {
+    onClickRemove = (extractResponse: ExtractorResponseEditor.Models.ExtractResponse) => {
         console.log(`onClickRemove`)
         this.setState(prevState => ({
-            editors: prevState.editors.filter(es => es !== editorState)
+            extractResponses: prevState.extractResponses.filter(es => es !== extractResponse)
         }))
     }
 
@@ -304,29 +302,26 @@ This is another paragraph`,
                         <h3>Prototype</h3>
 
                         <div className="prototype">
-                            {this.state.editors.map((editorState, i) => (
+                            {this.state.extractResponses.map((extractResponse, i) => (
                                 <div
                                     key={i}
                                 >
                                     <div>
-                                        <button type="button" onClick={() => this.onClickChangeText(editorState)}>Add Text</button>
-                                        <button type="button" onClick={() => this.onClickAddCustomEntity(editorState)}>Add Custom Entity</button>
-                                        <button type="button" onClick={() => this.onClickAddPrebuiltEntity(editorState)}>Add PreBuilt Entity</button>
+                                        <button type="button" onClick={() => this.onClickChangeText(extractResponse)}>Add Text</button>
+                                        <button type="button" onClick={() => this.onClickAddCustomEntity(extractResponse)}>Add Custom Entity</button>
+                                        <button type="button" onClick={() => this.onClickAddPrebuiltEntity(extractResponse)}>Add PreBuilt Entity</button>
                                     </div>
                                     <div className="editor-container">
-                                        <ExtractorResponseEditor.Editor
+                                        <ExtractorResponseEditor.EditorWrapper
                                             readOnly={i % 2 === 1}
-                                            isValid={i % 3 === 0}
-                                            options={this.state.options}
-                                            text={editorState.text}
-                                            customEntities={editorState.customEntities}
-                                            preBuiltEntities={editorState.preBuiltEntities}
-
-                                            onChangeCustomEntities={customEntities => this.onChangeCustomEntities(editorState, customEntities)}
+                                            isValid={i % 3 !== 0}
+                                            entities={this.state.entities}
+                                            extractorResponse={extractResponse}
+                                            onChange={this.onChangeExtractResponse}
                                             onClickNewEntity={this.onClickNewEntity}
                                         />
                                         {(i !== 0) && <div className="editor-container__icons">
-                                            <button type="button" onClick={() => this.onClickRemove(editorState)}>Remove</button>
+                                            <button type="button" onClick={() => this.onClickRemove(extractResponse)}>Remove</button>
                                         </div>}
                                     </div>
                                 </div>
