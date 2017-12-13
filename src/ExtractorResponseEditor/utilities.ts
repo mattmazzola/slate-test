@@ -93,7 +93,7 @@ export const convertEntitiesAndTextToEditorValue = (text: string, customEntities
             }
         ])
 
-    console.log(`convertEntitiesAndTextToEditorValue: `, normalizedSegements.map(s => `[${s.startIndex}, '${s.text}', ${s.endIndex}]`).join(', '))
+    // console.log(`convertEntitiesAndTextToEditorValue: `, normalizedSegements.map(s => `[${s.startIndex}, '${s.text}', ${s.endIndex}]`).join(', '))
     const nodes = normalizedSegements
         .map(segement => {
             if (segement.type === 'inline') {
