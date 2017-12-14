@@ -18,8 +18,12 @@ export const getRelativeParent = (element: HTMLElement | null): HTMLElement => {
     return getRelativeParent(element.parentElement)
 };
 
+export const getSelectedText = (value: any) => {
+    const characters = value.characters ? value.characters.toJSON() : []
+    return characters.reduce((s: string, node: any) => s += node.text, '')
+}
+
 export const valueToJSON = (value: any) => {
-    const characters = value.characters ? value.characters.toJSON() : [];
     return {
         data: value.data.toJSON(),
         decorations: value.decorations ? value.decorations.toJSON() : [],
@@ -27,8 +31,7 @@ export const valueToJSON = (value: any) => {
         activeMarks: value.activeMarks.toJSON(),
         marks: value.marks.toJSON(),
         texts: value.texts.toJSON(),
-        characters,
-        selectedText: characters.reduce((s: string, node: any) => s += node.text, ''),
+        selectedText: getSelectedText(value),
         selection: value.selection.toJSON()
     }
 }
@@ -235,7 +238,7 @@ export const getEntitiesFromValue = (change: any) => {
         const selectionChange = change
             .moveToRangeOf(node)
         const text = selectionChange.value.document.text
-        const selectedText = (selectionChange.value.characters ? selectionChange.value.characters.toJSON() : []).reduce((s: string, node: any) => s += node.text, '')
+        const selectedText = getSelectedText(selectionChange.value)
         const startIndex = text.search(selectedText)
         const endIndex = startIndex + selectedText.length
 
@@ -247,7 +250,7 @@ export const getEntitiesFromValue = (change: any) => {
         }
     })
         .toJS()
-        .reduce((entities: any[], entity: models.IGenericEntity<any>) => {
+        .reduce((entities: models.IGenericEntity<models.IGenericEntityData<any>>[], entity: models.IGenericEntity<any>) => {
             return entities.some(e => e.startIndex === entity.startIndex && e.endIndex === entity.endIndex)
                 ? entities
                 : [...entities, entity]
@@ -279,12 +282,13 @@ export const convertGenericEntityToPredictedEntity = (ge: models.IGenericEntity<
     // If predicted entity doesn't exist, re-construct predicted entity object using the option/entity chosen by the user and the selected text
     // Such as the case where we're editing the extract response and adding a new entity
     const option = ge.data.option
+    const text = (ge as any).text || (ge.data as any).text || ''
     return {
         startCharIndex: ge.startIndex,
         endCharIndex: ge.endIndex,
         entityId: option.id,
         entityName: option.name,
-        entityText: '',
+        entityText: text,
         resolution: {},
         builtinType: option.type
     }

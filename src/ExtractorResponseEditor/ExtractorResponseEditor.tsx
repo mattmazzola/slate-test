@@ -3,7 +3,7 @@ import { Editor } from 'slate-react'
 import { Value } from 'slate'
 import initialValue from './value'
 import { IOption, IPosition, IGenericEntity, NodeType } from './models'
-import { valueToJSON, convertEntitiesAndTextToEditorValue, getRelativeParent, getEntitiesFromValue } from './utilities'
+import { valueToJSON, convertEntitiesAndTextToEditorValue, getRelativeParent, getEntitiesFromValue, getSelectedText } from './utilities'
 import CustomEntityNode from './CustomEntityNode'
 import PreBuiltEntityNode from './PreBuiltEntityNode'
 import EntityPicker from './EntityPickerContainer'
@@ -169,11 +169,14 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
 
     onSelectOption = (option: IOption) => {
         console.log(`onSelectOption`, option)
-        const change = this.state.value.change()
+        const value = this.state.value
+        const selectedText = getSelectedText(value)
+        const change = value.change()
             .wrapInline({
                 type: NodeType.CustomEntityNodeType,
                 data: {
-                    option
+                    option,
+                    text: selectedText
                 }
             })
             .collapseToEnd()
