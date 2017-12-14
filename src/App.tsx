@@ -212,7 +212,7 @@ This is another paragraph`,
                             entityId: fixtureEntities[4].entityId,
                             entityText: '',
                             resolution: {},
-                            builtinType: ''
+                            builtinType: fixtureEntities[4].entityType
                         }
                     ]
 
