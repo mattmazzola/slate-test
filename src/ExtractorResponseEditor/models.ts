@@ -28,7 +28,7 @@ export interface IPosition {
 export interface IOption {
     id: string
     name: string
-    // type: string
+    type: string
 }
 
 export interface IGenericEntity<T> {

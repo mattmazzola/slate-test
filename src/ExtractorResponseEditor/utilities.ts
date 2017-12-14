@@ -263,7 +263,8 @@ export const convertPredictedEntityToGenericEntity = (pe: models.PredictedEntity
         data: {
             option: {
                 id: pe.entityId,
-                name: pe.entityName
+                name: pe.entityName,
+                type: pe.builtinType
             },
             original: pe
         }
@@ -285,8 +286,7 @@ export const convertGenericEntityToPredictedEntity = (ge: models.IGenericEntity<
         entityName: option.name,
         entityText: '',
         resolution: {},
-        // TODO: This is hard coded because we know only options available are custom types, should just use the raw entity objects
-        builtinType: "LUIS"
+        builtinType: option.type
     }
 }
 
@@ -297,7 +297,8 @@ export const convertExtractorResponseToEditorModels = (extractResponse: models.E
         .map<models.IOption>(e =>
         ({
             id: e.entityId,
-            name: e.entityName
+            name: e.entityName,
+            type: e.entityType
         }))
 
     const text = extractResponse.text
