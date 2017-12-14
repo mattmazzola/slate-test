@@ -210,9 +210,6 @@ class ExtractorResponseEditor extends React.Component<Props, State> {
                             onSelectOption={this.onSelectOption}
                         />
                     </div>
-                    <div className="entity-labeler__icons">
-                        {!this.props.isValid && <span>Warning</span>}
-                    </div>
                 </div>
                 {this.state.preBuiltEditorValues.length > 0
                     && <div className="entity-labeler__prebuilt-editors">
