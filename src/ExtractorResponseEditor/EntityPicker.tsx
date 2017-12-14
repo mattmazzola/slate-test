@@ -43,6 +43,7 @@ export default class EntityPicker extends React.Component<MenuProps> {
                 <div className="custom-toolbar__search">
                     <button
                         type="button"
+                        tabIndex={-1}
                         onClick={this.props.onClickNewEntity}
                         className="custom-toolbar__result"
                     >
