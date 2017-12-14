@@ -257,8 +257,8 @@ export const getEntitiesFromValue = (change: any) => {
 export const convertPredictedEntityToGenericEntity = (pe: models.PredictedEntity): models.IGenericEntity<models.IGenericEntityData<models.PredictedEntity>> =>
     ({
         startIndex: pe.startCharIndex,
-        // TODO: It seems some predicted entities come back with the endCharIndex one less that it should be, perhaps this is only for pre-builts?
-        endIndex: (pe as any).isPreBuilt ? pe.endCharIndex + 1 : pe.endCharIndex,
+        // TODO: It seems some predicted entities come back with the endCharIndex one less that it should be, perhaps this is only for pre-builts because they are passed through by LUIS API?
+        endIndex: pe.builtinType !== "LUIS" ? pe.endCharIndex + 1 : pe.endCharIndex,
         name: pe.entityName,
         data: {
             option: {
@@ -285,14 +285,15 @@ export const convertGenericEntityToPredictedEntity = (ge: models.IGenericEntity<
         entityName: option.name,
         entityText: '',
         resolution: {},
-        builtinType: ''
+        // TODO: This is hard coded because we know only options available are custom types, should just use the raw entity objects
+        builtinType: "LUIS"
     }
 }
 
 // TODO: Use strong types from blis-models
 export const convertExtractorResponseToEditorModels = (extractResponse: models.ExtractResponse, entities: models.EntityBase[]) => {
     const options = entities
-        .filter(e => !e.entityName.startsWith('luis-'))
+        .filter(e => e.entityType === "LUIS")
         .map<models.IOption>(e =>
         ({
             id: e.entityId,
@@ -301,29 +302,12 @@ export const convertExtractorResponseToEditorModels = (extractResponse: models.E
 
     const text = extractResponse.text
 
-    const predictedEntitiesWithNames = extractResponse.predictedEntities.map(pe => {
-        const entity = entities.find(e => e.entityId === pe.entityId)
-        if (!entity) {
-            throw new Error(`Attempted to find entity: ${pe.entityName} by id: ${pe.entityId} but could not find it in list of entities: `)
-        }
-
-        return {
-            ...pe,
-            entityName: entity.entityName,
-            // TODO: predictedEntities from TeachSession has full values with builtinType and entityName
-            // However, when viewing TrainDialog predictedEntities does not have builtinType or entityName
-            // We could merge back with extractResponse.definitions
-            // Better solution might be to do better conversion
-            isPreBuilt: entity.entityName.startsWith('luis-')
-        }
-    })
-
-    const customEntities = predictedEntitiesWithNames
-        .filter((pe: any) => !pe.isPreBuilt)
+    const customEntities = extractResponse.predictedEntities
+        .filter(pe => pe.builtinType === "LUIS")
         .map(convertPredictedEntityToGenericEntity)
 
-    const preBuiltEntities = predictedEntitiesWithNames
-        .filter((pe: any) => pe.isPreBuilt)
+    const preBuiltEntities = extractResponse.predictedEntities
+        .filter(pe => pe.builtinType !== "LUIS")
         .map(convertPredictedEntityToGenericEntity)
 
     return {

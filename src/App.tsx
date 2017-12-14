@@ -12,42 +12,42 @@ const fixtureEntities: ExtractorResponseEditor.Models.EntityBase[] = [
     {
         entityId: '1',
         entityName: 'entity1',
-        entityType: 'custom',
+        entityType: 'LUIS',
     },
     {
         entityId: '2',
         entityName: 'entity2',
-        entityType: 'custom',
+        entityType: 'LUIS',
     },
     {
         entityId: '3',
         entityName: 'entity3',
-        entityType: 'custom',
+        entityType: 'LUIS',
     },
     {
         entityId: '4',
         entityName: 'entity4',
-        entityType: 'custom',
+        entityType: 'LUIS',
     },
     {
         entityId: '5',
         entityName: 'entity5',
-        entityType: 'custom',
+        entityType: 'LUIS',
     },
     {
         entityId: '10',
-        entityName: 'luis-preBuiltEntity1',
-        entityType: 'custom',
+        entityName: 'luis-datetimeV2',
+        entityType: 'datetimeV2',
     },
     {
         entityId: '20',
-        entityName: 'luis-preBuiltEntity2',
-        entityType: 'custom',
+        entityName: 'luis-number',
+        entityType: 'number',
     },
     {
         entityId: '30',
-        entityName: 'luis-preBuiltEntity3',
-        entityType: 'custom',
+        entityName: 'luis-age',
+        entityType: 'age',
     },
 ]
 
@@ -67,7 +67,7 @@ class App extends React.Component<{}, State> {
                         entityId: fixtureEntities[0].entityId,
                         entityText: '',
                         resolution: {},
-                        builtinType: ''
+                        builtinType: fixtureEntities[0].entityType
                     },
                     {
                         startCharIndex: 6,
@@ -76,7 +76,7 @@ class App extends React.Component<{}, State> {
                         entityId: fixtureEntities[1].entityId,
                         entityText: '',
                         resolution: {},
-                        builtinType: ''
+                        builtinType: fixtureEntities[1].entityType
                     },
                     {
                         startCharIndex: 12,
@@ -85,7 +85,7 @@ class App extends React.Component<{}, State> {
                         entityId: fixtureEntities[5].entityId,
                         entityText: '',
                         resolution: {},
-                        builtinType: ''
+                        builtinType: fixtureEntities[5].entityType
                     }
                 ]
             },
@@ -99,7 +99,7 @@ class App extends React.Component<{}, State> {
                         entityId: fixtureEntities[0].entityId,
                         entityText: '',
                         resolution: {},
-                        builtinType: ''
+                        builtinType: fixtureEntities[0].entityType
                     },
                     {
                         startCharIndex: 13,
@@ -108,7 +108,7 @@ class App extends React.Component<{}, State> {
                         entityId: fixtureEntities[1].entityId,
                         entityText: '',
                         resolution: {},
-                        builtinType: ''
+                        builtinType: fixtureEntities[1].entityType
                     }
                 ]
             },
@@ -123,7 +123,7 @@ This is another paragraph`,
                         entityId: fixtureEntities[1].entityId,
                         entityText: '',
                         resolution: {},
-                        builtinType: ''
+                        builtinType: fixtureEntities[1].entityType
                     },
                     {
                         startCharIndex: 12,
@@ -132,7 +132,7 @@ This is another paragraph`,
                         entityId: fixtureEntities[2].entityId,
                         entityText: '',
                         resolution: {},
-                        builtinType: ''
+                        builtinType: fixtureEntities[2].entityType
                     },
                     {
                         startCharIndex: 21,
@@ -141,7 +141,7 @@ This is another paragraph`,
                         entityId: fixtureEntities[3].entityId,
                         entityText: '',
                         resolution: {},
-                        builtinType: ''
+                        builtinType: fixtureEntities[3].entityType
                     }
                 ]
             },

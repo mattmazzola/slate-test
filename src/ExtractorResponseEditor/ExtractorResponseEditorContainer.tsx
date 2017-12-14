@@ -17,7 +17,7 @@ interface Props {
 
 class ExtractorResponseEditorContainer extends React.Component<Props, {}> {
     onChangeCustomEntities = (customEntities: IGenericEntity<IGenericEntityData<PredictedEntity>>[]) => {
-        const preBuiltPredictedEntities = this.props.extractorResponse.predictedEntities.filter(e => e.entityName.startsWith('luis-'))
+        const preBuiltPredictedEntities = this.props.extractorResponse.predictedEntities.filter(e => e.builtinType !== "LUIS")
         const newExtractResponse = {
             ...this.props.extractorResponse,
             predictedEntities: [...preBuiltPredictedEntities, ...customEntities.map(convertGenericEntityToPredictedEntity)]
