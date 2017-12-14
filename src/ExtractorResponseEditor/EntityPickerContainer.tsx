@@ -2,8 +2,11 @@ import * as React from 'react'
 import EntityPicker from './EntityPicker'
 import * as Fuse from 'fuse.js'
 import { IOption, IPosition, FuseResult, MatchedOption } from './models'
-import { convertMatchedTextIntoStyledStrings } from './utilities'
+import { convertMatchedTextIntoMatchedOption } from './utilities'
 
+/**
+ * See http://fusejs.io/ for information about options meaning and configuration
+ */
 const fuseOptions: Fuse.FuseOptions = {
     shouldSort: true,
     includeMatches: true,
@@ -49,6 +52,7 @@ const increment = (x: number, limit: number) => (x + 1) > limit ? 0 : x + 1
 const decrement = (x: number, limit: number) => (x - 1) < 0 ? limit : x - 1
 
 export default class EntityPickerContainer extends React.Component<Props, State> {
+    defaultMatchedOptions: MatchedOption<IOption>[]
     fuse: Fuse
     element: HTMLElement
 
@@ -59,22 +63,35 @@ export default class EntityPickerContainer extends React.Component<Props, State>
 
         this.onChangeSearchText = this.onChangeSearchText.bind(this)
         this.fuse = new Fuse(this.props.options, fuseOptions)
-        this.state.matchedOptions = props.options.filter((_, i) => i < props.maxDisplayedOptions)
+
+        this.defaultMatchedOptions = props.options.filter((_, i) => i < props.maxDisplayedOptions)
             .map<MatchedOption<IOption>>(option => ({
                 matchedStrings: [{ text: option.name, matched: false }],
                 original: option
             }))
+        this.state.matchedOptions = this.defaultMatchedOptions
     }
 
     componentWillReceiveProps(nextProps: Props) {
         if (this.props.isVisible === false
             && nextProps.isVisible === true) {
 
-            this.fuse = new Fuse(this.props.options, fuseOptions)
+            this.fuse = new Fuse(nextProps.options, fuseOptions)
 
-            const matchedOptions = this.fuse.search<FuseResult<IOption>>(this.state.searchText)
-                .filter((_, i) => i < nextProps.maxDisplayedOptions)
-                .map(result => convertMatchedTextIntoStyledStrings(result.item.name, result.matches[0].indices, result.item))
+            // Recompute default options in case options list and max displayed props have changed
+            this.defaultMatchedOptions = nextProps.options.filter((_, i) => i < nextProps.maxDisplayedOptions)
+                .map<MatchedOption<IOption>>(option => ({
+                    matchedStrings: [{ text: option.name, matched: false }],
+                    original: option
+                }))
+
+            // We want to still show all options of the user has entered nothing or whitespace so trim and check for empty condition
+            const normalizedSearchText = this.state.searchText.trim()
+            const matchedOptions = (normalizedSearchText.length === 0)
+                ? this.defaultMatchedOptions
+                : this.fuse.search<FuseResult<IOption>>(normalizedSearchText)
+                    .filter((_, i) => i < nextProps.maxDisplayedOptions)
+                    .map(result => convertMatchedTextIntoMatchedOption(result.item.name, result.matches[0].indices, result.item))
 
             this.setState(prevState => ({
                 ...initialState,
@@ -121,7 +138,7 @@ export default class EntityPickerContainer extends React.Component<Props, State>
     onSelectHighlightedOption = () => {
         const matchedOption = this.state.matchedOptions[this.state.highlightIndex]
         // It's possible that highlight option is 0 even though there are no matched options becuase text doesn't match any
-        // in this case matchedOption will be null
+        // in this case matchedOption will be null and we must disregard it
         if (!matchedOption) {
             console.warn(`onSelectOption was skipped because matchedOption was null`)
             return
@@ -134,18 +151,18 @@ export default class EntityPickerContainer extends React.Component<Props, State>
     }
 
     onChangeSearchText(searchText: string) {
-        console.log(`searchText `, searchText)
-        const matchedOptions = this.fuse.search<FuseResult<IOption>>(searchText)
-            .filter((_, i) => i < this.props.maxDisplayedOptions)
-            .map(result => {
-                const indices = result.matches[0].indices.map<[number, number]>(([start, end]) => [start, end+1])
-                console.log(`indices: `, indices)
-                const matchedOption = convertMatchedTextIntoStyledStrings(result.item.name, indices, result.item)
-                console.log(`matchedOption: `, matchedOption)
-                return matchedOption
-            })
+        const normalizedSearchText = searchText.trim()
+        const matchedOptions = (normalizedSearchText.length === 0)
+            ? this.defaultMatchedOptions
+            : this.fuse.search<FuseResult<IOption>>(normalizedSearchText)
+                .filter((_, i) => i < this.props.maxDisplayedOptions)
+                .map(result => {
+                    // TODO: For some reason the Fuse.io library returns the end index before the last character instead of after
+                    // I opened issue here for explanation: https://github.com/krisk/Fuse/issues/212
+                    const indices = result.matches[0].indices.map<[number, number]>(([start, end]) => [start, end + 1])
+                    return convertMatchedTextIntoMatchedOption(result.item.name, indices, result.item)
+                })
 
-        console.log
         this.setState(prevState => ({
             searchText,
             matchedOptions,

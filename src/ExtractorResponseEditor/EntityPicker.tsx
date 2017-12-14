@@ -40,15 +40,15 @@ export default class EntityPicker extends React.Component<MenuProps> {
                         )}
 
                     </ul>}
+                <button
+                    type="button"
+                    tabIndex={-1}
+                    onClick={this.props.onClickNewEntity}
+                    className="custom-toolbar__new-entity-button"
+                >
+                    New Entity
+                </button>
                 <div className="custom-toolbar__search">
-                    <button
-                        type="button"
-                        tabIndex={-1}
-                        onClick={this.props.onClickNewEntity}
-                        className="custom-toolbar__result"
-                    >
-                        New Entity
-                    </button>
                     <label htmlFor="toolbar-input">Search for entities:</label>
                     <input
                         id="toolbar-input"

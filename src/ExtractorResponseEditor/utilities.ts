@@ -146,7 +146,7 @@ export const convertEntitiesAndTextToEditorValue = (text: string, customEntities
     return Value.fromJSON(document)
 }
 
-export const convertMatchedTextIntoStyledStrings = <T>(text: string, matches: [number, number][], original: T): models.MatchedOption<T> => {
+export const convertMatchedTextIntoMatchedOption = <T>(text: string, matches: [number, number][], original: T): models.MatchedOption<T> => {
     const matchedStrings = matches.reduce<models.ISegement[]>((segements, [startIndex, endIndex]) => {
         if (startIndex === endIndex) {
             return segements

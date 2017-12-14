@@ -28,7 +28,7 @@
 */
 
 .custom-toolbar__search {
-    padding: 0.5em 0.25em 0.25em 0.25em;
+    padding: 0.25em;
 }
 
 .custom-toolbar__search label {
@@ -65,4 +65,20 @@
 
 .custom-toolbar__result--highlight {
     background: rgba(187, 255, 187, 1.0);
+}
+
+.custom-toolbar__new-entity-button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 0.25em 0.5em;
+    display: block;
+    margin: 0;
+    width: 100%;
+    text-align: left;
+    font-size: 1rem;
+    margin-top: 0.25em;
+}
+.custom-toolbar__new-entity-button:hover {
+    background: rgba(187, 255, 187, 0.5);
 }
