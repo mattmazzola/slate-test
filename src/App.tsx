@@ -1,4 +1,5 @@
 import * as React from 'react'
+import MentionEditorExample from './MentionEditorExample'
 import * as ExtractorResponseEditor from './ExtractorResponseEditor'
 import { replace } from './utilities'
 import './App.css'
@@ -281,7 +282,12 @@ This is another paragraph`,
                 </header>
                 <section>
                     <div className="container">
-                        <h2>1. Entity Extraction</h2>
+                        <MentionEditorExample />
+                    </div>
+                </section>
+                <section>
+                    <div className="container">
+                        <h2>2. Entity Extraction</h2>
                         <h3>Requirements</h3>
                         <ul>
                             <li>
