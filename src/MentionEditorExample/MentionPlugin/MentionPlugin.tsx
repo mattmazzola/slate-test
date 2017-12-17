@@ -4,14 +4,29 @@ import * as immutable from 'immutable'
 import MentionNode from './MentionNode'
 import './MentionPlugin.css'
 
+export interface IPickerProps {
+    isVisible: boolean
+    bottom: number
+    left: number
+    searchText: string
+}
+
+export const defaultPickerProps: IPickerProps = {
+    isVisible: false,
+    bottom: -9999,
+    left: -9999,
+    searchText: ''
+}
+
 export interface IOptions {
     triggerCharacter: string
+    onChangeMenuProps: (menuProps: IPickerProps) => void
 }
 
 const defaultOptions: IOptions = {
-    triggerCharacter: '{'
+    triggerCharacter: '{',
+    onChangeMenuProps: (menuProps: IPickerProps) => {},
 }
-
 
 const findNodeByPath = (path: number[], root: any, nodeType: string = NodeTypes.Mention): any => {
     if (path.length === 0) {
@@ -33,7 +48,9 @@ const findNodeByPath = (path: number[], root: any, nodeType: string = NodeTypes.
     return findNodeByPath(nextPath, nextRoot)
 }
 
-export default function mentionPlugin(options: IOptions = defaultOptions) {
+export default function mentionPlugin(inputOptions: Partial<IOptions> = {}) {
+    let options: IOptions = { ...defaultOptions, ...inputOptions }
+
     return {
         onKeyDown(event: React.KeyboardEvent<HTMLInputElement>, change: any): boolean | void {
             // Check that the key pressed matches our `key` option.
@@ -61,6 +78,14 @@ export default function mentionPlugin(options: IOptions = defaultOptions) {
                         ]
                     })
 
+
+                options.onChangeMenuProps({
+                    isVisible: true,
+                    bottom: 0,
+                    left: 0,
+                    searchText: ''
+                })
+
                 return true
             }
 
@@ -70,6 +95,13 @@ export default function mentionPlugin(options: IOptions = defaultOptions) {
                 change
                     .insertText('}')
                     .collapseToStartOfNextText()
+
+                    options.onChangeMenuProps({
+                        isVisible: false,
+                        bottom: 0,
+                        left: 0,
+                        searchText: ''
+                    })
 
                 return true
             }
@@ -104,6 +136,13 @@ export default function mentionPlugin(options: IOptions = defaultOptions) {
                 //     return newChange
                 //         .removeNodeByKey(inlineNode.key)
                 // }, change)
+
+                options.onChangeMenuProps({
+                    isVisible: false,
+                    bottom: 0,
+                    left: 0,
+                    searchText: ''
+                })
             }
         },
 

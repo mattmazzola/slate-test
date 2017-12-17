@@ -1,7 +1,7 @@
 import Example from './Example'
 
 export {
-    Example
+    Example,
 }
 
 export default Example
