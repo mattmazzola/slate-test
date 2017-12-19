@@ -20,12 +20,12 @@ export const defaultPickerProps: IPickerProps = {
 
 export interface IOptions {
     triggerCharacter: string
-    onChangeMenuProps: (menuProps: IPickerProps) => void
+    onChangeMenuProps: (menuProps: Partial<IPickerProps>) => void
 }
 
 const defaultOptions: IOptions = {
     triggerCharacter: '{',
-    onChangeMenuProps: (menuProps: IPickerProps) => {},
+    onChangeMenuProps: () => {},
 }
 
 const findNodeByPath = (path: number[], root: any, nodeType: string = NodeTypes.Mention): any => {
@@ -80,10 +80,7 @@ export default function mentionPlugin(inputOptions: Partial<IOptions> = {}) {
 
 
                 options.onChangeMenuProps({
-                    isVisible: true,
-                    bottom: 0,
-                    left: 0,
-                    searchText: ''
+                    isVisible: true
                 })
 
                 return true
@@ -97,10 +94,7 @@ export default function mentionPlugin(inputOptions: Partial<IOptions> = {}) {
                     .collapseToStartOfNextText()
 
                     options.onChangeMenuProps({
-                        isVisible: false,
-                        bottom: 0,
-                        left: 0,
-                        searchText: ''
+                        isVisible: false
                     })
 
                 return true
@@ -122,27 +116,12 @@ export default function mentionPlugin(inputOptions: Partial<IOptions> = {}) {
                     .map(path => findNodeByPath(path, value.document))
                     .filter(n => n)
 
-                mentionInlineNodesAlongPath.reduce((newChange: any, inlineNode: any) => {
-                    return newChange
-                        .removeNodeByKey(inlineNode.key)
-                }, change)
-
-
-                // const inlineNodes = change.value.document.filterDescendants((node: any) => node.type === NodeTypes.Mention)
-                // console.log(`all inline mention nodes: `, inlineNodes.toJS())
-                // const selectionInlines = change.value.inlines
-                // console.log(`selection mention nodes: `, selectionInlines.toJS())
-                // selectionInlines.reduce((newChange: any, inlineNode: any) => {
-                //     return newChange
-                //         .removeNodeByKey(inlineNode.key)
-                // }, change)
-
-                options.onChangeMenuProps({
-                    isVisible: false,
-                    bottom: 0,
-                    left: 0,
-                    searchText: ''
-                })
+                if (mentionInlineNodesAlongPath.length > 0) {
+                    options.onChangeMenuProps({
+                        isVisible: false
+                    })
+                }
+                mentionInlineNodesAlongPath.reduce((newChange: any, inlineNode: any) => newChange.removeNodeByKey(inlineNode.key), change)
             }
         },
 

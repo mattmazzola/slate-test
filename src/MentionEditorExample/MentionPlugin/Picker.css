@@ -1,3 +1,20 @@
 .mention-picker {
     position: absolute;
+    left: -10000px;
+    bottom: 10000px;
+    background: white;
+    padding: 0.5em;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    min-width: 200px;
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0);
+    transition: transform 0.15s cubic-bezier(.3,1.2,.2,1);
+}
+
+.mention-picker--visible {
+    visibility: visible;
+    opacity: 1;
+    transform: scale(1);
 }
