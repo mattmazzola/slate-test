@@ -30,9 +30,10 @@ export default class Example extends React.Component<{}, State> {
     }
 
     onChangeValue = (change: any) => {
+        const { value } = change
         // Must always update the value to allow normal use of editor such as cursor movement and typing
         this.setState({
-            value: change.value
+            value
         })
 
         // Also compute the new positino of menu if needed
@@ -41,7 +42,6 @@ export default class Example extends React.Component<{}, State> {
             return
         }
 
-        const { value } = this.state
         if (value.document.text.length === 0) {
             console.log(`value.isEmpty`)
             this.onChangePickerProps({
@@ -66,11 +66,11 @@ export default class Example extends React.Component<{}, State> {
         // const top = ((selectionBoundingRect.top - relativeRect.top) - menu.offsetHeight) + window.scrollY - 20
         const left = (selectionBoundingRect.left - relativeRect.left) + window.scrollX - menu.offsetWidth / 2 + selectionBoundingRect.width / 2
         const bottom = relativeRect.height - (selectionBoundingRect.top - relativeRect.top) + 10
-
+        const searchText = ((value.inlines.size > 0) ? (value.inlines.first().text as string).substr(1) : '')
         const menuProps: Partial<MentionPlugin.IPickerProps> = {
             bottom,
             left,
-            searchText: '',
+            searchText,
         }
 
         this.onChangePickerProps(menuProps)

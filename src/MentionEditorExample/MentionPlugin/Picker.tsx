@@ -21,7 +21,7 @@ export default class Picker extends React.Component<Props, {}> {
             ref={this.props.menuRef}
             style={style}
         >
-            Picker: {this.props.isVisible ? 'show' : 'hide'}
+            Search: {this.props.searchText}
         </div>
     }
 }
