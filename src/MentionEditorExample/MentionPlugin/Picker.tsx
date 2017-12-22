@@ -1,12 +1,14 @@
 import * as React from 'react'
 import './Picker.css'
+import { IOption } from './models'
 
 interface Props {
+    options: IOption[]
     isVisible: boolean
-    bottom: number,
-    left: number,
-    searchText: string
+    bottom: number
+    left: number
     menuRef: (element: HTMLDivElement) => void
+    onSelectOption: (option: IOption) => void
 }
 
 export default class Picker extends React.Component<Props, {}> {
@@ -21,7 +23,9 @@ export default class Picker extends React.Component<Props, {}> {
             ref={this.props.menuRef}
             style={style}
         >
-            Search: {this.props.searchText}
+            {this.props.options.map(option =>
+                <button key={option.id} type="button" className={`mention-picker-button ${option.highlighted ? 'mention-picker-button--active': ''}`} onClick={() => this.props.onSelectOption(option)}>{option.name}</button>
+            )}
         </div>
     }
 }
