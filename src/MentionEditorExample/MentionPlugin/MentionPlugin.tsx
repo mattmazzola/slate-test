@@ -93,16 +93,23 @@ export default function mentionPlugin(inputOptions: Partial<IOptions> = {}) {
             if (event.key === '}') {
                 event.preventDefault()
 
-                const inlineWithText = change
+                // Add closing character
+                let nextChange = change
                     .insertText('}')
 
                 // Update current inline optional node with completed: true
-                const inline = inlineWithText.value.inlines.find((i: any) => i.type === NodeTypes.Mention)
-                const newInline = inline.set('data', inline.data.set('completed', true))
+                const inline = nextChange.value.inlines.find((i: any) => i.type === NodeTypes.Mention)
+                if (inline) {
+                    const newInline = inline.set('data', inline.data.set('completed', true))
+                    
+                    nextChange
+                        .replaceNodeByKey(inline.key, newInline)
+                }
+                else {
+                    console.warn(`Could not find any inlines matching Mention type`, nextChange.value.inlines)
+                }
 
-                // Add closing character
-                inlineWithText
-                    .replaceNodeByKey(inline.key, newInline)
+                nextChange
                     .collapseToStartOfNextText()
                     .collapseToStartOfNextText()
 
