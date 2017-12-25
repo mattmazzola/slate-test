@@ -25,7 +25,7 @@ export interface IOptions {
 
 const defaultOptions: IOptions = {
     triggerCharacter: '{',
-    onChangeMenuProps: (menuProps: IPickerProps) => {},
+    onChangeMenuProps: (menuProps: IPickerProps) => { },
 }
 
 const findNodeByPath = (path: number[], root: any, nodeType: string = NodeTypes.Mention): any => {
@@ -64,6 +64,7 @@ export default function mentionPlugin(inputOptions: Partial<IOptions> = {}) {
                     .insertInline({
                         type: NodeTypes.Mention,
                         data: {
+                            completed: false,
                             foo: 'bar'
                         },
                         nodes: [
@@ -92,16 +93,25 @@ export default function mentionPlugin(inputOptions: Partial<IOptions> = {}) {
             if (event.key === '}') {
                 event.preventDefault()
 
-                change
+                const inlineWithText = change
                     .insertText('}')
+
+                // Update current inline optional node with completed: true
+                const inline = inlineWithText.value.inlines.find((i: any) => i.type === NodeTypes.Mention)
+                const newInline = inline.set('data', inline.data.set('completed', true))
+
+                // Add closing character
+                inlineWithText
+                    .replaceNodeByKey(inline.key, newInline)
+                    .collapseToStartOfNextText()
                     .collapseToStartOfNextText()
 
-                    options.onChangeMenuProps({
-                        isVisible: false,
-                        bottom: 0,
-                        left: 0,
-                        searchText: ''
-                    })
+                options.onChangeMenuProps({
+                    isVisible: false,
+                    bottom: 0,
+                    left: 0,
+                    searchText: ''
+                })
 
                 return true
             }
@@ -123,8 +133,10 @@ export default function mentionPlugin(inputOptions: Partial<IOptions> = {}) {
                     .filter(n => n)
 
                 mentionInlineNodesAlongPath.reduce((newChange: any, inlineNode: any) => {
-                    return newChange
-                        .removeNodeByKey(inlineNode.key)
+                    return inlineNode.data.get('completed')
+                        ? newChange
+                            .removeNodeByKey(inlineNode.key)
+                        : newChange
                 }, change)
 
 
