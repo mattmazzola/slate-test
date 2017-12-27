@@ -67,7 +67,7 @@ const getNodesByPath = (path: number[], root: any, nodes: any[] = []): any[] => 
 }
 
 export default function mentionPlugin(inputOptions: Partial<IOptions> = {}) {
-    let options: IOptions = { ...defaultOptions, ...inputOptions }
+    const options: IOptions = { ...defaultOptions, ...inputOptions }
 
     return {
         onKeyDown(event: React.KeyboardEvent<HTMLInputElement>, change: any): boolean | void {
@@ -75,8 +75,8 @@ export default function mentionPlugin(inputOptions: Partial<IOptions> = {}) {
             // console.log(`event.metaKey: `, event.metaKey)
             // console.log(`event.ctrlKey: `, event.ctrlKey)
             // console.log(`event.key: `, event.key)
-
-            if (event.key === options.triggerCharacter) {
+            const isWithinMentionNode = change.value.inlines.size > 0 && change.value.inlines.last().type === NodeTypes.Mention
+            if (!isWithinMentionNode && event.key === options.triggerCharacter) {
                 event.preventDefault()
                 change
                     .insertInline({
@@ -97,7 +97,6 @@ export default function mentionPlugin(inputOptions: Partial<IOptions> = {}) {
                         ]
                     })
 
-
                 options.onChangeMenuProps({
                     isVisible: true,
                     bottom: 0,
@@ -108,7 +107,7 @@ export default function mentionPlugin(inputOptions: Partial<IOptions> = {}) {
                 return true
             }
 
-            if (event.key === '}') {
+            if (isWithinMentionNode && event.key === '}') {
                 event.preventDefault()
 
                 // Add closing character
@@ -151,22 +150,20 @@ export default function mentionPlugin(inputOptions: Partial<IOptions> = {}) {
             if (removeTextOperations.size > 0) {
                 const selection = change.value.selection
                 const { startKey, startOffset } = selection
-                console.log(`selection: `, selection.toJS(), selection)
+
+                // TODO: Generalize between previousSibling method, and node paths method
                 const previousSibling = value.document.getPreviousSibling(startKey)
                 if (previousSibling && previousSibling.type === NodeTypes.Optional) {
                     if (startOffset === 0) {
                         const removeTextOperation = removeTextOperations.first()
                         const nodes = getNodesByPath(removeTextOperation.toJS().path, value.document)
-                        console.log(`removeTextOperation: `, removeTextOperation.toJS())
-                        console.log(`nodes: `, nodes)
                         if (nodes.length > 2 && nodes[nodes.length - 2].type === NodeTypes.Optional) {
-                            console.log(`Removing character just after inline node`)
                             change = change
                                 .collapseToEndOfPreviousText()
                         }
                     }
                 }
-                
+
                 const paths: number[][] = removeTextOperations.map<number[]>(o => (o! as any).path).toJS()
 
                 const mentionInlineNodesAlongPath: any[] = paths

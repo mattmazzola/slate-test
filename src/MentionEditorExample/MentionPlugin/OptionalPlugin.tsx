@@ -15,7 +15,9 @@ export default function optionalPlugin(inputOptions: Partial<IOptions> = {}) {
 
     return {
         onKeyDown(event: React.KeyboardEvent<HTMLInputElement>, change: any): boolean | void {
-            if (event.key === options.triggerCharacter) {
+            const isWithinOptionalNode = change.value.inlines.size > 0 && change.value.inlines.last().type === NodeTypes.Optional
+            
+            if (!isWithinOptionalNode && event.key === options.triggerCharacter) {
                 console.log('insert optional node')
                 event.preventDefault()
                 change
@@ -37,7 +39,7 @@ export default function optionalPlugin(inputOptions: Partial<IOptions> = {}) {
                 return true
             }
 
-            if (event.key === ']') {
+            if (isWithinOptionalNode && event.key === ']') {
                 console.log(`optional.node.collapseToStartOfNextText`)
                 event.preventDefault()
 
