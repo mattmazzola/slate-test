@@ -6,7 +6,6 @@ import * as MentionPlugin from './MentionPlugin'
 export type SlateValue = any
 
 interface State {
-    menuProps: MentionPlugin.IPickerProps
     value: SlateValue
 }
 
@@ -14,7 +13,6 @@ export default class Example extends React.Component<{}, State> {
     plugins: any[]
 
     state = {
-        menuProps: MentionPlugin.defaultPickerProps,
         value: Value.fromJSON(MentionPlugin.initialValue)
     }
 
@@ -22,30 +20,14 @@ export default class Example extends React.Component<{}, State> {
         super(props)
 
         this.plugins = [
-            MentionPlugin.OptionalPlugin(),
-            MentionPlugin.MentionPlugin({
-                onChangeMenuProps: this.onChangeMenuProps
-            }),
+            MentionPlugin.MentionPlugin(),
         ]
     }
 
     onChangeValue = (change: any) => {
-        this.onChangeMenuProps({
-            bottom: 0,
-            left: 0,
-            searchText: ''
-        })
-
         this.setState({
             value: change.value
         })
-    }
-
-    onChangeMenuProps = (menuProps: Partial<MentionPlugin.IPickerProps>) => {
-        console.log(`onChangeMenuProps: `)
-        this.setState(prevState => ({
-            menuProps: { ...prevState.menuProps, ...menuProps }
-        }))
     }
 
     render() {
@@ -59,9 +41,6 @@ export default class Example extends React.Component<{}, State> {
             <h3>Prototype</h3>
             <div className="prototype">
                 <div className="mention-editor-container">
-                    <MentionPlugin.Picker
-                        {...this.state.menuProps}
-                    />
                     <Editor
                         className="mention-editor"
                         placeholder="Enter some text..."
