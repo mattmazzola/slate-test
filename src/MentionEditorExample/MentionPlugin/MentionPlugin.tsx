@@ -48,6 +48,24 @@ const findNodeByPath = (path: number[], root: any, nodeType: string = NodeTypes.
     return findNodeByPath(nextPath, nextRoot)
 }
 
+const getNodesByPath = (path: number[], root: any, nodes: any[] = []): any[] => {
+    if (path.length === 0) {
+        return nodes
+    }
+
+    const [nextKey, ...nextPath] = path
+    const nextRoot = root.findDescendant((node: any, i: number) => i === nextKey)
+
+    // If the node was already removed due to another change it might not exist in the path anymore
+    if (nextRoot === null) {
+        return nodes
+    }
+
+    nodes.push(nextRoot)
+
+    return getNodesByPath(nextPath, nextRoot, nodes)
+}
+
 export default function mentionPlugin(inputOptions: Partial<IOptions> = {}) {
     let options: IOptions = { ...defaultOptions, ...inputOptions }
 
@@ -126,13 +144,29 @@ export default function mentionPlugin(inputOptions: Partial<IOptions> = {}) {
 
         onChange(change: any) {
             const { value, operations } = change
-            const operationsJs: string[] = operations.toJS()
-            const operationTypes: string[] = operationsJs.map((o: any) => o.type)
 
-            if (operationTypes.includes('remove_text')) {
-                const removeTextOperations: immutable.List<immutable.Map<any, any>> = operations
-                    .filter((o: any) => o.type === 'remove_text')
+            const removeTextOperations: immutable.List<immutable.Map<any, any>> = operations
+                .filter((o: any) => o.type === 'remove_text')
 
+            if (removeTextOperations.size > 0) {
+                const selection = change.value.selection
+                const { startKey, startOffset } = selection
+                console.log(`selection: `, selection.toJS(), selection)
+                const previousSibling = value.document.getPreviousSibling(startKey)
+                if (previousSibling && previousSibling.type === NodeTypes.Optional) {
+                    if (startOffset === 0) {
+                        const removeTextOperation = removeTextOperations.first()
+                        const nodes = getNodesByPath(removeTextOperation.toJS().path, value.document)
+                        console.log(`removeTextOperation: `, removeTextOperation.toJS())
+                        console.log(`nodes: `, nodes)
+                        if (nodes.length > 2 && nodes[nodes.length - 2].type === NodeTypes.Optional) {
+                            console.log(`Removing character just after inline node`)
+                            change = change
+                                .collapseToEndOfPreviousText()
+                        }
+                    }
+                }
+                
                 const paths: number[][] = removeTextOperations.map<number[]>(o => (o! as any).path).toJS()
 
                 const mentionInlineNodesAlongPath: any[] = paths
@@ -145,7 +179,6 @@ export default function mentionPlugin(inputOptions: Partial<IOptions> = {}) {
                             .removeNodeByKey(inlineNode.key)
                         : newChange
                 }, change)
-
 
                 // const inlineNodes = change.value.document.filterDescendants((node: any) => node.type === NodeTypes.Mention)
                 // console.log(`all inline mention nodes: `, inlineNodes.toJS())
