@@ -107,13 +107,18 @@ export default class Example extends React.Component<{}, State> {
     onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>, change: any) => {
         const fn = this[`on${event.key}`]
         if (typeof fn === "function") {
-            event.preventDefault()
-            fn.call(this)
+            fn.call(this, event, change)
         }
     }
 
-    onArrowUp() {
+    onArrowUp(event: React.KeyboardEvent<HTMLInputElement>, change: any) {
         console.log(`onArrowUp`)
+        if (!this.state.menuProps.isVisible) {
+            return
+        }
+
+        event.preventDefault()
+        
         this.setState(prevState => {
             const nextIndex = prevState.highlightIndex - 1
             const minIndex = 0
@@ -125,8 +130,14 @@ export default class Example extends React.Component<{}, State> {
         })
     }
 
-    onArrowDown() {
+    onArrowDown(event: React.KeyboardEvent<HTMLInputElement>, change: any) {
         console.log('onArrowDown')
+        if (!this.state.menuProps.isVisible) {
+            return
+        }
+
+        event.preventDefault()
+        
         this.setState(prevState => {
             const nextIndex = prevState.highlightIndex + 1
             const minIndex = 0
@@ -138,15 +149,15 @@ export default class Example extends React.Component<{}, State> {
         })
     }
 
-    onEnter() {
+    onEnter(event: React.KeyboardEvent<HTMLInputElement>, change: any) {
         console.log(`onEnter`)
     }
 
-    onEscape() {
+    onEscape(event: React.KeyboardEvent<HTMLInputElement>, change: any) {
         console.log(`onEscape`)
     }
 
-    onTab() {
+    onTab(event: React.KeyboardEvent<HTMLInputElement>, change: any) {
         console.log(`onTab`)
     }
 
