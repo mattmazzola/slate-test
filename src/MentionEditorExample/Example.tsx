@@ -47,7 +47,8 @@ export default class Example extends React.Component<{}, State> {
         super(props)
 
         this.plugins = [
-            MentionPlugin.Plugin({
+            MentionPlugin.OptionalPlugin(),
+            MentionPlugin.MentionPlugin({
                 onChangeMenuProps: this.onChangePickerProps
             })
         ]

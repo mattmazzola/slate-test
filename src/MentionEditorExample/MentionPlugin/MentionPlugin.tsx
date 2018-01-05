@@ -25,7 +25,7 @@ export interface IOptions {
 
 const defaultOptions: IOptions = {
     triggerCharacter: '{',
-    onChangeMenuProps: () => {},
+    onChangeMenuProps: () => { },
 }
 
 const findNodeByPath = (path: number[], root: any, nodeType: string = NodeTypes.Mention): any => {
@@ -48,8 +48,26 @@ const findNodeByPath = (path: number[], root: any, nodeType: string = NodeTypes.
     return findNodeByPath(nextPath, nextRoot)
 }
 
+const getNodesByPath = (path: number[], root: any, nodes: any[] = []): any[] => {
+    if (path.length === 0) {
+        return nodes
+    }
+
+    const [nextKey, ...nextPath] = path
+    const nextRoot = root.findDescendant((node: any, i: number) => i === nextKey)
+
+    // If the node was already removed due to another change it might not exist in the path anymore
+    if (nextRoot === null) {
+        return nodes
+    }
+
+    nodes.push(nextRoot)
+
+    return getNodesByPath(nextPath, nextRoot, nodes)
+}
+
 export default function mentionPlugin(inputOptions: Partial<IOptions> = {}) {
-    let options: IOptions = { ...defaultOptions, ...inputOptions }
+    const options: IOptions = { ...defaultOptions, ...inputOptions }
 
     return {
         onKeyDown(event: React.KeyboardEvent<HTMLInputElement>, change: any): boolean | void {
@@ -57,13 +75,14 @@ export default function mentionPlugin(inputOptions: Partial<IOptions> = {}) {
             // console.log(`event.metaKey: `, event.metaKey)
             // console.log(`event.ctrlKey: `, event.ctrlKey)
             // console.log(`event.key: `, event.key)
-
-            if (event.key === options.triggerCharacter) {
+            const isWithinMentionNode = change.value.inlines.size > 0 && change.value.inlines.last().type === NodeTypes.Mention
+            if (!isWithinMentionNode && event.key === options.triggerCharacter) {
                 event.preventDefault()
                 change
                     .insertInline({
                         type: NodeTypes.Mention,
                         data: {
+                            completed: false,
                             foo: 'bar'
                         },
                         nodes: [
@@ -78,7 +97,6 @@ export default function mentionPlugin(inputOptions: Partial<IOptions> = {}) {
                         ]
                     })
 
-
                 options.onChangeMenuProps({
                     isVisible: true
                 })
@@ -86,16 +104,32 @@ export default function mentionPlugin(inputOptions: Partial<IOptions> = {}) {
                 return true
             }
 
-            if (event.key === '}') {
+            if (isWithinMentionNode && event.key === '}') {
                 event.preventDefault()
 
-                change
+                // Add closing character
+                let nextChange = change
                     .insertText('}')
+
+                // Update current inline optional node with completed: true
+                const inline = nextChange.value.inlines.find((i: any) => i.type === NodeTypes.Mention)
+                if (inline) {
+                    const newInline = inline.set('data', inline.data.set('completed', true))
+
+                    nextChange
+                        .replaceNodeByKey(inline.key, newInline)
+                }
+                else {
+                    console.warn(`Could not find any inlines matching Mention type`, nextChange.value.inlines)
+                }
+
+                nextChange
+                    .collapseToStartOfNextText()
                     .collapseToStartOfNextText()
 
-                    options.onChangeMenuProps({
-                        isVisible: false
-                    })
+                options.onChangeMenuProps({
+                    isVisible: false
+                })
 
                 return true
             }
@@ -103,12 +137,26 @@ export default function mentionPlugin(inputOptions: Partial<IOptions> = {}) {
 
         onChange(change: any) {
             const { value, operations } = change
-            const operationsJs: string[] = operations.toJS()
-            const operationTypes: string[] = operationsJs.map((o: any) => o.type)
 
-            if (operationTypes.includes('remove_text')) {
-                const removeTextOperations: immutable.List<immutable.Map<any, any>> = operations
-                    .filter((o: any) => o.type === 'remove_text')
+            const removeTextOperations: immutable.List<immutable.Map<any, any>> = operations
+                .filter((o: any) => o.type === 'remove_text')
+
+            if (removeTextOperations.size > 0) {
+                const selection = change.value.selection
+                const { startKey, startOffset } = selection
+
+                // TODO: Generalize between previousSibling method, and node paths method
+                const previousSibling = value.document.getPreviousSibling(startKey)
+                if (previousSibling && previousSibling.type === NodeTypes.Optional) {
+                    if (startOffset === 0) {
+                        const removeTextOperation = removeTextOperations.first()
+                        const nodes = getNodesByPath(removeTextOperation.toJS().path, value.document)
+                        if (nodes.length > 2 && nodes[nodes.length - 2].type === NodeTypes.Optional) {
+                            change = change
+                                .collapseToEndOfPreviousText()
+                        }
+                    }
+                }
 
                 const paths: number[][] = removeTextOperations.map<number[]>(o => (o! as any).path).toJS()
 
@@ -116,12 +164,18 @@ export default function mentionPlugin(inputOptions: Partial<IOptions> = {}) {
                     .map(path => findNodeByPath(path, value.document))
                     .filter(n => n)
 
-                if (mentionInlineNodesAlongPath.length > 0) {
-                    options.onChangeMenuProps({
-                        isVisible: false
-                    })
-                }
-                mentionInlineNodesAlongPath.reduce((newChange: any, inlineNode: any) => newChange.removeNodeByKey(inlineNode.key), change)
+                mentionInlineNodesAlongPath.reduce((newChange: any, inlineNode: any) => {
+                    return inlineNode.data.get('completed')
+                        ? newChange
+                            .removeNodeByKey(inlineNode.key)
+                        : newChange
+                }, change)
+
+                // if (mentionInlineNodesAlongPath.length > 0) {
+                //     options.onChangeMenuProps({
+                //         isVisible: false
+                //     })
+                // }
             }
         },
 
