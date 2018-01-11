@@ -3,7 +3,7 @@ import { Editor } from 'slate-react'
 import { Value } from 'slate'
 import * as Fuse from 'fuse.js'
 import * as MentionPlugin from './MentionPlugin'
-import { IOption } from './MentionPlugin/models'
+import { IOption, NodeTypes } from './MentionPlugin/models'
 import { FuseResult, MatchedOption } from '../ExtractorResponseEditor/models'
 import { convertMatchedTextIntoStyledStrings } from '../ExtractorResponseEditor/utilities'
 import './Example.css'
@@ -145,10 +145,11 @@ export default class Example extends React.Component<{}, State> {
             return
         }
 
-        const isVisible = (value.inlines.size > 0)
-        if (!isVisible) {
+        const isWithinMentionNode = value.inlines.size > 0 && value.inlines.last().type === NodeTypes.Mention
+        // If not within an inline node, hide menu
+        if (!isWithinMentionNode) {
             this.onChangePickerProps({
-                isVisible,
+                isVisible: false,
                 bottom: 0,
                 left: 0,
                 searchText: ''
@@ -168,7 +169,7 @@ export default class Example extends React.Component<{}, State> {
         const bottom = relativeRect.height - (selectionBoundingRect.top - relativeRect.top) + 10
         const searchText = ((value.inlines.size > 0) ? (value.inlines.first().text as string).substr(1) : '')
         const menuProps: Partial<MentionPlugin.IPickerProps> = {
-            isVisible,
+            isVisible: isWithinMentionNode,
             bottom,
             left,
             searchText,
