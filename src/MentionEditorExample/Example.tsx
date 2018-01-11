@@ -3,14 +3,23 @@ import { Editor } from 'slate-react'
 import { Value } from 'slate'
 import * as MentionPlugin from './MentionPlugin'
 import { IOption } from './MentionPlugin/models';
+import './Example.css'
+
+const createEmptySlateValue = () => Value.fromJSON(MentionPlugin.initialValue)
 
 export type SlateValue = any
+
+interface IPayload {
+    text: string
+    json: any
+}
 
 interface State {
     highlightIndex: number
     options: MentionPlugin.IOption[]
     menuProps: MentionPlugin.IPickerProps
     value: SlateValue
+    payloads: IPayload[]
 }
 
 const defaultOptions: MentionPlugin.IOption[] = [
@@ -32,6 +41,8 @@ const defaultOptions: MentionPlugin.IOption[] = [
     }
 ]
 
+const payload1value = createEmptySlateValue().change().insertText(`Payload 1`).value
+
 export default class Example extends React.Component<{}, State> {
     menu: HTMLElement
     plugins: any[]
@@ -40,7 +51,13 @@ export default class Example extends React.Component<{}, State> {
         highlightIndex: 0,
         options: defaultOptions,
         menuProps: MentionPlugin.defaultPickerProps,
-        value: Value.fromJSON(MentionPlugin.initialValue)
+        value: createEmptySlateValue(),
+        payloads: [
+            {
+                text: payload1value.document.text,
+                json: payload1value.toJSON()
+            }
+        ]
     }
 
     constructor(props: {}) {
@@ -118,7 +135,7 @@ export default class Example extends React.Component<{}, State> {
         }
 
         event.preventDefault()
-        
+
         this.setState(prevState => {
             const nextIndex = prevState.highlightIndex - 1
             const minIndex = 0
@@ -137,7 +154,7 @@ export default class Example extends React.Component<{}, State> {
         }
 
         event.preventDefault()
-        
+
         this.setState(prevState => {
             const nextIndex = prevState.highlightIndex + 1
             const minIndex = 0
@@ -176,8 +193,33 @@ export default class Example extends React.Component<{}, State> {
         console.log(`onSelectOption: `, option)
     }
 
+    onClickSave = () => {
+        const value = this.state.value
+        if (value.length === 0) {
+            return
+        }
+
+        const newPayload: IPayload = {
+            text: value.document.text,
+            json: value.toJSON()
+        }
+
+        this.setState(prevState => ({
+            payloads: [...prevState.payloads, newPayload],
+            value: createEmptySlateValue()
+        }))
+    }
+
+    onClickPayload = (payload: IPayload) => {
+        console.log(`onClickPayload: `, payload)
+        const value = Value.fromJSON(payload.json)
+
+        this.setState({
+            value
+        })
+    }
+
     render() {
-        console.log(`isMenuVisible: `, this.state.menuProps.isVisible)
         const matchedOptions = this.state.options.map((o, i) => ({
             ...o,
             highlighted: i === this.state.highlightIndex
@@ -192,23 +234,40 @@ export default class Example extends React.Component<{}, State> {
             </ul>
             <h3>Prototype</h3>
             <div className="prototype">
-                Highlight: {this.state.highlightIndex}
-                <div className="mention-editor-container">
-                    <MentionPlugin.Picker
-                        menuRef={this.onMenuRef}
-                        {...this.state.menuProps}
-                        options={matchedOptions}
-                        onSelectOption={this.onSelectOption}
-                    />
-                    <Editor
-                        className="mention-editor"
-                        placeholder="Enter some text..."
-                        value={this.state.value}
-                        onChange={this.onChangeValue}
-                        onKeyDown={this.onKeyDown}
-                        plugins={this.plugins}
-                    />
+                <div className="mention-prototype">
+                    <div className="mention-prototype__payloads">
+                        <h3>Payloads</h3>
+                        <ul>
+                            {this.state.payloads.map((payload, i) => 
+                                <li key={i}><button onClick={() => this.onClickPayload(payload)}>Load {i}</button> {payload.text}</li>
+                            )}
+                        </ul>
+                    </div>
+                    <div className="mention-prototype__editor">
+                        <div className="mention-editor-container">
+                            <MentionPlugin.Picker
+                                menuRef={this.onMenuRef}
+                                {...this.state.menuProps}
+                                options={matchedOptions}
+                                maxDisplayedOptions={4}
+                                onSelectOption={this.onSelectOption}
+                            />
+                            <Editor
+                                className="mention-editor"
+                                placeholder="Enter some text..."
+                                value={this.state.value}
+                                onChange={this.onChangeValue}
+                                onKeyDown={this.onKeyDown}
+                                plugins={this.plugins}
+                            />
+                            <button onClick={this.onClickSave}>
+                                Save
+                            </button>
+                        </div>
+                        Highlight: {this.state.highlightIndex}
+                    </div>
                 </div>
+
             </div>
         </div>
     }

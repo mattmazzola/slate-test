@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { NodeTypes } from './models'
 import * as immutable from 'immutable'
+import { NodeTypes } from './models'
 import MentionNode from './MentionNode'
 import './MentionPlugin.css'
 
