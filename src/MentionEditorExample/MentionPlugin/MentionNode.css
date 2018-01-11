@@ -1,6 +1,6 @@
 .mention-node {
-    border: 1px solid rgb(94, 193, 230);
-    background: rgb(184, 235, 255);
-    border-radius: 4px;
+    border: 1px solid rgba(0,0,0,0.1);
+    background: #deecf9;
+    border-radius: 2px;
     padding: 0.25rem 0;
 }

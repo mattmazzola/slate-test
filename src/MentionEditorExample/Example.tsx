@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Editor } from 'slate-react'
-import { Value } from 'slate'
+import { Value, Text } from 'slate'
 import * as Fuse from 'fuse.js'
 import * as MentionPlugin from './MentionPlugin'
 import { IOption, NodeTypes } from './MentionPlugin/models'
@@ -181,7 +181,7 @@ export default class Example extends React.Component<{}, State> {
     onArrowUp(event: React.KeyboardEvent<HTMLInputElement>, change: any) {
         console.log(`onArrowUp`)
         if (!this.state.menuProps.isVisible) {
-            return false
+            return
         }
 
         event.preventDefault()
@@ -202,7 +202,7 @@ export default class Example extends React.Component<{}, State> {
     onArrowDown(event: React.KeyboardEvent<HTMLInputElement>, change: any) {
         console.log('onArrowDown')
         if (!this.state.menuProps.isVisible) {
-            return false
+            return
         }
 
         event.preventDefault()
@@ -222,8 +222,12 @@ export default class Example extends React.Component<{}, State> {
 
     onEnter(event: React.KeyboardEvent<HTMLInputElement>, change: any) {
         console.log(`onEnter`)
+        return this.onCompleteNode(event, change)
+    }
+
+    private onCompleteNode(event: React.KeyboardEvent<HTMLInputElement>, change: any) {
         if (!this.state.menuProps.isVisible || this.state.matchedOptions.length === 0) {
-            return false
+            return
         }
 
         event.preventDefault()
@@ -231,16 +235,40 @@ export default class Example extends React.Component<{}, State> {
 
         const textNode = change.value.texts.last()
         if (textNode) {
-            // const newText = textNode.set('text', option.name)
             change
-                .insertText(option.name)
-                .insertText('}')
+                .replaceNodeByKey(textNode.key, Text.fromJSON({
+                    "kind": "text",
+                    "leaves": [
+                        {
+                            "kind": "leaf",
+                            "text": `{${option.name}}`,
+                            "marks": [] as any[]
+                        }
+                    ]
+                }))
                 .collapseToStartOfNextText()
-                // .replaceNodeByKey(textNode.key, newText)
         }
         else {
             console.warn(`Current selection did not contain any text nodes to insert option name into`, change.value.texts)
         }
+
+        // Mark inline node as completed meaning it is now immutable
+        const inline = change.value.inlines.find((i: any) => i.type === NodeTypes.Mention)
+        if (inline) {
+            change
+                .setNodeByKey(inline.key, {
+                    data: {
+                        ...inline.get('data').toJS(),
+                        completed: true
+                    }
+                })
+        }
+        else {
+            console.warn(`Could not find any inlines matching Mention type`, change.value.inlines)
+        }
+
+        change
+            .collapseToStartOfNextText()
 
         this.onSelectOption(option)
         return true
@@ -248,19 +276,24 @@ export default class Example extends React.Component<{}, State> {
 
     onEscape(event: React.KeyboardEvent<HTMLInputElement>, change: any) {
         console.log(`onEscape`)
+        if (!this.state.menuProps.isVisible) {
+            return
+        }
+
+        const inline = change.value.inlines.find((i: any) => i.type === NodeTypes.Mention)
+        if (!inline) {
+            return
+        }
+
+        change
+            .removeNodeByKey(inline.key)
+
+        return true
     }
 
     onTab(event: React.KeyboardEvent<HTMLInputElement>, change: any) {
         console.log(`onTab`)
-        if (!this.state.menuProps.isVisible || this.state.matchedOptions.length === 0) {
-            return false
-        }
-
-        event.preventDefault()
-        const option = this.state.matchedOptions[this.state.highlightIndex].original
-
-        this.onSelectOption(option)
-        return true
+        return this.onCompleteNode(event, change)
     }
 
     onChangePickerProps = (menuProps: Partial<MentionPlugin.IPickerProps>) => {
