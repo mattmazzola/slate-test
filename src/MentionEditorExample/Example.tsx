@@ -124,10 +124,7 @@ export default class Example extends React.Component<{}, State> {
         // Might not even be needed since when the text is empty we would have already deleted the inline node
         if (value.document.text.length === 0) {
             this.onChangePickerProps({
-                isVisible: false,
-                bottom: 0,
-                left: 0,
-                searchText: ''
+                isVisible: false
             })
         }
 
@@ -137,10 +134,7 @@ export default class Example extends React.Component<{}, State> {
         const selection = window.getSelection()
         if (!selection) {
             this.onChangePickerProps({
-                isVisible: false,
-                bottom: 0,
-                left: 0,
-                searchText: ''
+                isVisible: false
             })
             return
         }
@@ -151,10 +145,7 @@ export default class Example extends React.Component<{}, State> {
         // If not within an inline node, hide menu
         if (!isWithinMentionNode) {
             this.onChangePickerProps({
-                isVisible: false,
-                bottom: 0,
-                left: 0,
-                searchText: ''
+                isVisible: false
             })
             return
         }
