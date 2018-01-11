@@ -114,17 +114,19 @@ export default function mentionPlugin(inputOptions: Partial<IOptions> = {}) {
                 // Update current inline optional node with completed: true
                 const inline = nextChange.value.inlines.find((i: any) => i.type === NodeTypes.Mention)
                 if (inline) {
-                    const newInline = inline.set('data', inline.data.set('completed', true))
-
-                    nextChange
-                        .replaceNodeByKey(inline.key, newInline)
+                    nextChange = nextChange
+                        .setNodeByKey(inline.key, {
+                            data: {
+                                ...inline.get('data').toJS(),
+                                completed: true
+                            }
+                        })
                 }
                 else {
                     console.warn(`Could not find any inlines matching Mention type`, nextChange.value.inlines)
                 }
 
                 nextChange
-                    .collapseToStartOfNextText()
                     .collapseToStartOfNextText()
 
                 options.onChangeMenuProps({
@@ -164,6 +166,7 @@ export default function mentionPlugin(inputOptions: Partial<IOptions> = {}) {
                     .map(path => findNodeByPath(path, value.document))
                     .filter(n => n)
 
+                // Remove all inline nodes along path that are completed
                 mentionInlineNodesAlongPath.reduce((newChange: any, inlineNode: any) => {
                     return inlineNode.data.get('completed')
                         ? newChange

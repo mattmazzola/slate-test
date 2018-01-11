@@ -13,7 +13,7 @@ interface Props extends EntityComponentProps {
 
 export const MentionNode = (props: Props) => {
     return (
-        <span className="mention-node">
+        <span className="mention-node" {...props.attributes}>
             {props.children}
         </span>
     )

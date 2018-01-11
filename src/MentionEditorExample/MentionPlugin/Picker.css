@@ -3,7 +3,7 @@
     left: -10000px;
     bottom: 10000px;
     background: white;
-    padding: 0.5em;
+    padding: 0.25em 0;
     border-radius: 4px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
     min-width: 200px;
@@ -27,14 +27,13 @@
 .mention-picker-button {
     background: none;
     border: none;
-    border-radius: 3px;
     padding: 0.5em;
     text-align: left;
 }
 
 .mention-picker-button:hover {
-    background: rgba(94, 252, 255, 0.719)
+    background: rgba(94, 172, 255, 0.15)
 }
 .mention-picker-button--active {
-    background: rgba(94, 252, 255, 0.973)
+    background: rgba(94, 172, 255, 0.28)
 }

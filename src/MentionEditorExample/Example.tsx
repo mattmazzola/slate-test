@@ -1,9 +1,25 @@
 import * as React from 'react'
 import { Editor } from 'slate-react'
 import { Value } from 'slate'
+import * as Fuse from 'fuse.js'
 import * as MentionPlugin from './MentionPlugin'
-import { IOption } from './MentionPlugin/models';
+import { IOption } from './MentionPlugin/models'
+import { FuseResult, MatchedOption } from '../ExtractorResponseEditor/models'
+import { convertMatchedTextIntoStyledStrings } from '../ExtractorResponseEditor/utilities'
 import './Example.css'
+
+const fuseOptions: Fuse.FuseOptions = {
+    shouldSort: true,
+    includeMatches: true,
+    threshold: 0.6,
+    location: 0,
+    distance: 100,
+    maxPatternLength: 32,
+    minMatchCharLength: 1,
+    keys: [
+        "name"
+    ]
+}
 
 const createEmptySlateValue = () => Value.fromJSON(MentionPlugin.initialValue)
 
@@ -15,8 +31,10 @@ interface IPayload {
 }
 
 interface State {
+    maxDisplayedOptions: number
     highlightIndex: number
     options: MentionPlugin.IOption[]
+    matchedOptions: MatchedOption<IOption>[]
     menuProps: MentionPlugin.IPickerProps
     value: SlateValue
     payloads: IPayload[]
@@ -44,12 +62,15 @@ const defaultOptions: MentionPlugin.IOption[] = [
 const payload1value = createEmptySlateValue().change().insertText(`Payload 1`).value
 
 export default class Example extends React.Component<{}, State> {
+    fuse: Fuse
     menu: HTMLElement
     plugins: any[]
 
     state = {
         highlightIndex: 0,
         options: defaultOptions,
+        matchedOptions: [] as MatchedOption<IOption>[],
+        maxDisplayedOptions: 4,
         menuProps: MentionPlugin.defaultPickerProps,
         value: createEmptySlateValue(),
         payloads: [
@@ -63,6 +84,9 @@ export default class Example extends React.Component<{}, State> {
     constructor(props: {}) {
         super(props)
 
+        this.fuse = new Fuse(this.state.options, fuseOptions)
+        this.state.matchedOptions = this.getDefaultMatchedOptions()
+
         this.plugins = [
             MentionPlugin.OptionalPlugin(),
             MentionPlugin.MentionPlugin({
@@ -71,8 +95,19 @@ export default class Example extends React.Component<{}, State> {
         ]
     }
 
+    getDefaultMatchedOptions() {
+        return this.state.options
+            .filter((_, i) => i < this.state.maxDisplayedOptions)
+            .map<MatchedOption<IOption>>((option, i) => ({
+                highlighted: this.state.highlightIndex === i,
+                matchedStrings: [{ text: option.name, matched: false }],
+                original: option
+            }))
+    }
+
     onChangeValue = (change: any) => {
         const { value } = change
+
         // Must always update the value to allow normal use of editor such as cursor movement and typing
         this.setState({
             value
@@ -88,7 +123,6 @@ export default class Example extends React.Component<{}, State> {
         // TODO: See if there is less expensive way to test this?
         // Might not even be needed since when the text is empty we would have already deleted the inline node
         if (value.document.text.length === 0) {
-            console.log(`value.isEmpty`)
             this.onChangePickerProps({
                 isVisible: false,
                 bottom: 0,
@@ -102,17 +136,39 @@ export default class Example extends React.Component<{}, State> {
 
         const selection = window.getSelection()
         if (!selection) {
+            this.onChangePickerProps({
+                isVisible: false,
+                bottom: 0,
+                left: 0,
+                searchText: ''
+            })
+            return
+        }
+
+        const isVisible = (value.inlines.size > 0)
+        if (!isVisible) {
+            this.onChangePickerProps({
+                isVisible,
+                bottom: 0,
+                left: 0,
+                searchText: ''
+            })
             return
         }
 
         const range = selection.getRangeAt(0)
         const selectionBoundingRect = range.getBoundingClientRect()
+        // TODO: Hack to get HTML element of current text node since findDOMNode is not working for custom nodes
+        // const selectionParentElement = selection.focusNode!.parentElement!
+        // const selectionParentBoundingRect = selectionParentElement.getBoundingClientRect()
+        // console.log(`selectionParentElement: `, selectionParentElement, selectionParentBoundingRect)
 
         // const top = ((selectionBoundingRect.top - relativeRect.top) - menu.offsetHeight) + window.scrollY - 20
-        const left = (selectionBoundingRect.left - relativeRect.left) + window.scrollX - menu.offsetWidth / 2 + selectionBoundingRect.width / 2
+        const left = (selectionBoundingRect.left - relativeRect.left) + window.scrollX // - menu.offsetWidth / 2 + selectionBoundingRect.width / 2
         const bottom = relativeRect.height - (selectionBoundingRect.top - relativeRect.top) + 10
         const searchText = ((value.inlines.size > 0) ? (value.inlines.first().text as string).substr(1) : '')
         const menuProps: Partial<MentionPlugin.IPickerProps> = {
+            isVisible,
             bottom,
             left,
             searchText,
@@ -124,14 +180,14 @@ export default class Example extends React.Component<{}, State> {
     onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>, change: any) => {
         const fn = this[`on${event.key}`]
         if (typeof fn === "function") {
-            fn.call(this, event, change)
+            return fn.call(this, event, change)
         }
     }
 
     onArrowUp(event: React.KeyboardEvent<HTMLInputElement>, change: any) {
         console.log(`onArrowUp`)
         if (!this.state.menuProps.isVisible) {
-            return
+            return false
         }
 
         event.preventDefault()
@@ -139,18 +195,20 @@ export default class Example extends React.Component<{}, State> {
         this.setState(prevState => {
             const nextIndex = prevState.highlightIndex - 1
             const minIndex = 0
-            const maxIndex = prevState.options.length - 1
+            const maxIndex = Math.max(0, prevState.matchedOptions.length - 1)
 
             return {
                 highlightIndex: nextIndex < minIndex ? maxIndex : nextIndex
             }
         })
+
+        return true
     }
 
     onArrowDown(event: React.KeyboardEvent<HTMLInputElement>, change: any) {
         console.log('onArrowDown')
         if (!this.state.menuProps.isVisible) {
-            return
+            return false
         }
 
         event.preventDefault()
@@ -158,16 +216,40 @@ export default class Example extends React.Component<{}, State> {
         this.setState(prevState => {
             const nextIndex = prevState.highlightIndex + 1
             const minIndex = 0
-            const maxIndex = prevState.options.length - 1
+            const maxIndex = Math.max(0, prevState.matchedOptions.length - 1)
 
             return {
                 highlightIndex: nextIndex > maxIndex ? minIndex : nextIndex
             }
         })
+
+        return true
     }
 
     onEnter(event: React.KeyboardEvent<HTMLInputElement>, change: any) {
         console.log(`onEnter`)
+        if (!this.state.menuProps.isVisible || this.state.matchedOptions.length === 0) {
+            return false
+        }
+
+        event.preventDefault()
+        const option = this.state.matchedOptions[this.state.highlightIndex].original
+
+        const textNode = change.value.texts.last()
+        if (textNode) {
+            // const newText = textNode.set('text', option.name)
+            change
+                .insertText(option.name)
+                .insertText('}')
+                .collapseToStartOfNextText()
+                // .replaceNodeByKey(textNode.key, newText)
+        }
+        else {
+            console.warn(`Current selection did not contain any text nodes to insert option name into`, change.value.texts)
+        }
+
+        this.onSelectOption(option)
+        return true
     }
 
     onEscape(event: React.KeyboardEvent<HTMLInputElement>, change: any) {
@@ -176,13 +258,32 @@ export default class Example extends React.Component<{}, State> {
 
     onTab(event: React.KeyboardEvent<HTMLInputElement>, change: any) {
         console.log(`onTab`)
+        if (!this.state.menuProps.isVisible || this.state.matchedOptions.length === 0) {
+            return false
+        }
+
+        event.preventDefault()
+        const option = this.state.matchedOptions[this.state.highlightIndex].original
+
+        this.onSelectOption(option)
+        return true
     }
 
     onChangePickerProps = (menuProps: Partial<MentionPlugin.IPickerProps>) => {
         console.log(`onChangePickerProps: `, menuProps)
+
+        const matchedOptions = (typeof menuProps.searchText !== 'string' || menuProps.searchText === "")
+            ? this.getDefaultMatchedOptions()
+            : this.fuse.search<FuseResult<IOption>>(menuProps.searchText!)
+                .filter((_, i) => i < this.state.maxDisplayedOptions)
+                .map(result => convertMatchedTextIntoStyledStrings(result.item.name, result.matches[0].indices, result.item))
+
         this.setState(prevState => ({
+            matchedOptions,
             menuProps: { ...prevState.menuProps, ...menuProps }
         }))
+
+        return true
     }
 
     onMenuRef = (element: HTMLElement) => {
@@ -191,6 +292,10 @@ export default class Example extends React.Component<{}, State> {
 
     onSelectOption = (option: IOption) => {
         console.log(`onSelectOption: `, option)
+
+        this.setState({
+            highlightIndex: 0
+        })
     }
 
     onClickSave = () => {
@@ -220,7 +325,7 @@ export default class Example extends React.Component<{}, State> {
     }
 
     render() {
-        const matchedOptions = this.state.options.map((o, i) => ({
+        const matchedOptions = this.state.matchedOptions.map((o, i) => ({
             ...o,
             highlighted: i === this.state.highlightIndex
         }))
@@ -238,7 +343,7 @@ export default class Example extends React.Component<{}, State> {
                     <div className="mention-prototype__payloads">
                         <h3>Payloads</h3>
                         <ul>
-                            {this.state.payloads.map((payload, i) => 
+                            {this.state.payloads.map((payload, i) =>
                                 <li key={i}><button onClick={() => this.onClickPayload(payload)}>Load {i}</button> {payload.text}</li>
                             )}
                         </ul>
@@ -248,9 +353,8 @@ export default class Example extends React.Component<{}, State> {
                             <MentionPlugin.Picker
                                 menuRef={this.onMenuRef}
                                 {...this.state.menuProps}
-                                options={matchedOptions}
-                                maxDisplayedOptions={4}
-                                onSelectOption={this.onSelectOption}
+                                matchedOptions={matchedOptions}
+                                onClickOption={this.onSelectOption}
                             />
                             <Editor
                                 className="mention-editor"

@@ -61,6 +61,7 @@ export default class EntityPickerContainer extends React.Component<Props, State>
         this.fuse = new Fuse(this.props.options, fuseOptions)
         this.state.matchedOptions = props.options.filter((_, i) => i < props.maxDisplayedOptions)
             .map<MatchedOption<IOption>>(option => ({
+                highlighted: false, // Is not used for EntityPicker so false will not affect rendering
                 matchedStrings: [{ text: option.name, matched: false }],
                 original: option
             }))

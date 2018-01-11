@@ -213,6 +213,7 @@ export const convertMatchedTextIntoStyledStrings = <T>(text: string, matches: [n
         }))
 
     return {
+        highlighted: false,
         original,
         matchedStrings
     }
