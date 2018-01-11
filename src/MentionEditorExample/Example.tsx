@@ -145,6 +145,8 @@ export default class Example extends React.Component<{}, State> {
             return
         }
 
+        // TODO: This logic is duplicated inside the MentionPlugin.  Since it's required to be here, we could collapse the plugin into this module
+        // and perhaps that would actually reduce code complexity even though it's less modular
         const isWithinMentionNode = value.inlines.size > 0 && value.inlines.last().type === NodeTypes.Mention
         // If not within an inline node, hide menu
         if (!isWithinMentionNode) {
