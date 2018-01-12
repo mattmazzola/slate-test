@@ -12,6 +12,7 @@ interface IPayload {
 }
 
 interface State {
+    disabled: boolean
     options: MentionPlugin.IOption[]
     value: MentionPlugin.SlateValue
     payloads: IPayload[]
@@ -44,6 +45,7 @@ export default class Example extends React.Component<{}, State> {
     plugins: any[]
 
     state = {
+        disabled: false,
         options: defaultOptions,
         value: createEmptySlateValue(),
         payloads: [
@@ -86,6 +88,12 @@ export default class Example extends React.Component<{}, State> {
         })
     }
 
+    onClickToggleDisabled = () => {
+        this.setState(prevState => ({
+            disabled: !prevState.disabled
+        }))
+    }
+
     render() {
         return <div>
             <h2>1. Mentions</h2>
@@ -111,10 +119,13 @@ export default class Example extends React.Component<{}, State> {
                             placeholder="Enter some text..."
                             value={this.state.value}
                             onChange={this.onChangeValue}
-                            disabled={false}
+                            disabled={this.state.disabled}
                         />
                         <button onClick={this.onClickSave}>
                             Save
+                        </button>
+                        <button onClick={this.onClickToggleDisabled}>
+                            Toggle Disabled
                         </button>
                     </div>
                 </div>

@@ -329,12 +329,13 @@ export default class MentionEditor extends React.Component<Props, State> {
                 onClickOption={this.onClickOption}
             />
             <Editor
-                className="mention-editor"
+                className={`mention-editor ${this.props.disabled ? 'mention-editor--disabled' : ''}`}
                 placeholder={this.props.placeholder}
                 value={this.props.value}
                 onChange={this.onChangeValue}
                 onKeyDown={this.onKeyDown}
                 plugins={this.plugins}
+                readOnly={this.props.disabled}
             />
         </div>
     }
