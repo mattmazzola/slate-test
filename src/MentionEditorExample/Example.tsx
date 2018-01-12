@@ -233,16 +233,16 @@ export default class Example extends React.Component<{}, State> {
 
     onEnter(event: React.KeyboardEvent<HTMLInputElement>, change: any) {
         console.log(`onEnter`)
-        return this.onCompleteNode(event, change)
+        const option = this.state.matchedOptions[this.state.highlightIndex].original
+        return this.onCompleteNode(event, change, option)
     }
 
-    private onCompleteNode(event: React.KeyboardEvent<HTMLInputElement>, change: any) {
+    private onCompleteNode(event: React.KeyboardEvent<HTMLInputElement> | undefined, change: any, option: IOption) {
         if (!this.state.menuProps.isVisible || this.state.matchedOptions.length === 0) {
             return
         }
 
-        event.preventDefault()
-        const option = this.state.matchedOptions[this.state.highlightIndex].original
+        event && event.preventDefault()
 
         const textNode = change.value.texts.last()
         if (textNode) {
@@ -281,7 +281,11 @@ export default class Example extends React.Component<{}, State> {
         change
             .collapseToStartOfNextText()
 
-        this.onSelectOption(option)
+        // Reset highlight index to be ready for next node
+        this.setState({
+            highlightIndex: 0
+        })
+
         return true
     }
 
@@ -304,7 +308,8 @@ export default class Example extends React.Component<{}, State> {
 
     onTab(event: React.KeyboardEvent<HTMLInputElement>, change: any) {
         console.log(`onTab`)
-        return this.onCompleteNode(event, change)
+        const option = this.state.matchedOptions[this.state.highlightIndex].original
+        return this.onCompleteNode(event, change, option)
     }
 
     onChangePickerProps = (menuProps: Partial<MentionPlugin.IPickerProps>) => {
@@ -328,12 +333,15 @@ export default class Example extends React.Component<{}, State> {
         this.menu = element
     }
 
-    onSelectOption = (option: IOption) => {
-        console.log(`onSelectOption: `, option)
+    onClickOption = (option: IOption) => {
+        console.log(`onClickOption: `, option)
+        const change = this.state.value.change()
+        this.onCompleteNode(undefined, change, option)
 
-        this.setState({
-            highlightIndex: 0
-        })
+        this.setState(prevState => ({
+            value: change.value,
+            menuProps: { ...prevState.menuProps, isVisible: false }
+        }))
     }
 
     onClickSave = () => {
@@ -392,7 +400,7 @@ export default class Example extends React.Component<{}, State> {
                                 menuRef={this.onMenuRef}
                                 {...this.state.menuProps}
                                 matchedOptions={matchedOptions}
-                                onClickOption={this.onSelectOption}
+                                onClickOption={this.onClickOption}
                             />
                             <Editor
                                 className="mention-editor"

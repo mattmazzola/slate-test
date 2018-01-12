@@ -34,7 +34,8 @@ export default class Picker extends React.Component<Props, {}> {
                     key={matchedOption.original.id}
                     type="button"
                     className={`mention-picker-button ${(matchedOption as any).highlighted ? 'mention-picker-button--active' : ''}`}
-                    onClick={() => this.props.onClickOption(matchedOption.original)}>
+                    onMouseDown={() => { console.log(`onMouseDown: `, matchedOption.original); this.props.onClickOption(matchedOption.original) }}
+                >
                     <FuseMatch matches={matchedOption.matchedStrings} />
                 </button>
             )}
