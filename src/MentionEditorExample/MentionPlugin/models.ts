@@ -8,3 +8,11 @@ export interface IOption {
     name: string
     highlighted?: boolean
 }
+
+export interface IPickerProps {
+    isVisible: boolean
+    top: number
+    bottom: number
+    left: number
+    searchText: string
+}

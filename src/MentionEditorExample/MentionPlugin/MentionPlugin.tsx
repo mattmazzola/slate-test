@@ -1,16 +1,8 @@
 import * as React from 'react'
 import * as immutable from 'immutable'
-import { NodeTypes } from './models'
+import { IPickerProps, NodeTypes } from './models'
 import MentionNode from './MentionNode'
 import './MentionPlugin.css'
-
-export interface IPickerProps {
-    isVisible: boolean
-    top: number
-    bottom: number
-    left: number
-    searchText: string
-}
 
 export const defaultPickerProps: IPickerProps = {
     isVisible: false,
@@ -22,11 +14,13 @@ export const defaultPickerProps: IPickerProps = {
 
 export interface IOptions {
     triggerCharacter: string
+    closingCharacter: string
     onChangeMenuProps: (menuProps: Partial<IPickerProps>) => void
 }
 
 const defaultOptions: IOptions = {
-    triggerCharacter: '{',
+    triggerCharacter: '$',
+    closingCharacter: ' ',
     onChangeMenuProps: () => { },
 }
 
@@ -76,7 +70,7 @@ export default function mentionPlugin(inputOptions: Partial<IOptions> = {}) {
             // Check that the key pressed matches our `key` option.
             // console.log(`event.metaKey: `, event.metaKey)
             // console.log(`event.ctrlKey: `, event.ctrlKey)
-            // console.log(`event.key: `, event.key)
+            console.log(`event.key: `, event.key)
             const isWithinMentionNode = change.value.inlines.size > 0 && change.value.inlines.last().type === NodeTypes.Mention
             if (!isWithinMentionNode && event.key === options.triggerCharacter) {
                 event.preventDefault()
@@ -106,30 +100,12 @@ export default function mentionPlugin(inputOptions: Partial<IOptions> = {}) {
                 return true
             }
 
-            if (isWithinMentionNode && event.key === '}') {
+            if (isWithinMentionNode && event.key === options.closingCharacter) {
                 event.preventDefault()
 
-                // Add closing character
-                let nextChange = change
-                    .insertText('}')
-
-                // Update current inline optional node with completed: true
-                const inline = nextChange.value.inlines.find((i: any) => i.type === NodeTypes.Mention)
-                if (inline) {
-                    nextChange = nextChange
-                        .setNodeByKey(inline.key, {
-                            data: {
-                                ...inline.get('data').toJS(),
-                                completed: true
-                            }
-                        })
-                }
-                else {
-                    console.warn(`Could not find any inlines matching Mention type`, nextChange.value.inlines)
-                }
-
-                nextChange
+                change
                     .collapseToStartOfNextText()
+                    .insertText(options.closingCharacter)
 
                 options.onChangeMenuProps({
                     isVisible: false

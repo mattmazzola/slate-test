@@ -1,18 +1,12 @@
-import Picker from './Picker'
-import MentionPlugin, { defaultPickerProps, IPickerProps } from './MentionPlugin'
-import OptionalPlugin from './OptionalPlugin'
-
+import PayloadEditor, { SlateValue } from './PayloadEditor'
 import initialValue from './value'
 import * as Utilities from './utilities'
 import { IOption } from './models'
 
 export {
-    defaultPickerProps,
+    SlateValue,
+    PayloadEditor,
     IOption,
-    IPickerProps,
     initialValue,
-    MentionPlugin,
-    OptionalPlugin,
-    Picker,
     Utilities
 }
