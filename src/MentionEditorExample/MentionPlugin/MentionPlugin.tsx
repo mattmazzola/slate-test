@@ -100,18 +100,21 @@ export default function mentionPlugin(inputOptions: Partial<IOptions> = {}) {
                 return true
             }
 
-            if (isWithinMentionNode && event.key === options.closingCharacter) {
-                event.preventDefault()
+            if (isWithinMentionNode) {
+                const isNodeCompleted = change.value.inlines.last().data.get('completed')
+                if (!isNodeCompleted && event.key === options.closingCharacter) {
+                    event.preventDefault()
 
-                change
-                    .collapseToStartOfNextText()
-                    .insertText(options.closingCharacter)
+                    change
+                        .collapseToStartOfNextText()
+                        .insertText(options.closingCharacter)
 
-                options.onChangeMenuProps({
-                    isVisible: false
-                })
+                    options.onChangeMenuProps({
+                        isVisible: false
+                    })
 
-                return true
+                    return true
+                }
             }
         },
 
