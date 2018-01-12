@@ -313,7 +313,8 @@ export default class Example extends React.Component<{}, State> {
     }
 
     onChangePickerProps = (menuProps: Partial<MentionPlugin.IPickerProps>) => {
-        console.log(`onChangePickerProps: `, menuProps)
+        // Note: Helpful to debug menu behavior
+        // console.log(`onChangePickerProps: `, menuProps)
 
         const matchedOptions = (typeof menuProps.searchText !== 'string' || menuProps.searchText === "")
             ? this.getDefaultMatchedOptions()
