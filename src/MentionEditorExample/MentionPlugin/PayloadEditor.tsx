@@ -133,6 +133,15 @@ export default class MentionEditor extends React.Component<Props, State> {
         const range = selection.getRangeAt(0)
         const selectionBoundingRect = range.getBoundingClientRect()
         // TODO: Hack to get HTML element of current text node since findDOMNode is not working for custom nodes
+        // The menu currently moves as the user types, but it should stay fixed to the left position of the current node
+        // In order to do this we need to get the DOM node and call getBoundingClientRect
+
+        // const textNode = value.texts.last()
+        // const textDomNode = findDOMNode(textNode)
+        // const textDomNodeRectd = textDomNode.getBoundingClientRect()
+
+        // An alternative method:
+        
         // const selectionParentElement = selection.focusNode!.parentElement!
         // const selectionParentBoundingRect = selectionParentElement.getBoundingClientRect()
         // console.log(`selectionParentElement: `, selectionParentElement, selectionParentBoundingRect)
@@ -212,6 +221,10 @@ export default class MentionEditor extends React.Component<Props, State> {
             return
         }
 
+        // It's a little odd to have optional event here, there might be better way to refactor
+        // When invoked on key events we have an event; however, on click from the Picker menu we do not
+        // The alternative is moving this event logic into the key handlers but that also moves the above logic
+        // and consolidating here seemed better for consistent maitanance
         event && event.preventDefault()
 
         const textNode = change.value.texts.last()
@@ -222,7 +235,7 @@ export default class MentionEditor extends React.Component<Props, State> {
                     "leaves": [
                         {
                             "kind": "leaf",
-                            "text": `{${option.name}}`,
+                            "text": `$${option.name}`,
                             "marks": [] as any[]
                         }
                     ]
@@ -270,8 +283,7 @@ export default class MentionEditor extends React.Component<Props, State> {
             return
         }
 
-        change
-            .removeNodeByKey(inline.key)
+        change.removeNodeByKey(inline.key)
 
         return true
     }
