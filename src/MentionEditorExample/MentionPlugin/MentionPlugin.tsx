@@ -70,7 +70,7 @@ export default function mentionPlugin(inputOptions: Partial<IOptions> = {}) {
             // Check that the key pressed matches our `key` option.
             // console.log(`event.metaKey: `, event.metaKey)
             // console.log(`event.ctrlKey: `, event.ctrlKey)
-            console.log(`event.key: `, event.key)
+            // console.log(`event.key: `, event.key)
             const isWithinMentionNode = change.value.inlines.size > 0 && change.value.inlines.last().type === NodeTypes.Mention
             if (!isWithinMentionNode && event.key === options.triggerCharacter) {
                 event.preventDefault()
