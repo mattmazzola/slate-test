@@ -8,7 +8,7 @@ import OptionalPlugin from './OptionalPlugin'
 import Picker from './Picker'
 import * as Utilities from './utilities'
 import { FuseResult, MatchedOption } from '../../ExtractorResponseEditor/models'
-import { convertMatchedTextIntoStyledStrings } from '../../ExtractorResponseEditor/utilities'
+import { convertMatchedTextIntoMatchedOption } from '../../ExtractorResponseEditor/utilities'
 import './PayloadEditor.css'
 
 const fuseOptions: Fuse.FuseOptions = {
@@ -293,7 +293,7 @@ export default class MentionEditor extends React.Component<Props, State> {
             ? this.getDefaultMatchedOptions()
             : this.fuse.search<FuseResult<IOption>>(menuProps.searchText!)
                 .filter((_, i) => i < this.state.maxDisplayedOptions)
-                .map(result => convertMatchedTextIntoStyledStrings(result.item.name, result.matches[0].indices, result.item))
+                .map(result => convertMatchedTextIntoMatchedOption(result.item.name, result.matches[0].indices, result.item))
 
         this.setState(prevState => ({
             matchedOptions,

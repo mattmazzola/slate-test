@@ -146,12 +146,13 @@ export const convertEntitiesAndTextToEditorValue = (text: string, customEntities
     return Value.fromJSON(document)
 }
 
-export const convertMatchedTextIntoStyledStrings = <T>(text: string, matches: [number, number][], original: T): models.MatchedOption<T> => {
-    const matchedStrings = matches.reduce<models.ISegement[]>((segements, [startIndex, endIndex]) => {
-        if (startIndex === endIndex) {
-            return segements
-        }
+export const convertMatchedTextIntoMatchedOption = <T>(text: string, matches: [number, number][], original: T): models.MatchedOption<T> => {
+    const matchedStrings = matches.reduce<models.ISegement[]>((segements, [startIndex, originalEndIndex]) => {
+        // if (startIndex === endIndex) {
+        //     return segements
+        // }
 
+        let endIndex = originalEndIndex + 1
         const segementIndexWhereEntityBelongs = segements.findIndex(seg => seg.startIndex <= startIndex && endIndex <= seg.endIndex)
         const prevSegements = segements.slice(0, segementIndexWhereEntityBelongs)
         const nextSegements = segements.slice(segementIndexWhereEntityBelongs + 1, segements.length)
@@ -162,7 +163,7 @@ export const convertMatchedTextIntoStyledStrings = <T>(text: string, matches: [n
         const prevSegement: models.ISegement = {
             ...segementWhereEntityBelongs,
             text: prevSegementText,
-            endIndex: prevSegementEndIndex,
+            endIndex: startIndex,
         }
 
         const nextSegementStartIndex = endIndex - segementWhereEntityBelongs.startIndex
@@ -170,7 +171,7 @@ export const convertMatchedTextIntoStyledStrings = <T>(text: string, matches: [n
         const nextSegement: models.ISegement = {
             ...segementWhereEntityBelongs,
             text: nextSegementText,
-            startIndex: nextSegementStartIndex,
+            startIndex: endIndex,
         }
 
         const newSegement: models.ISegement = {
@@ -183,7 +184,7 @@ export const convertMatchedTextIntoStyledStrings = <T>(text: string, matches: [n
             }
         }
 
-        const newSegements = prevSegements
+        const newSegements = []
         if (prevSegement.startIndex !== prevSegement.endIndex) {
             newSegements.push(prevSegement)
         }
@@ -196,7 +197,7 @@ export const convertMatchedTextIntoStyledStrings = <T>(text: string, matches: [n
             newSegements.push(nextSegement)
         }
 
-        return [...newSegements, ...nextSegements]
+        return [...prevSegements, ...newSegements, ...nextSegements]
     }, [
             {
                 text,

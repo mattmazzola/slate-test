@@ -2,7 +2,7 @@ import * as React from 'react'
 import EntityPicker from './EntityPicker'
 import * as Fuse from 'fuse.js'
 import { IOption, IPosition, FuseResult, MatchedOption } from './models'
-import { convertMatchedTextIntoStyledStrings } from './utilities'
+import { convertMatchedTextIntoMatchedOption } from './utilities'
 
 const fuseOptions: Fuse.FuseOptions = {
     shouldSort: true,
@@ -75,7 +75,7 @@ export default class EntityPickerContainer extends React.Component<Props, State>
 
             const matchedOptions = this.fuse.search<FuseResult<IOption>>(this.state.searchText)
                 .filter((_, i) => i < nextProps.maxDisplayedOptions)
-                .map(result => convertMatchedTextIntoStyledStrings(result.item.name, result.matches[0].indices, result.item))
+                .map(result => convertMatchedTextIntoMatchedOption(result.item.name, result.matches[0].indices, result.item))
 
             this.setState(prevState => ({
                 ...initialState,
@@ -141,7 +141,7 @@ export default class EntityPickerContainer extends React.Component<Props, State>
             .map(result => {
                 const indices = result.matches[0].indices.map<[number, number]>(([start, end]) => [start, end+1])
                 console.log(`indices: `, indices)
-                const matchedOption = convertMatchedTextIntoStyledStrings(result.item.name, indices, result.item)
+                const matchedOption = convertMatchedTextIntoMatchedOption(result.item.name, indices, result.item)
                 console.log(`matchedOption: `, matchedOption)
                 return matchedOption
             })
