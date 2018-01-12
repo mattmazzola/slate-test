@@ -3,11 +3,13 @@ import { NodeTypes } from './models'
 import OptionalNode from './OptionalNode'
 
 export interface IOptions {
-    triggerCharacter: string
+    openingCharacter: string
+    closingCharacter: string
 }
 
 const defaultOptions: IOptions = {
-    triggerCharacter: '[',
+    openingCharacter: '[',
+    closingCharacter: ']'
 }
 
 export default function optionalPlugin(inputOptions: Partial<IOptions> = {}) {
@@ -17,8 +19,7 @@ export default function optionalPlugin(inputOptions: Partial<IOptions> = {}) {
         onKeyDown(event: React.KeyboardEvent<HTMLInputElement>, change: any): boolean | void {
             const isWithinOptionalNode = change.value.inlines.size > 0 && change.value.inlines.last().type === NodeTypes.Optional
             
-            if (!isWithinOptionalNode && event.key === options.triggerCharacter) {
-                console.log('insert optional node')
+            if (!isWithinOptionalNode && event.key === options.openingCharacter) {
                 event.preventDefault()
                 change
                     .insertInline({
@@ -29,7 +30,7 @@ export default function optionalPlugin(inputOptions: Partial<IOptions> = {}) {
                                 kind: 'text',
                                 leaves: [
                                     {
-                                        text: '['
+                                        text: options.openingCharacter
                                     }
                                 ]
                             }
@@ -39,12 +40,11 @@ export default function optionalPlugin(inputOptions: Partial<IOptions> = {}) {
                 return true
             }
 
-            if (isWithinOptionalNode && event.key === ']') {
-                console.log(`optional.node.collapseToStartOfNextText`)
+            if (isWithinOptionalNode && event.key === options.closingCharacter) {
                 event.preventDefault()
 
                 change
-                    .insertText(']')
+                    .insertText(options.closingCharacter)
                     .collapseToStartOfNextText()
 
                 return true
