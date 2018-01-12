@@ -132,12 +132,12 @@ export default class MentionEditor extends React.Component<Props, State> {
         // const textDomNodeRectd = textDomNode.getBoundingClientRect()
 
         // An alternative method:
-        
+
         // const selectionParentElement = selection.focusNode!.parentElement!
         // const selectionParentBoundingRect = selectionParentElement.getBoundingClientRect()
         // console.log(`selectionParentElement: `, selectionParentElement, selectionParentBoundingRect)
 
-        const top = ((selectionBoundingRect.bottom - relativeRect.top)) + window.scrollY
+        const top = (selectionBoundingRect.bottom - relativeRect.top)// - window.scrollY
         const left = (selectionBoundingRect.left - relativeRect.left) + window.scrollX // - menu.offsetWidth / 2 + selectionBoundingRect.width / 2
         const bottom = relativeRect.height - (selectionBoundingRect.top - relativeRect.top)
         const searchText = ((value.inlines.size > 0) ? (value.inlines.first().text as string).substr(1) : '')
