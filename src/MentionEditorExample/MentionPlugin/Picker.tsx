@@ -9,6 +9,7 @@ interface Props {
     isVisible: boolean
     bottom: number
     left: number
+    top: number
     searchText: string
     menuRef: (element: HTMLDivElement) => void
     onClickOption: (option: IOption) => void
@@ -18,7 +19,7 @@ export default class Picker extends React.Component<Props, {}> {
     render() {
         const style: any = {
             left: `${this.props.left}px`,
-            bottom: `${this.props.bottom}px`,
+            top: `${this.props.top}px`,
         }
 
         return <div

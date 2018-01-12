@@ -6,6 +6,7 @@ import './MentionPlugin.css'
 
 export interface IPickerProps {
     isVisible: boolean
+    top: number
     bottom: number
     left: number
     searchText: string
@@ -15,6 +16,7 @@ export const defaultPickerProps: IPickerProps = {
     isVisible: false,
     bottom: -9999,
     left: -9999,
+    top: -9999,
     searchText: ''
 }
 
