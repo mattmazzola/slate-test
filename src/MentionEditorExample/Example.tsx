@@ -43,19 +43,19 @@ interface State {
 const defaultOptions: MentionPlugin.IOption[] = [
     {
         id: '1',
-        name: 'Option 1'
+        name: 'luis-datetimev2'
     },
     {
         id: '2',
-        name: 'Option 2'
+        name: 'luis-ecyclopedia'
     },
     {
         id: '3',
-        name: 'Option 3'
+        name: 'MyEntity'
     },
     {
         id: '4',
-        name: 'Option 4'
+        name: 'YourEntity'
     }
 ]
 
