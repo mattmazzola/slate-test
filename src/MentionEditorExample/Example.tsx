@@ -126,6 +126,16 @@ export default class Example extends React.Component<{}, State> {
             this.onChangePickerProps({
                 isVisible: false
             })
+            return
+        }
+
+        // Note: When debugging styling of Picker it is best to comment out this so you can inspect
+        // picker elements while selection is not focused
+        if (!value.isFocused) {
+            this.onChangePickerProps({
+                isVisible: false
+            })
+            return
         }
 
         const relativeParent = MentionPlugin.Utilities.getRelativeParent(this.menu.parentElement)
