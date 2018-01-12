@@ -90,15 +90,6 @@ export default class MentionEditor extends React.Component<Props, State> {
             return
         }
 
-        // TODO: See if there is less expensive way to test this?
-        // Might not even be needed since when the text is empty we would have already deleted the inline node
-        if (value.document.text.length === 0) {
-            this.onChangePickerProps({
-                isVisible: false
-            })
-            return
-        }
-
         // Note: When debugging styling of Picker it is best to comment out this so you can inspect
         // picker elements while selection is not focused
         if (!value.isFocused) {
