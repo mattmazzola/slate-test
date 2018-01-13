@@ -247,6 +247,7 @@ export default class MentionEditor extends React.Component<Props, State> {
                 .setNodeByKey(inline.key, {
                     data: {
                         ...inline.get('data').toJS(),
+                        option,
                         completed: true
                     }
                 })
