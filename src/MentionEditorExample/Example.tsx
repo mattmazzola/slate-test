@@ -57,6 +57,8 @@ export default class Example extends React.Component<{}, State> {
     }
 
     onChangeValue = (value: MentionPlugin.SlateValue) => {
+        const entities = MentionPlugin.Utilities.getEntitiesFromValue(value)
+        // console.log(`onChangeValue.entities: `, entities)
         this.setState({
             value
         })
