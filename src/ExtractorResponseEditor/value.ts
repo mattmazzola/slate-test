@@ -24,7 +24,6 @@ const value = {
                         "type": NodeType.CustomEntityNodeType,
                         "isVoid": false,
                         "data": {
-                            "foo": "bar"
                         },
                         "nodes": [
                             {

@@ -41,8 +41,7 @@ export default function mentionPlugin(inputOptions: Partial<IOptions> = {}) {
                     .insertInline({
                         type: NodeTypes.Mention,
                         data: {
-                            completed: false,
-                            foo: 'bar'
+                            completed: false
                         },
                         nodes: [
                             {
