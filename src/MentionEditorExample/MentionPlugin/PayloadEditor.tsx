@@ -204,8 +204,10 @@ export default class MentionEditor extends React.Component<Props, State> {
 
     onEnter(event: React.KeyboardEvent<HTMLInputElement>, change: any) {
         console.log(`onEnter`)
+        event.preventDefault()
         const option = this.state.matchedOptions[this.state.highlightIndex].original
-        return this.onCompleteNode(event, change, option)
+        this.onCompleteNode(event, change, option)
+        return true
     }
 
     private onCompleteNode(event: React.KeyboardEvent<HTMLInputElement> | undefined, change: any, option: IOption) {
