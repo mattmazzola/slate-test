@@ -121,6 +121,7 @@ export default class MentionEditor extends React.Component<Props, State> {
             return
         }
 
+        const isNodeCompleted = change.value.inlines.last().data.get('completed')
         const range = selection.getRangeAt(0)
         const selectionBoundingRect = range.getBoundingClientRect()
         // TODO: Hack to get HTML element of current text node since findDOMNode is not working for custom nodes
@@ -142,7 +143,7 @@ export default class MentionEditor extends React.Component<Props, State> {
         const bottom = relativeRect.height - (selectionBoundingRect.top - relativeRect.top)
         const searchText = ((value.inlines.size > 0) ? (value.inlines.first().text as string).substr(1) : '')
         const menuProps: Partial<IPickerProps> = {
-            isVisible: isWithinMentionNode,
+            isVisible: !isNodeCompleted,
             bottom,
             left,
             top,
