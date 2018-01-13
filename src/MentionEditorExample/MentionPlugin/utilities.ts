@@ -84,6 +84,10 @@ interface INode {
     data: any
 }
 
+/**
+ * This a normal tree DFS with change that it only returns nodes that satisfy the predicate and also it will skip nodes that are excluded
+ * In practice this means return all inline nodes and skip optional nodes effectively returning list of inline nodes that are not within and optional node.
+ */
 const depthFirstSearch = (root: INode, predicate: (n: INode) => boolean, exclude: (n: INode) => boolean, nodes: INode[] = []): INode[] => {
     if (predicate(root)) {
         nodes.push(root)
